@@ -1,0 +1,67 @@
+// ==========================================================================
+// GLOBAL | Typography
+// ==========================================================================
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 2rem;
+  line-height: 1.5;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+h1 {
+  font-family: $ff-h1;
+  color: #000000;
+  @include mobile-tablet {
+    font-size: $fs-h1*.7;
+    padding-top: 20px;
+    padding-bottom: 10px;
+  }
+  @include desktop {
+    font-size: $fs-h1;
+    padding-top: 40px;
+    padding-bottom: 42px;
+  }
+}
+
+h2 {
+  font-weight: 700;
+  @include mobile-tablet {
+    font-size: $fs-h2*.7;
+  }
+  @include desktop {
+    font-size: $fs-h2;
+  }
+}
+
+h3 {
+  @include mobile-tablet {
+    font-size: $fs-h3*.7;
+  }
+  @include desktop {
+    font-size: $fs-h3;
+  }
+}
+
+h4 {
+
+}
+
+h5 {
+
+}
+
+h6 {
+
+}
+
+// -----
+
+p {
+  margin: 0;
+}

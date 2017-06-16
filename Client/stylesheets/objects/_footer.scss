@@ -1,0 +1,17 @@
+// ==========================================================================
+// OBJECTS | Footer
+// ==========================================================================
+
+.footer {
+  &__inner {
+    padding: $base-spacing;
+    text-align: center;
+    font-size: $base-font-size;
+    @include tablet {
+      margin-left: $width-sidebar-tablet;
+    }
+    @include desktop {
+      margin-left: $width-sidebar-desktop;
+    }
+  }
+}

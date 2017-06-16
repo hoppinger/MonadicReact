@@ -1,0 +1,48 @@
+.column-view-menu {
+  @include tablet-desktop {
+    width: 300px;
+    position: fixed;
+    top: $topbar-height;
+    left: $width-sidebar-desktop;
+    bottom: 0;
+    background: #fff;
+    overflow-y: auto;
+    .model-nested {
+      border-bottom: 1px solid #D2D2D2;
+    }
+  }
+  .attribute-label {
+    display: none;
+  }
+  .model-preview {
+    padding: 0;
+    font-size: inherit;
+  }
+  .model__attribute {
+    margin: 0;
+  }
+  .model-content {
+    padding: 21px 50px;
+    min-height: auto;
+  }
+}
+
+.column-view-content {
+  @include tablet-desktop {
+    margin-left: 250px;
+  }
+  .topbar {
+    display: none; // remove this ugly fix when giuseppe fixed the double topbar
+  }
+}
+
+.column-view-menu__item {
+  color: $black-400;
+  border-right: 5px solid transparent;
+  display: block;
+}
+
+.column-view-menu__item--selected {
+  border-right-color: currentColor;
+  color: $menu-link-color-active;
+}

@@ -1,0 +1,39 @@
+// ==========================================================================
+// GLOBAL | Core
+// ==========================================================================
+
+@viewport {
+  width: device-width;
+  height: device-height;
+}
+
+// -----
+
+*,
+*:after,
+*:before {
+  box-sizing: inherit;
+}
+
+// -----
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  overflow-y: scroll; // Force vertical scrollbar to avoid jumping if navigating from short to long page and vice versa
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $bg-base;
+  color: $black-400;
+  font-size: $fs-base;
+  font-family: $ff-base;
+  line-height: $lh-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size-adjust: auto;
+}

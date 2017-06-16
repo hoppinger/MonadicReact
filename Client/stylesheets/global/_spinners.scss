@@ -1,0 +1,33 @@
+.loader {
+    display: inline-block;
+    width: 15px;
+    border: 2px solid $main-color-light; 
+    border-top: 2px solid $main-color; 
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.save-state {
+  float: right;
+  position: relative;
+  right: 5px;
+  height: 15px;
+}
+
+.saved {
+  opacity: 0;
+  transition: opacity 2.0s ease;
+}
+
+.warning {
+  float: left;
+  position: relative;
+  left: 5px;
+  top: 45px;
+  height: 15px;
+}
