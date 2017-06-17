@@ -24,10 +24,14 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<RetractProps<A>>(Retract, this.props.cmd)
     : this.props.cmd.kind == "repeat" ?
       React.createElement<RepeatProps<A>>(Repeat, this.props.cmd)
+    : this.props.cmd.kind == "any" ?
+      React.createElement<AnyProps<A>>(Any, this.props.cmd)
     : this.props.cmd.kind == "delay" ?
       React.createElement<DelayProps<A>>(Delay, this.props.cmd)
     : this.props.cmd.kind == "string" ?
       React.createElement<StringProps>(String, this.props.cmd)
+    : this.props.cmd.kind == "int" ?
+      React.createElement<IntProps>(Int, this.props.cmd)
     :
       null
   }
@@ -44,11 +48,11 @@ class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
     this.setState({...this.state, step:"waiting for p" })
   }
   render() {
-    return <div key={`${this.props.key}_bind`} className="bind">
+    return <div className="bind">
       {
         this.state.step == "waiting for p" || !this.props.once ?
-          <Interpreter cmd={this.props.p(callback => x =>
-            this.setState({...this.state, step:this.props.k(x)(this.props.cont)}, callback)
+          <Interpreter cmd={this.props.p.comp(callback => x =>
+            this.setState({...this.state, step:this.props.k(x).comp(this.props.cont)}, callback)
           )} />
         :
           null
@@ -81,6 +85,26 @@ class String extends React.Component<StringProps,StringState> {
                   onChange={e =>
                     this.setState({...this.state,
                       value:e.currentTarget.value},
+                      () => this.props.cont(()=>null)(this.state.value))} />
+  }
+}
+
+type IntProps = Monad.Int
+type IntState = { value:number }
+class Int extends React.Component<IntProps,IntState> {
+  constructor(props:IntProps,context:any) {
+    super()
+    this.state = { value:props.value }
+  }
+  componentWillReceiveProps(new_props:IntProps) {
+    this.setState({...this.state, value: new_props.value})
+  }
+  render() {
+    return <input type="number"
+                  value={this.state.value}
+                  onChange={e =>
+                    this.setState({...this.state,
+                      value:isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber},
                       () => this.props.cont(()=>null)(this.state.value))} />
   }
 }
@@ -118,7 +142,7 @@ class Retract<A> extends React.Component<RetractProps<A>,RetractState<A>> {
   }
   render() {
     return <Interpreter
-      cmd={this.props.p(this.props.inb(this.props.value))
+      cmd={this.props.p(this.props.inb(this.props.value)).comp
             (callback => new_value =>
               // console.log("retracting from ", new_value, this.props.out(this.props.value)(new_value)) ||
               this.props.cont(callback)
@@ -135,7 +159,7 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   }
   render() {
     // console.log("rendering repeater", this.state.current_value)
-    return <Interpreter cmd={this.props.p(this.state.current_value)(callback => new_value =>
+    return <Interpreter cmd={this.props.p(this.state.current_value).comp(callback => new_value =>
       // console.log("repeating with", new_value) ||
       this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
         this.props.cont(callback)(new_value)))
@@ -143,38 +167,65 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   }
 }
 
+type AnyProps<A> = Monad.Any<A>
+type AnyState<A> = { current_value:A, frame_index:number }
+class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
+  constructor(props:AnyProps<A>,context:any) {
+    super()
+    this.state = { current_value: props.value, frame_index:1 }
+  }
+  render() {
+    return <div>
+      {
+        this.props.ps.map(p =>
+          <Interpreter cmd={p(this.state.current_value).comp(callback => new_value =>
+            // console.log("repeating with", new_value) ||
+            this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
+              this.props.cont(callback)(new_value)))
+          } />
+        )
+      }
+    </div>
+  }
+}
+
 type DelayProps<A> = Monad.Delay<A>
-type DelayState<A> = { status:"dirty"|"waiting", value:A }
+type DelayState<A> = { status:"dirty"|"waiting", value:A, last_command:Monad.Cmd<A> }
 class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   constructor(props:DelayProps<A>,context:any) {
     super()
-    this.state = { status:"dirty", value:props.value }
+    this.state = { status:"dirty", value:props.value, last_command:props.p(props.value).comp(props.cont) }
   }
   running:boolean
   componentWillMount() {
+    console.log("starting delay thread")
     this.running = true
+    var self = this
     let process = () => setTimeout(() => {
-      if (this.state.status == "dirty") {
-        this.setState({...this.state, status:"waiting"}, () => {
-          this.props.cont(process)(this.state.value)
-        })
+      console.log("delay is ticking", self.state.status, self.state.value)
+      if (self.state.status == "dirty") {
+        console.log("delay is submitting the data to save")
+        self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(callback => new_value => {
+          console.log("calling the continuation of dirty", self.state.value)
+          self.props.cont(callback)(new_value)
+        })})
+        process()
       } else {
-        if (this.running)
+        if (self.running)
           process()
       }
-    }, this.props.dt)
+    }, self.props.dt)
     process()
   }
   componentWillUnmount() {
+    console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    this.setState({...this.state, value: new_props.value, status:"dirty"})
+    this.setState({...this.state, value: new_props.value, old_value: this.state.value, status:"dirty"})
   }
   render() {
-    return <Interpreter
-      cmd={this.props.p(this.state.value)
-        (callback => new_value => this.setState({...this.state, status:"dirty", value:new_value}, callback))} />
+    return <Interpreter cmd={this.state.last_command} />
   }
 }
 
