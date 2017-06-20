@@ -28,6 +28,10 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<AnyProps<A>>(Any, this.props.cmd)
     : this.props.cmd.kind == "delay" ?
       React.createElement<DelayProps<A>>(Delay, this.props.cmd)
+    : this.props.cmd.kind == "custom" ?
+      React.createElement<CustomProps<A>>(Custom, this.props.cmd)
+    : this.props.cmd.kind == "selector" ?
+      React.createElement<SelectorProps<A>>(Selector, this.props.cmd)
     : this.props.cmd.kind == "string" ?
       React.createElement<StringProps>(String, this.props.cmd)
     : this.props.cmd.kind == "int" ?
@@ -198,15 +202,15 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   }
   running:boolean
   componentWillMount() {
-    console.log("starting delay thread")
+    // console.log("starting delay thread")
     this.running = true
     var self = this
     let process = () => setTimeout(() => {
-      console.log("delay is ticking", self.state.status, self.state.value)
+      // console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
-        console.log("delay is submitting the data to save")
+        // console.log("delay is submitting the data to save")
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(callback => new_value => {
-          console.log("calling the continuation of dirty", self.state.value)
+          // console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
         process()
@@ -218,7 +222,7 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     process()
   }
   componentWillUnmount() {
-    console.log("stopping delay thread")
+    // console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
@@ -228,4 +232,50 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     return <Interpreter cmd={this.state.last_command} />
   }
 }
+
+type CustomProps<A> = Monad.Custom<A>
+type CustomState<A> = {}
+class Custom<A> extends React.Component<CustomProps<A>,CustomState<A>> {
+  constructor(props:CustomProps<A>,context:any) {
+    super()
+    this.state = {}
+  }
+
+  render() {
+    return React.createElement<Monad.Custom<A>>(this.props.react_class, {...this.props})
+  }
+}
+
+
+type SelectorProps<A> = Monad.Selector<A>
+type SelectorState<A> = { selected:undefined|number }
+class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
+  constructor(props:SelectorProps<A>,context:any) {
+    super()
+    this.state = { selected:undefined }
+  }
+
+  render() {
+    console.log("Rendering selector", this.state.selected)
+    return <select value={this.state.selected == undefined ? "-1" : this.state.selected} onChange={e => {
+        console.log("on change", e.currentTarget.value)
+        if (e.currentTarget.value == "-1") {
+          this.setState({...this.state, selected: undefined})
+          return
+        }
+        let selected_index = parseInt(e.currentTarget.value)
+        let selected = this.props.items.get(selected_index)
+        this.setState({...this.state, selected: selected_index}, () => this.props.cont(() => {})(selected))
+      } }>
+      <option value="-1"></option>
+      {
+        this.props.items.map((i,i_index) => {
+          let i_s = this.props.to_string(i)
+          return <option key={i_s} value={i_index}>{i_s}</option>
+        })
+      }
+    </select>
+  }
+}
+
 

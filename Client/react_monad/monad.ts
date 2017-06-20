@@ -2,17 +2,25 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
 
-type CmdCommon<A> = { cont:Cont<A>, key:string }
+export type CmdCommon<A> = { cont:Cont<A>, key:string }
 export type Unit<A> = { kind:"unit", value:A } & CmdCommon<A>
 export type Bind<A> = { kind:"bind", once:boolean, p:C<any>, k:(_:any) => C<A> } & CmdCommon<A>
 export type String = { kind:"string", value:string } & CmdCommon<string>
 export type Int = { kind:"int", value:number } & CmdCommon<number>
 export type Delay<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
+export type Custom<A> = { kind:"custom", props_data:any, react_class:React.ClassicComponentClass<Custom<A>> } & CmdCommon<A>
 export type LiftPromise<A> = { kind:"lift promise", p:(_:any)=>Promise<A>, value:any } & CmdCommon<A>
 export type Retract<A> = { kind:"retract", inb:(_:any)=>A, out:(_:any)=>(_:A)=>any, p:(_:any)=>C<any>, value:A } & CmdCommon<A>
 export type Repeat<A> = { kind:"repeat", value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type Any<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<A>
+export type SelectorType = "dropdown"|"radio"
+export type Selector<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A> } & CmdCommon<A>
 
+// lift (React.createClass)
+// more methods besides then:
+// - then_once
+// - repeat
+// - delay
 // all
 // label
 // menu
@@ -21,6 +29,7 @@ export type Any<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<
 // union
 // radio
 // dropdown
+  // default selection
 // open/close
 // toggle
 // list
@@ -38,7 +47,9 @@ export type Cmd<A> =
   | LiftPromise<A>
   | Retract<A>
   | Repeat<A>
+  | Selector<A>
   | Any<A>
+  | Custom<A>
 
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = { comp:(cont:Cont<A>) => Cmd<A>, then:<B>(key:string, once:boolean, k:(_:A)=>C<B>)=>C<B> }
@@ -79,8 +90,16 @@ export let any = function<A>(key:string, ps:Array<(_:A)=>C<A>>) : ((_:A) => C<A>
   return initial_value => make_C<A>(cont => ({ kind:"any", ps:ps as Array<(_:A)=>C<A>>, value:initial_value, cont:cont, key:key }))
 }
 
+export let selector = function<A>(key:string, type:SelectorType, to_string:(_:A)=>string) : ((items:Immutable.List<A>) => C<A>) {
+  return items => make_C<A>(cont => ({ kind:"selector", items:items, type:type, to_string:to_string, cont:cont, key:key }))
+}
+
 export let delay = <A>(key:string, dt:number) => (p:(_:A)=>C<A>) : ((_:A) => C<A>) => {
   return initial_value => make_C<A>(cont => ({ kind:"delay", dt:dt, p:p as (_:A)=>C<A>, value:initial_value, cont:cont, key:key }))
+}
+
+export let custom = <A>(key:string) => (react_class:React.ClassicComponentClass<Custom<A>>, props_data:any) : C<A> => {
+  return make_C<A>(cont => ({ kind:"custom", react_class:react_class, props_data:props_data, cont:cont, key:key }))
 }
 
 export let string = (key:string) => function(value:string) : C<string> {
