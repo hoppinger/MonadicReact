@@ -32,6 +32,8 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<CustomProps<A>>(Custom, this.props.cmd)
     : this.props.cmd.kind == "selector" ?
       React.createElement<SelectorProps<A>>(Selector, this.props.cmd)
+    : this.props.cmd.kind == "multi selector" ?
+      React.createElement<any>(MultiSelector, this.props.cmd)
     : this.props.cmd.kind == "string" ?
       React.createElement<StringProps>(String, this.props.cmd)
     : this.props.cmd.kind == "int" ?
@@ -49,7 +51,7 @@ class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
     this.state = { step:"waiting for p" }
   }
   componentWillReceiveProps(new_props:BindProps<A>) {
-    this.setState({...this.state, step:"waiting for p" })
+    if (this.props.once) this.setState({...this.state, step:"waiting for p" })
   }
   render() {
     return <div className="bind">
@@ -83,13 +85,14 @@ class String extends React.Component<StringProps,StringState> {
     this.setState({...this.state, value: new_props.value})
   }
   render() {
-    // console.log("string render", this.state.value)
-    return <input type="text"
+    return this.props.mode == "edit" ? <input type="text"
                   value={this.state.value}
                   onChange={e =>
                     this.setState({...this.state,
                       value:e.currentTarget.value},
                       () => this.props.cont(()=>null)(this.state.value))} />
+            :
+              <span>{this.state.value}</span>
   }
 }
 
@@ -104,12 +107,14 @@ class Int extends React.Component<IntProps,IntState> {
     this.setState({...this.state, value: new_props.value})
   }
   render() {
-    return <input type="number"
+    return this.props.mode == "edit" ? <input type="number"
                   value={this.state.value}
                   onChange={e =>
                     this.setState({...this.state,
                       value:isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber},
                       () => this.props.cont(()=>null)(this.state.value))} />
+            :
+              <span>{this.state.value}</span>
   }
 }
 
@@ -148,7 +153,6 @@ class Retract<A> extends React.Component<RetractProps<A>,RetractState<A>> {
     return <Interpreter
       cmd={this.props.p(this.props.inb(this.props.value)).comp
             (callback => new_value =>
-              // console.log("retracting from ", new_value, this.props.out(this.props.value)(new_value)) ||
               this.props.cont(callback)
                 (this.props.out(this.props.value)(new_value)))} />
   }
@@ -162,9 +166,7 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
     this.state = { current_value: props.value, frame_index:1 }
   }
   render() {
-    // console.log("rendering repeater", this.state.current_value)
     return <Interpreter cmd={this.props.p(this.state.current_value).comp(callback => new_value =>
-      // console.log("repeating with", new_value) ||
       this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
         this.props.cont(callback)(new_value)))
     } />
@@ -233,7 +235,7 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   }
 }
 
-type CustomProps<A> = Monad.Custom<A>
+type CustomProps<A> = Monad.Lift<A>
 type CustomState<A> = {}
 class Custom<A> extends React.Component<CustomProps<A>,CustomState<A>> {
   constructor(props:CustomProps<A>,context:any) {
@@ -242,7 +244,7 @@ class Custom<A> extends React.Component<CustomProps<A>,CustomState<A>> {
   }
 
   render() {
-    return React.createElement<Monad.Custom<A>>(this.props.react_class, {...this.props})
+    return React.createElement<Monad.Lift<A>>(this.props.react_class, {...this.props})
   }
 }
 
@@ -252,30 +254,116 @@ type SelectorState<A> = { selected:undefined|number }
 class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
   constructor(props:SelectorProps<A>,context:any) {
     super()
-    this.state = { selected:undefined }
+    this.state = { selected:props.selected_item != undefined ? props.items.findIndex(i => props.to_string(i) == props.to_string(props.selected_item)) : undefined }
   }
-
+  componentWillMount() {
+    if (this.props.selected_item != undefined)
+      this.props.cont(() => null)(this.props.selected_item)
+  }
   render() {
-    console.log("Rendering selector", this.state.selected)
-    return <select value={this.state.selected == undefined ? "-1" : this.state.selected} onChange={e => {
-        console.log("on change", e.currentTarget.value)
-        if (e.currentTarget.value == "-1") {
-          this.setState({...this.state, selected: undefined})
-          return
+    if (this.props.type == "dropdown")
+      return <select value={this.state.selected == undefined ? "-1" : this.state.selected} onChange={e => {
+          if (e.currentTarget.value == "-1") {
+            this.setState({...this.state, selected: undefined})
+            return
+          }
+          let selected_index = parseInt(e.currentTarget.value)
+          let selected = this.props.items.get(selected_index)
+          this.setState({...this.state, selected: selected_index}, () => this.props.cont(() => {})(selected))
+        } }>
+        <option value="-1"></option>
+        {
+          this.props.items.map((i,i_index) => {
+            let i_s = this.props.to_string(i)
+            return <option key={i_s} value={i_index}>{i_s}</option>
+          })
         }
-        let selected_index = parseInt(e.currentTarget.value)
-        let selected = this.props.items.get(selected_index)
-        this.setState({...this.state, selected: selected_index}, () => this.props.cont(() => {})(selected))
-      } }>
-      <option value="-1"></option>
-      {
-        this.props.items.map((i,i_index) => {
-          let i_s = this.props.to_string(i)
-          return <option key={i_s} value={i_index}>{i_s}</option>
-        })
-      }
-    </select>
+      </select>
+    else if (this.props.type.kind == "radio") {
+      let name = this.props.type.name
+      return <form>
+        {
+          this.props.items.map((i,i_index) => {
+            let i_s = this.props.to_string(i)
+            return <div key={i_s}>
+                <input id={`${name}_${i_index}`} key={i_s} name={name} type="radio" checked={i_index == this.state.selected}
+                      onChange={e => {
+                        if (e.currentTarget.checked == false) return
+                        let selected = this.props.items.get(i_index)
+                        this.setState({...this.state, selected: i_index}, () =>
+                          this.props.cont(() => {})(selected))
+                      } } />
+                  <label htmlFor={`${name}_${i_index}`}>{i_s}
+                </label>
+              </div>
+          })
+        }
+      </form>
+    }
   }
 }
+
+type MultiSelectorProps<A> = Monad.MultiSelector<Immutable.List<A>>
+type MultiSelectorState<A> = { selected:Immutable.Set<number> }
+class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelectorState<A>> {
+  constructor(props:MultiSelectorProps<A>,context:any) {
+    super()
+    this.state = { selected:Immutable.Set<number>(
+      props.selected_items != undefined ?
+        props.items.map((i,i_index) : [string, number] => [props.to_string(i), i_index])
+                   .filter(x => props.selected_items.some(selected => props.to_string(selected) == x[0]))
+                   .map(x => x[1])
+                   .toArray()
+      :
+        []) }
+  }
+  componentWillMount() {
+    if (this.props.selected_items != undefined)
+      this.props.cont(() => null)(this.state.selected.map(index => this.props.items.get(index)).toList())
+  }
+  render() {
+    if (this.props.type == "list") {
+      return <select value={this.state.selected.map(index => index.toString()).toArray()} multiple={true} onChange={e => {
+          let options = e.currentTarget.options
+          let selection = Immutable.Set<number>()
+          for (var i = 0, l = options.length; i < l; i++) {
+              if (options[i].selected) {
+                let index = parseInt(options[i].value)
+                selection = selection.add(index)
+              }
+            }
+          this.setState({...this.state, selected: selection}, () =>
+          this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
+        } }>
+        {
+          this.props.items.map((i,i_index) => {
+            let i_s = this.props.to_string(i)
+            return <option key={i_s} value={i_index}>{i_s}</option>
+          })
+        }
+      </select>
+    } else if (this.props.type.kind == "checkbox") {
+      let name = this.props.type.name
+      return <form>
+        {
+          this.props.items.map((i,i_index) => {
+            let i_s = this.props.to_string(i)
+            return <div key={i_s}>
+                <input id={`${name}_${i_index}`} key={i_s} name={name} type="checkbox" checked={this.state.selected.has(i_index)}
+                      onChange={e => {
+                        let selected = this.props.items.get(i_index)
+                        let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index)
+                        this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
+                      } } />
+                  <label htmlFor={`${name}_${i_index}`}>{i_s}
+                </label>
+              </div>
+          })
+        }
+      </form>
+    }
+  }
+}
+
 
 
