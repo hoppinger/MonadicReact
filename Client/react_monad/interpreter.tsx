@@ -80,10 +80,9 @@ class String extends React.Component<StringProps,StringState> {
     super()
     this.state = { value:props.value }
   }
-  // componentWillReceiveProps(new_props:StringProps) {
-  //   // console.log("string update", new_props.value)
-  //   this.setState({...this.state, value: new_props.value})
-  // }
+  componentWillReceiveProps(new_props:StringProps) {
+    if (new_props.mode == "view") this.setState({...this.state, value: new_props.value})
+  }
   render() {
     return this.props.mode == "edit" ? <input type="text"
                   value={this.state.value}
@@ -103,9 +102,9 @@ class Int extends React.Component<IntProps,IntState> {
     super()
     this.state = { value:props.value }
   }
-  // componentWillReceiveProps(new_props:IntProps) {
-  //   this.setState({...this.state, value: new_props.value})
-  // }
+  componentWillReceiveProps(new_props:IntProps) {
+    if (new_props.mode == "view") this.setState({...this.state, value: new_props.value})
+  }
   render() {
     return this.props.mode == "edit" ? <input type="number"
                   value={this.state.value}

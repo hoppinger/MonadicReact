@@ -67,9 +67,9 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       This is the homepage
       {
         React.createElement<InterpreterProps<void>>(Interpreter, {
-          cmd: course_view(1).comp(continuation => value => console.log("something has happened"))
+          cmd: // course_view(1).comp(continuation => value => console.log("something has happened"))
                // counter.comp(continuation => value => null)
-               // sample3.comp(continuation => value => null)
+               sample3.comp(continuation => value => null)
           })
       }
   </div>
