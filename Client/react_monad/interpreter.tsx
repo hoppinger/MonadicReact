@@ -50,9 +50,9 @@ class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
     super()
     this.state = { step:"waiting for p" }
   }
-  componentWillReceiveProps(new_props:BindProps<A>) {
-    if (this.props.once) this.setState({...this.state, step:"waiting for p" })
-  }
+  // componentWillReceiveProps(new_props:BindProps<A>) {
+  //   if (this.props.once) this.setState({...this.state, step:"waiting for p" })
+  // }
   render() {
     return <div className="bind">
       {
@@ -80,10 +80,10 @@ class String extends React.Component<StringProps,StringState> {
     super()
     this.state = { value:props.value }
   }
-  componentWillReceiveProps(new_props:StringProps) {
-    // console.log("string update", new_props.value)
-    this.setState({...this.state, value: new_props.value})
-  }
+  // componentWillReceiveProps(new_props:StringProps) {
+  //   // console.log("string update", new_props.value)
+  //   this.setState({...this.state, value: new_props.value})
+  // }
   render() {
     return this.props.mode == "edit" ? <input type="text"
                   value={this.state.value}
@@ -103,9 +103,9 @@ class Int extends React.Component<IntProps,IntState> {
     super()
     this.state = { value:props.value }
   }
-  componentWillReceiveProps(new_props:IntProps) {
-    this.setState({...this.state, value: new_props.value})
-  }
+  // componentWillReceiveProps(new_props:IntProps) {
+  //   this.setState({...this.state, value: new_props.value})
+  // }
   render() {
     return this.props.mode == "edit" ? <input type="number"
                   value={this.state.value}

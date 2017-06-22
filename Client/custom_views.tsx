@@ -11,27 +11,34 @@ import * as Monad from './react_monad/monad'
 import {Interpreter, InterpreterProps} from './react_monad/interpreter'
 
 // sample 1
-let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item))(null)
-let upload_course : (_:Models.Course) => C<Models.Course> = c =>
-  lift_promise<Models.Course, void>(Api.update_Course)(c).bind(`course_uploader_${c.Id}`, _ =>
-  unit<Models.Course>(c))
+let inner_course_form : (_:Models.Course) => C<Models.Course> = c =>
+  any<Models.Course>([
+    c => retract<Models.Course, string>(
+      c => c.Name || "", c => n => ({...c, Name:n}),
+      string("edit", `course_name_${c.Id}`), `course_retract_${c.Id}`)(c),
+    c => retract<Models.Course, number>(
+      c => c.Points || 0, c => p => ({...c, Points:p}),
+      int("edit", `course_points_${c.Id}`), `course_retract_${c.Id}`)(c)
+  ], `inner_course_form_${c.Id}`)(c)
 
 let course_form : (_:Models.Course) => C<Models.Course> = c =>
   repeat<Models.Course>(c =>
-    any<Models.Course>([
-      c => retract<Models.Course, string>(
-        c => c.Name || "", c => n => ({...c, Name:n}),
-        string("edit"))(c),
-      c => retract<Models.Course, number>(
-        c => c.Points || 0, c => p => ({...c, Points:p}),
-        int("edit"))(c)
-    ])(c))(c)
+    inner_course_form(c), `course_repeater_${c.Id}`)(c)
+
+let course_form_uploader : (_:Models.Course) => C<Models.Course> = c =>
+  course_form(c).bind(`course_form_${c.Id}`, c =>
+  delay<Models.Course>(200, `course_delayer_${c.Id}`)(c => upload_course(c))(c))
+
+let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), `course_downloader_lift_${c_id}`)(null)
+let upload_course : (_:Models.Course) => C<Models.Course> = c =>
+  lift_promise<Models.Course, void>(Api.update_Course, `course_uploader_lift_${c.Id}`)(c).bind(`course_uploader_${c.Id}`, _ =>
+  unit<Models.Course>(c))
+
 
 let course_view = (c_id:number) =>
   download_course(c_id).bind_once(`course_downloader_${c_id}`, c =>
-  course_form(c).bind(`course_form_${c.Id}`, c =>
-  delay<Models.Course>(200)(c => upload_course(c))(c)).ignore())
-
+  course_form_uploader(c).bind<void>(`ignore_${c.Id}`, _ => unit<void>(null))
+  )
 
 // sample 2
 type CounterState = { current:number, signals_sent:number }
