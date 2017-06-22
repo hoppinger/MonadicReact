@@ -12,9 +12,8 @@
   "dependencies": {
     "@types/draft-js": "^0.9.1",
     "@types/i18next": "^2.3.35",
-    "@types/moment": "^2.13.0",
-    "@types/react": "^0.14.55",
-    "@types/react-dom": "^0.14.19",
+    "@types/react": "^15.0.30",
+    "@types/react-dom": "^15.5.0",
     "babel-polyfill": "^6.22.0",
     "babel-runtime": "^6.22.0",
     "create-react-class": "^15.6.0",
@@ -24,8 +23,8 @@
     "jquery": "^2.2.2",
     "jquery-ujs": "^1.2.1",
     "moment": "^2.18.1",
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {
@@ -46,13 +45,8 @@
     "gulp-merge-media-queries": "^0.2.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
-    "nodemon": "^1.11.0",
     "source-map-loader": "^0.1.6",
-    "ts-loader": "^0.8.2",
-    "tsify": "^3.0.1",
     "typescript": "^2.2.2",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
     "webpack": "^2.3.2"
   },
   "-vs-binding": {

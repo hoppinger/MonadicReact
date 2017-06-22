@@ -228,7 +228,7 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    this.setState({...this.state, value: new_props.value, old_value: this.state.value, status:"dirty"})
+    this.setState({...this.state, value: new_props.value, status:"dirty"})
   }
   render() {
     return <Interpreter cmd={this.state.last_command} />
