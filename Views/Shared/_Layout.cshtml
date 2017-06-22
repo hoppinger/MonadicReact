@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--
+      Developed by Hoppinger BV 2017
+      http://www.hoppinger.com
+    -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MonadicComponents</title>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/css/site.css" />
+    </environment>
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" asp-fallback-href="~/css/site.css" />
+    </environment>
+
+    <environment names="Development">
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="~/js/site.min.js" asp-append-version="true" asp-fallback-src="~/js/site.js"></script>
+    </environment>
+
+</head>
+
+<body>
+    @Html.AntiForgeryToken()
+
+    <div class="wrap">
+        <main class="main">
+            <div class="main__inner">
+                <div class="container">
+                    @RenderBody()
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer__inner">
+                <p>&copy; 2017 - MonadicComponents</p>
+            </div>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

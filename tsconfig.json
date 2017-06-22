@@ -1,0 +1,18 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "outDir": "./obj/js",
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "module": "commonjs",
+        "target": "es6",
+        "jsx": "react"
+    }, 
+     "include": [
+      "./Client/**/*.ts",
+      "./Client/**/*.tsx"
+    ],
+   "exclude": [
+      "/**/node_modules/*"
+    ]
+}

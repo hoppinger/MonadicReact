@@ -1,0 +1,20 @@
+.breadcrumbs__item {
+  display: inline-block;
+  position: relative;
+  margin-right: 30px;
+  color: #fff;
+
+  &:after {
+    content: '»';
+    display: inline-block;
+    position: absolute;
+    right: -19px;
+    top: 0;
+  }
+
+  &:last-child {
+    &:after {
+      content: none;
+    }
+  }
+}

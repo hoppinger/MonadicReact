@@ -1,0 +1,92 @@
+// ==========================================================================
+// Main Stylesheet
+// ==========================================================================
+
+// ==========================================================================
+// The SCSS folder is structured using the ITCSS principle (Hoppinger Style):
+// - SETTINGS: for variables
+// - TOOLS: for mixins/functions
+// - VENDOR: for third-party styling
+// - GLOBAL: for element styling - no classes or IDs
+// - OBJECTS: for shared styling - OOCSS!
+// - PAGES: for specific page styling - as less as possible
+// - OVERWRITES: for overwriting styles - this is the only place where the `!important` tag is acceptable.
+//
+// READ MORE: http://csswizardry.net/talks/2014/11/itcss-dafed.pdf
+// ==========================================================================
+
+@charset 'UTF-8';
+
+// ==========================================================================
+// SETTINGS
+// ==========================================================================
+
+@import 'settings/variables';
+@import 'overwrites/project-variables';
+@import 'settings/fonts';
+
+// ==========================================================================
+// TOOLS
+// ==========================================================================
+
+@import 'tools/mixins';
+
+// ==========================================================================
+// VENDOR
+// ============================================= =============================
+
+@import 'vendor/normalize';
+
+// ==========================================================================
+// GLOBAL
+// ==========================================================================
+
+@import 'global/core';
+@import 'global/typography';
+@import 'global/links';
+@import 'global/buttons';
+@import 'global/spinners';
+@import 'global/lists';
+@import 'global/figures';
+@import 'global/forms';
+@import 'global/tables';
+
+// ==========================================================================
+// OBJECTS
+// ==========================================================================
+
+@import 'objects/helpers';
+
+@import 'objects/core';
+@import 'objects/breadcrumbs';
+
+@import 'objects/header';
+@import 'objects/menu';
+@import 'objects/local-menu';
+@import 'objects/topbar';
+@import 'objects/footer';
+@import 'objects/footer-sticky';
+
+@import 'objects/buttons';
+@import 'objects/dropdowns';
+@import 'objects/forms';
+
+@import 'objects/models';
+@import 'objects/controls';
+@import 'objects/list-styles';
+@import 'objects/new-entity';
+@import 'objects/texteditor';
+@import 'objects/cards';
+@import 'objects/column-view';
+@import 'objects/searchform';
+
+
+// ==========================================================================
+// PAGES
+// ==========================================================================
+
+// ==========================================================================
+// OVERWRITES
+// ==========================================================================
+
+@import 'overwrites/project-specific';

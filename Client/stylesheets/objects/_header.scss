@@ -1,0 +1,24 @@
+// ==========================================================================
+// OBJECTS | Header
+// ==========================================================================
+
+[class^="header__inner"] {
+  border-bottom: solid 1px $border-color;
+  text-align: center;
+  padding: $base-spacing $base-spacing 0;
+}
+
+.header {
+  &__inner {
+    background-color: $background-color;
+
+    &--sub {
+      display: none;
+      background-color: $white-800;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+}

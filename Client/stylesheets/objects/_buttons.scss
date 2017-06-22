@@ -1,0 +1,126 @@
+// ==========================================================================
+// OBJECTS | Buttons
+// ==========================================================================
+
+.button {
+  @extend button;
+
+  &--inline {
+    float: left;
+    margin-right: 5px;
+  }
+}
+
+.button--primary {
+  background: $main-color;
+  color: #fff;
+  &:hover {
+    background: #fff;
+    color: $main-color;
+  }
+}
+
+.button--light {
+  color: #08ABCE;
+  background: #fff;
+  &:hover {
+    background: #fff;
+    color: #06809C;
+  }
+}
+
+.button__actions-wrapper {
+  overflow: hidden;
+}
+
+.button__actions {
+  float: left;
+  button {
+    margin: 20px 20px 0 0;
+  }
+}
+
+.button--close,
+.button--delete,
+.button--unlink,
+.button--existing,
+.button--cancel,
+.button--fullscreen,
+.button--toggle {
+  font-size: 0;
+  padding: 0;
+  height: 47px;
+  line-height: 47px;
+  margin-left: 20px;
+  overflow: hidden;
+  text-align: center;
+  font-weight: normal;
+  border: none;
+  &:before {
+    font-family: 'icomoon';
+    font-size: 20px;
+    width: 100%;
+    display: block;
+  }
+}
+
+.button--close {
+  &:before {
+    content: $icon-cross;
+  }
+}
+
+.button--existing {
+  &:before {
+    content: $icon-link;
+  }
+}
+
+.button--unlink {
+  &:before {
+    content: $icon-unlink;
+  }
+}
+
+.button--delete {
+  &:before {
+    content: $icon-trash;
+  }
+}
+
+.button--cancel {
+  &:before {
+    content: $icon-cross;
+  }
+}
+
+.button--fullscreen {
+  &:before {
+    content: $icon-fullscreen;
+  }
+}
+
+.button--toggle {
+  background: $button--toggle-bg;
+  color: #fff;
+  padding: 0 10px;
+  &:hover {
+    color: #fff;
+  }
+
+  &:before {
+    content: $icon-plus;
+  }
+
+  &--open {
+    &:before {
+      content: $icon-minus;
+    }
+  }
+}
+
+.button--search {
+  height: 42px;
+  line-height: 42px;
+  margin-left: 20px;
+}

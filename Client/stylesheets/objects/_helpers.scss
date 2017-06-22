@@ -1,0 +1,24 @@
+// ==========================================================================
+// OBJECTS | Helpers
+// ==========================================================================
+
+.hide {
+  display: none;
+  visibility: hidden;
+}
+
+.sr-text {
+  @include screen-reader-text;
+}
+
+.cf {
+  @include clearfix;
+}
+
+.valign-p {
+  @include valign-parent;
+}
+
+.valign-c {
+  @include valign-child;
+}

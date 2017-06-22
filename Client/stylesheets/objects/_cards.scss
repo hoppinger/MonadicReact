@@ -1,0 +1,41 @@
+.cards {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  display: flex;
+  .model-nested__title {
+    width: 100%;
+  }
+  @include tablet-desktop {
+    &:after {
+      content: '';
+      width: calc(33.3333% - 20px);
+    }
+  }
+}
+
+.card {
+  background: #fff;
+  padding-bottom: 25px;
+  .control {
+    right: 12px;
+  }
+  @include tablet-desktop {
+    width: calc(33.3333% - 20px);
+    margin-bottom: 20px;
+    label {
+      margin-bottom: 0;
+    }
+    .model-content {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+    .model__attribute {
+      display: block;
+      margin-right: 0;
+    }
+    .model__attribute label + .model__attribute-content,
+    .model__attribute label {
+      width: 100%;
+    }
+  }
+}

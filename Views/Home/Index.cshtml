@@ -1,0 +1,10 @@
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div id="react-content"></div>
+
+<script>
+  app.HomePage_to(@ViewData["id"], "react-content")
+</script>

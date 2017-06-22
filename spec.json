@@ -1,0 +1,86 @@
+{
+    "namespace": "MonadicComponents",
+    "context_name": "MonadicComponentsContext",
+    "api_version": "v1",
+    "database_provider": "sqlite",
+    "custom_view_imports": "import * as CustomViews from '../custom_views'",
+    "custom_restriction_imports": "",
+    "models": [
+        {
+            "name": "HomePage",
+            "allow_maximisation": true,
+            "type": "homepage",
+            "attributes": [],
+            "custom_rendering": "CustomViews.HomePage",
+            "permissions": {
+                "view": ["*"],
+                "edit": ["*"],
+                "delete": [],
+                "create": []
+            }
+        },
+        {
+            "name": "Course",
+            "allow_maximisation": true,
+            "attributes": [
+                { "type": "title", "name": "Name" },
+                { "type": "int", "name": "Points" }
+            ],
+            "permissions": {
+                "view": ["*"],
+                "edit": ["*"],
+                "delete": ["*"],
+                "create": ["*"]
+            },
+            "seeds": [
+              { "Id": 1, "Name": "\"Dev 1\"", "Points":4 },
+              { "Id": 2, "Name": "\"Dev 2\"", "Points":4 },
+              { "Id": 3, "Name": "\"Dev 3\"", "Points":4 },
+              { "Id": 4, "Name": "\"Dev 4\"", "Points":4 }
+            ]
+        },
+        {
+            "name": "Lecture",
+            "allow_maximisation": true,
+            "attributes": [
+                { "type": "string", "name": "Name" },
+                { "type": "rich_text", "name": "Description", "hidden_when_minimised":true }
+            ],
+            "permissions": {
+                "view": ["*"],
+                "edit": ["*"],
+                "delete": ["*"],
+                "create": ["*"]
+            },
+            "seeds": [
+              { "Id": 1, "Name": "\"Lecture 1\"", "Description":"\"\"" },
+              { "Id": 2, "Name": "\"Lecture 2\"", "Description":"\"\"" },
+              { "Id": 3, "Name": "\"Lecture 3\"", "Description":"\"\"" },
+              { "Id": 4, "Name": "\"Lecture 4\"", "Description":"\"\"" }
+            ]
+        }
+    ],
+    "relations": [{
+            "source": "HomePage",
+            "target": "Course",
+            "sort": "1-N",
+            "seeds": []
+        },
+        {
+            "source": "Course",
+            "target": "Lecture",
+            "sort": "1-N",
+            "hide_inverted": true,
+            "delete_behaviour": {
+              "forward": "cascade",
+              "inverted": "set_null"
+            },
+            "seeds": [
+              { "CourseId": 1, "LectureId": 1 },
+              { "CourseId": 2, "LectureId": 2 },
+              { "CourseId": 3, "LectureId": 3 },
+              { "CourseId": 3, "LectureId": 4 }
+            ]
+       }
+    ]
+}

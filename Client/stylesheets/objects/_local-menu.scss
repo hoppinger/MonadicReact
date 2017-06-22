@@ -1,0 +1,34 @@
+// ==========================================================================
+// OBJECTS | Local menu
+// ==========================================================================
+
+.local-menu {
+  margin: 50px 0;
+  padding-top: 20px;
+  border-bottom: solid 1px $grey-400;
+}
+
+.local_menu_entry {
+  display: inline-block;
+  padding: 10px 15px;
+  border: solid 1px transparent;
+  border-bottom-color: $grey-400;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  color: $main-color-dark;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 10px;
+  position: relative;
+  bottom: -1px;
+}
+
+.local_menu_entry--active {
+  border-color: $grey-400;
+  border-bottom-color: transparent;
+  background-color: #f1f1f1;
+  a {
+    color: $black-400;
+  }
+}
