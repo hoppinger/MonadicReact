@@ -38,6 +38,8 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<StringProps>(String, this.props.cmd)
     : this.props.cmd.kind == "int" ?
       React.createElement<IntProps>(Int, this.props.cmd)
+    : this.props.cmd.kind == "bool" ?
+      React.createElement<BoolProps>(Bool, this.props.cmd)
     :
       null
   }
@@ -50,9 +52,9 @@ class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
     super()
     this.state = { step:"waiting for p" }
   }
-  // componentWillReceiveProps(new_props:BindProps<A>) {
-  //   if (this.props.once) this.setState({...this.state, step:"waiting for p" })
-  // }
+  componentWillReceiveProps(new_props:BindProps<A>) {
+    if (this.props.once) this.setState({...this.state, step:"waiting for p" })
+  }
   render() {
     return <div className="bind">
       {
@@ -81,7 +83,7 @@ class String extends React.Component<StringProps,StringState> {
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:StringProps) {
-    if (new_props.mode == "view") this.setState({...this.state, value: new_props.value})
+    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
   }
   render() {
     return this.props.mode == "edit" ? <input type="text"
@@ -103,7 +105,7 @@ class Int extends React.Component<IntProps,IntState> {
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:IntProps) {
-    if (new_props.mode == "view") this.setState({...this.state, value: new_props.value})
+    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
   }
   render() {
     return this.props.mode == "edit" ? <input type="number"
@@ -364,5 +366,44 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
   }
 }
 
+type BoolProps = Monad.Bool
+type BoolState = { value:boolean }
+class Bool extends React.Component<BoolProps,BoolState> {
+  constructor(props:BoolProps,context:any) {
+    super()
+    this.state = { value:props.value }
+  }
+  componentWillReceiveProps(new_props:BoolProps) {
+    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
+  }
+  render() {
+    // disable if mode is not edit!!!
+    return this.props.style == "fancy toggle" ?
+              <a disabled={this.props.mode == "view"}
+                 className={`toggle-mode toggle-mode--${this.state.value ? "edit" : "view"}`}
+                 onClick={() => this.setState({...this.state, value:!this.state.value},
+                                  () => this.props.cont(()=>null)(this.state.value))}>
+                  <span></span>
+              </a>
+            : this.props.style == "plus/minus" ?
+                <a disabled={this.props.mode == "view"} className={`"button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
+                  onClick={() => this.setState({...this.state, value:!this.state.value},
+                                  () => this.props.cont(()=>null)(this.state.value))}>
+                  <span></span>
+                </a>
+            :
+              <form>
+                <input type="checkbox"
+                      id={this.props.style.name}
+                      disabled={this.props.mode == "view"}
+                      checked={this.state.value}
+                      onChange={e =>
+                        this.setState({...this.state,
+                          value:e.currentTarget.checked },
+                          () => this.props.cont(()=>null)(this.state.value))} />
+                <label htmlFor={this.props.style.name}>{this.props.style.label}</label>
+              </form>
 
-
+    // return this.props.mode == "edit" ?
+  }
+}

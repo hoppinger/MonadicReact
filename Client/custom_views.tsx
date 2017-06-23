@@ -6,7 +6,7 @@ import * as Immutable from "immutable"
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
-import {C, unit, bind, bind_once, lift_promise, retract, delay, repeat, string, int, any, custom, selector, multi_selector} from './react_monad/monad'
+import {C, unit, bind, bind_once, lift_promise, retract, delay, repeat, string, int, bool, any, custom, selector, multi_selector} from './react_monad/monad'
 import * as Monad from './react_monad/monad'
 import {Interpreter, InterpreterProps} from './react_monad/interpreter'
 
@@ -61,6 +61,15 @@ let sample3 : C<void> =
     x => x.toString())(List<number>([1, 3, 5]), List<number>([1, 5])).bind(`multi_selector`, n =>
   string("view")(JSON.stringify(n.toArray())).ignore())
 
+// sample 4
+let sample4 : C<void> =
+  repeat<boolean>(b =>
+    any<boolean>([
+      bool("edit", { kind: "checkbox", label:"my toggle", name:"checkbox toggle" }, `toggle`),
+      bool("edit", "fancy toggle", `toggle`),
+      bool("edit", "plus/minus", `toggle`),
+    ], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c =>
+  string("view")(`Your selection is ${c.toString()}`).ignore())
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   return <div>
@@ -69,7 +78,8 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
         React.createElement<InterpreterProps<void>>(Interpreter, {
           cmd: // course_view(1).comp(continuation => value => console.log("something has happened"))
                // counter.comp(continuation => value => null)
-               sample3.comp(continuation => value => null)
+               // sample3.comp(continuation => value => null)
+               sample4.comp(continuation => value => null)
           })
       }
   </div>
@@ -78,13 +88,11 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
 // TODO:
   // npm package
   // add () in front of all combinators to enforce laziness and improve closures
-  // multiple nested selectors in Counter sample: propagate with "all"
+  // multiple nested selectors in new Counter sample: propagate with "all"
   // Api.download/upload operators should already be lifted out the box (from the generator)
   // various operators
     // toggles
-      // pretty toggle
-      // checkbox
-      // open/close
+      // checkbox (with name and label)
     // all
     // div?
     // label
