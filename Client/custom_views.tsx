@@ -86,13 +86,11 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
 }
 
 // TODO:
-  // npm package
+  // fully headless custom page renderer
+  // Api.download/upload operators should already be lifted out the box (from the scaffolder)
   // add () in front of all combinators to enforce laziness and improve closures
   // multiple nested selectors in new Counter sample: propagate with "all"
-  // Api.download/upload operators should already be lifted out the box (from the generator)
   // various operators
-    // toggles
-      // checkbox (with name and label)
     // all
     // div?
     // label
@@ -103,7 +101,12 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       // add new
       // add existing
     // page manager (with url's)
-  // fully headless custom page renderer
+    // images
+      // lazy loading
+    // files
+  // routing
+  // show to designers for feedback
   // documentation
   // linkedin post linked on reddit
   // better sample file structure
+  // npm package

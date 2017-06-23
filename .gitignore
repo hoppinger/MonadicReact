@@ -13,8 +13,6 @@
 *.js.map
 *.js
 
-*generated*
-
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
