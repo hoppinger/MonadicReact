@@ -22,10 +22,11 @@ let course_form : (_:Models.Course) => C<Models.Course> = c =>
         int("edit", `course_points_${c.Id}`), `course_retract_${c.Id}`)(c)
     ], `inner_course_form_${c.Id}`)(c), `course_repeater_${c.Id}`)(c)
 
-let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), ((p,q) => true), `course_downloader_lift_${c_id}`)(null)
+let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), ((p,q) => false), `course_downloader_lift_${c_id}`)(null)
 let upload_course : (_:Models.Course) => C<Models.Course> = c =>
   lift_promise<Models.Course, Models.Course>(c => Api.update_Course(c).then(_ => c),
-  (c1,c2) => c1.Id != c2.Id || c1.Name != c2.Name || c1.Points != c2.Points || c1.CreatedDate.toDate().getTime() != c2.CreatedDate.toDate().getTime(),  `course_uploader_lift_${c.Id}`)(c)
+  (c1,c2) => c1.Id != c2.Id || c1.Name != c2.Name || c1.Points != c2.Points || c1.CreatedDate.toDate().getTime() != c2.CreatedDate.toDate().getTime(),
+   `course_uploader_lift_${c.Id}`)(c)
 
 
 let sample1 : C<void> =
@@ -114,6 +115,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
     // page manager (with url's)
     // images
       // lazy loading
+    // multiple images and labels
     // files
   // routing
   // show to designers for feedback

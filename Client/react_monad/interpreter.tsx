@@ -82,28 +82,29 @@ class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
 }
 
 type LiftPromiseProps<A> = Monad.LiftPromise<A>
-type LiftPromiseState<A> = { value:"busy"|"error"|A}
+type LiftPromiseState<A> = { result:"busy"|"error"|A, input:any }
 class LiftPromise<A> extends React.Component<LiftPromiseProps<A>,LiftPromiseState<A>> {
   constructor(props:LiftPromiseProps<A>,context:any) {
     super()
-    this.state = { value:"busy" }
+    this.state = { result:"busy", input:props.value }
   }
   componentWillReceiveProps(new_props:LiftPromiseProps<A>) {
-    if (this.state.value != "busy" && this.state.value != "error" &&
-        !this.props.is_value_changed(new_props.value, this.state.value)) {
-      this.props.debug_info && console.log("New props (ignored):", this.props.debug_info(), this.state.value, new_props.value)
+    if (this.state.result != "busy" && this.state.result != "error" &&
+        !this.props.is_value_changed(new_props.value, this.state.input)) {
+      this.props.debug_info && console.log("New props (ignored):", this.props.debug_info(), this.state.input, new_props.value)
       return
     }
-    this.props.debug_info && console.log("New props:", this.props.debug_info(), this.props.value)
-    this.load(new_props)
+    this.props.debug_info && console.log("New props:", this.props.debug_info(), this.state.input, new_props.value)
+    this.setState({...this.state, input:new_props.value}, () =>
+    this.load(new_props))
   }
   load(props:LiftPromiseProps<A>) {
-    this.setState({...this.state, value:"busy"}, () =>
-    props.p(props.value).then(x =>
+    this.setState({...this.state, result:"busy"}, () =>
+    props.p(this.state.input).then(x =>
       (this.props.debug_info && console.log("Promise done:", this.props.debug_info())) ||
-      this.setState({...this.state, value:x}, () =>
+      this.setState({...this.state, result:x}, () =>
       props.cont(() => null)(x)))
-    .catch(() => this.setState({...this.state, value:"error"})))
+    .catch(() => this.setState({...this.state, result:"error"})))
   }
   componentWillMount() {
     this.props.debug_info && console.log("Mount:", this.props.debug_info())
@@ -111,8 +112,8 @@ class LiftPromise<A> extends React.Component<LiftPromiseProps<A>,LiftPromiseStat
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.value == "busy" ? <div className="busy">busy</div>
-            : this.state.value == "error" ? <div className="error">error</div>
+    return this.state.result == "busy" ? <div className="busy">busy</div>
+            : this.state.result == "error" ? <div className="error">error</div>
             : null // <div className="done">done</div>
   }
 }
@@ -186,9 +187,9 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     let process = () => setTimeout(() => {
       // console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
-        console.log("delay is submitting the data to save")
+        // console.log("delay is submitting the data to save")
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(callback => new_value => {
-          console.log("calling the continuation of dirty", self.state.value)
+          // console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
         process()
@@ -200,11 +201,11 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     process()
   }
   componentWillUnmount() {
-    console.log("stopping delay thread")
+    // console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    console.log("Delay received new props and is going back to dirty")
+    // console.log("Delay received new props and is going back to dirty")
     this.setState({...this.state, value: new_props.value, status:"dirty"})
   }
   render() {
