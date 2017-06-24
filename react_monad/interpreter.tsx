@@ -38,46 +38,83 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<StringProps>(String, this.props.cmd)
     : this.props.cmd.kind == "int" ?
       React.createElement<IntProps>(Int, this.props.cmd)
-    : this.props.cmd.kind == "bool" ?
-      React.createElement<BoolProps>(Bool, this.props.cmd)
     :
       null
   }
 }
 
 type BindProps<A> = Monad.Bind<A>
-type BindState<A> = { k:"waiting for p"|Monad.Cmd<A> }
+type BindState<A> = { step:"waiting for p"|Monad.Cmd<A> }
 class Bind<A> extends React.Component<BindProps<A>,BindState<A>> {
   constructor(props:BindProps<A>,context:any) {
     super()
-    this.state = { k:"waiting for p" }
+    this.state = { step:"waiting for p" }
   }
   componentWillReceiveProps(new_props:BindProps<A>) {
-    this.props.debug_info && console.log("New props:", this.props.debug_info())
     if (this.props.once) this.setState({...this.state, step:"waiting for p" })
   }
-  componentWillMount() {
-  }
   render() {
-    this.props.debug_info && console.log("Render:", this.props.debug_info())
     return <div className="bind">
       {
-        (this.state.k == "waiting for p" || !this.props.once) ?
+        this.state.step == "waiting for p" || !this.props.once ?
           <Interpreter cmd={this.props.p.comp(callback => x =>
-            this.setState({...this.state,
-              k:this.props.k(x).comp(callback => x =>
-                this.props.cont(callback)(x))}, callback)
+            this.setState({...this.state, step:this.props.k(x).comp(this.props.cont)}, callback)
           )} />
         :
           null
       }
       {
-        this.state.k != "waiting for p" ?
-          <Interpreter cmd={this.state.k} />
+        this.state.step != "waiting for p" ?
+          <Interpreter cmd={this.state.step} />
         :
           null
       }
     </div>
+  }
+}
+
+type StringProps = Monad.String
+type StringState = { value:string }
+class String extends React.Component<StringProps,StringState> {
+  constructor(props:StringProps,context:any) {
+    super()
+    this.state = { value:props.value }
+  }
+  componentWillReceiveProps(new_props:StringProps) {
+    // console.log("string update", new_props.value)
+    this.setState({...this.state, value: new_props.value})
+  }
+  render() {
+    return this.props.mode == "edit" ? <input type="text"
+                  value={this.state.value}
+                  onChange={e =>
+                    this.setState({...this.state,
+                      value:e.currentTarget.value},
+                      () => this.props.cont(()=>null)(this.state.value))} />
+            :
+              <span>{this.state.value}</span>
+  }
+}
+
+type IntProps = Monad.Int
+type IntState = { value:number }
+class Int extends React.Component<IntProps,IntState> {
+  constructor(props:IntProps,context:any) {
+    super()
+    this.state = { value:props.value }
+  }
+  componentWillReceiveProps(new_props:IntProps) {
+    this.setState({...this.state, value: new_props.value})
+  }
+  render() {
+    return this.props.mode == "edit" ? <input type="number"
+                  value={this.state.value}
+                  onChange={e =>
+                    this.setState({...this.state,
+                      value:isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber},
+                      () => this.props.cont(()=>null)(this.state.value))} />
+            :
+              <span>{this.state.value}</span>
   }
 }
 
@@ -89,31 +126,19 @@ class LiftPromise<A> extends React.Component<LiftPromiseProps<A>,LiftPromiseStat
     this.state = { value:"busy" }
   }
   componentWillReceiveProps(new_props:LiftPromiseProps<A>) {
-    if (this.state.value != "busy" && this.state.value != "error" &&
-        !this.props.is_value_changed(new_props.value, this.state.value)) {
-      this.props.debug_info && console.log("New props (ignored):", this.props.debug_info(), this.state.value, new_props.value)
-      return
-    }
-    this.props.debug_info && console.log("New props:", this.props.debug_info(), this.props.value)
     this.load(new_props)
   }
   load(props:LiftPromiseProps<A>) {
-    this.setState({...this.state, value:"busy"}, () =>
     props.p(props.value).then(x =>
-      (this.props.debug_info && console.log("Promise done:", this.props.debug_info())) ||
       this.setState({...this.state, value:x}, () =>
       props.cont(() => null)(x)))
-    .catch(() => this.setState({...this.state, value:"error"})))
+    .catch(() => this.setState({...this.state, value:"error"}))
   }
-  componentWillMount() {
-    this.props.debug_info && console.log("Mount:", this.props.debug_info())
-    this.load(this.props)
-  }
+  componentWillMount() { this.load(this.props) }
   render() {
-    this.props.debug_info && console.log("Render:", this.props.debug_info())
     return this.state.value == "busy" ? <div className="busy">busy</div>
-            : this.state.value == "error" ? <div className="error">error</div>
-            : null // <div className="done">done</div>
+            : this.state.value == "error" ? <div className="error">Error</div>
+            : null
   }
 }
 
@@ -177,18 +202,17 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     super()
     this.state = { status:"dirty", value:props.value, last_command:props.p(props.value).comp(props.cont) }
   }
-  running:boolean = false
+  running:boolean
   componentWillMount() {
     // console.log("starting delay thread")
-    if (this.running) return
     this.running = true
     var self = this
     let process = () => setTimeout(() => {
       // console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
-        console.log("delay is submitting the data to save")
+        // console.log("delay is submitting the data to save")
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(callback => new_value => {
-          console.log("calling the continuation of dirty", self.state.value)
+          // console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
         process()
@@ -200,11 +224,10 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     process()
   }
   componentWillUnmount() {
-    console.log("stopping delay thread")
+    // console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    console.log("Delay received new props and is going back to dirty")
     this.setState({...this.state, value: new_props.value, status:"dirty"})
   }
   render() {
@@ -342,92 +365,5 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
   }
 }
 
-type StringProps = Monad.String
-type StringState = { value:string }
-class String extends React.Component<StringProps,StringState> {
-  constructor(props:StringProps,context:any) {
-    super()
-    this.state = { value:props.value }
-  }
-  componentWillReceiveProps(new_props:StringProps) {
-    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
-  }
-  render() {
-    return this.props.mode == "edit" ? <input type="text"
-                  value={this.state.value}
-                  onChange={e => {
-                    if (this.state.value == e.currentTarget.value) return
-                    this.setState({...this.state,
-                      value:e.currentTarget.value},
-                      () => this.props.cont(()=>null)(this.state.value))}
-                  } />
-            :
-              <span>{this.state.value}</span>
-  }
-}
 
-type IntProps = Monad.Int
-type IntState = { value:number }
-class Int extends React.Component<IntProps,IntState> {
-  constructor(props:IntProps,context:any) {
-    super()
-    this.state = { value:props.value }
-  }
-  componentWillReceiveProps(new_props:IntProps) {
-    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
-  }
-  render() {
-    return this.props.mode == "edit" ? <input type="number"
-                  value={this.state.value}
-                  onChange={e => {
-                    let new_value = isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber
-                    if (new_value == this.state.value) return
-                    this.setState({...this.state, value:new_value},
-                      () => this.props.cont(()=>null)(this.state.value))}
-                  }/>
-            :
-              <span>{this.state.value}</span>
-  }
-}
 
-type BoolProps = Monad.Bool
-type BoolState = { value:boolean }
-class Bool extends React.Component<BoolProps,BoolState> {
-  constructor(props:BoolProps,context:any) {
-    super()
-    this.state = { value:props.value }
-  }
-  componentWillReceiveProps(new_props:BoolProps) {
-    if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
-  }
-  render() {
-    // disable if mode is not edit!!!
-    return this.props.style == "fancy toggle" ?
-              <a disabled={this.props.mode == "view"}
-                 className={`toggle-mode toggle-mode--${this.state.value ? "edit" : "view"}`}
-                 onClick={() => this.setState({...this.state, value:!this.state.value},
-                                  () => this.props.cont(()=>null)(this.state.value))}>
-                  <span></span>
-              </a>
-            : this.props.style == "plus/minus" ?
-                <a disabled={this.props.mode == "view"} className={`"button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
-                  onClick={() => this.setState({...this.state, value:!this.state.value},
-                                  () => this.props.cont(()=>null)(this.state.value))}>
-                  <span></span>
-                </a>
-            :
-              <form>
-                <input type="checkbox"
-                      id={this.props.style.name}
-                      disabled={this.props.mode == "view"}
-                      checked={this.state.value}
-                      onChange={e =>
-                        this.setState({...this.state,
-                          value:e.currentTarget.checked },
-                          () => this.props.cont(()=>null)(this.state.value))} />
-                <label htmlFor={this.props.style.name}>{this.props.style.label}</label>
-              </form>
-
-    // return this.props.mode == "edit" ?
-  }
-}

@@ -36,18 +36,7 @@ export class AuthenticationMenu extends React.Component<AuthenticationMenuProps,
     let restore_state = () => this.setState(current_state)
     let error = (message:string) => () => this.setState({...this.state, kind:"error", message:i18next.t(message), action:restore_state})
     if (this.state.kind == "menu") {
-      return <div className="authentication-menu">
-        <a className="authentication-menu__user-btn"
-                onClick={() => {
-                    if (current_logged_in_entity)
-                      this.setState({kind:"choose-logout-changepassword"})
-                    else
-                      this.setState({kind:"choose-login-register"})
-
-                  }
-                }>
-            {/*current_logged_in_entity.Username*/}
-        </a>
+      return <div className="topbar__action-wrapper">
         {
           current_logged_in_entity ?
             <LanguageSelector 
@@ -55,6 +44,19 @@ export class AuthenticationMenu extends React.Component<AuthenticationMenuProps,
           :
             null
         }
+        <div className="authentication-menu">
+          <a className="authentication-menu__user-btn"
+                  onClick={() => {
+                      if (current_logged_in_entity)
+                        this.setState({kind:"choose-logout-changepassword"})
+                      else
+                        this.setState({kind:"choose-login-register"})
+
+                    }
+                  }>
+              {/*current_logged_in_entity.Username*/}
+          </a>
+        </div>
       </div>
     } else if (this.state.kind == "choose-login-register") {
       return <div className="authentication-menu">

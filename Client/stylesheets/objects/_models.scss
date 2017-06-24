@@ -84,6 +84,9 @@
   @include desktop {
     padding-bottom: 5px;
   }
+  .inline-relation & {
+    padding-bottom: 0;
+  }
 }
 
 .model-nested {
@@ -137,9 +140,6 @@
   &:first-child {
     margin-top: 19px;
   }
-  &:last-child {
-    margin-bottom: 15px;
-  }
   @include desktop {
     display: flex;
     margin-right: 50px;
@@ -171,8 +171,7 @@
     margin-bottom: 0;
   }
   input {
-    margin-right: 40px;
-    max-width: calc(100% - 21px);
+    max-width: calc(100% - 50px);
   }
   .button__actions-wrapper {
     button {
@@ -192,12 +191,9 @@
     }
   }
   .control {
-    display: table-cell;
+    right: 50px;
     width: 47px;
-    position: relative;
-    .button {
-      margin-top: 7px;
-    }
+    position: absolute;
     .button--unlink {
       border-left: 1px solid #D2D2D2;
       line-height: 28px;
@@ -218,13 +214,6 @@
       min-height: 42px;
       padding-top: 8px;
     }
-  }
-  .content {
-    display: table;
-    width: 100%;
-  }
-  .model-content--preview {
-    display: table-cell;
   }
 }
 

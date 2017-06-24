@@ -149,3 +149,47 @@
 .authentication-menu__forgot-password {
   margin-top: 10px;
 }
+
+.topbar__action-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.language-selector {
+  display: inline-block;
+  position: relative;
+}
+
+
+.language-selector__change-language {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  &:after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 5px 0 5px;
+    border-color: #fff transparent transparent transparent;
+    display: inline-block;
+    margin-left: 10px;
+  }
+  &:focus,
+  &:hover {
+    color: #fff;
+    border-color: currentColor;
+  }
+}
+
+.language-selector__languages {
+  background: #fff;
+  position: absolute;
+  width: 100%;
+  button {
+    width: 100%;
+    border: none;
+    text-align: left;
+  }
+}

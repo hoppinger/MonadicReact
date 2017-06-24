@@ -475,28 +475,7 @@ export class HomePageComponent extends React.Component<Utils.EntityComponentProp
               : null
     }
 
-    return <div id={`HomePage_${this.props.entity.Id.toString()}_${this.state.update_count}`} className={`model homepage`}>
-      { render_saving_animations_HomePage(this.get_self()) }
-      { this.props.nesting_depth == 0 ? render_menu_HomePage(this.get_self()) : null }
-      <div className="content" >
-        {
-          this.props.nesting_depth == 0 && !!this.props.toggle_button ?
-          <div className="topbar">
-            { this.props.breadcrumbs() }
-            <div className="topbar__buttons">
-              
-                {this.props.toggle_button ? this.props.toggle_button() : null}
-              { this.props.authentication_menu() }
-            </div>
-          </div>
-          :
-          null
-        }
-        
-        { render_controls_HomePage(this.get_self()) }
-        { render_content_HomePage(this.get_self()) }
-      </div>
-    </div>
+    return CustomViews.HomePage(this.props)
   }
 }
 
