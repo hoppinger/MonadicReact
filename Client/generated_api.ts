@@ -184,7 +184,7 @@ export async function create_Course() : Promise<Models.Course> {
 
 export async function update_Course(item:Models.Course) : Promise<void> {
   let res = await fetch(`/api/v1/Course/`, { method: 'put',
-      body: JSON.stringify({...item, CreatedDate:undefined, }), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+      body: JSON.stringify({...item, CreatedDate:undefined, Logo:""}), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
   if (!res.ok) throw Error(res.statusText)
   return
 }
@@ -212,6 +212,18 @@ export async function get_Courses(page_index:number, page_size:number, search_qu
 }
 
 
+export async function get_Course_Logo(item:Models.Course) : Promise<string> {
+  let res = await fetch(`/api/v1/Course/${item.Id}/Logo`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
+  if (!res.ok) throw Error(res.statusText)
+  let json = await res.json()
+  return json.Content
+}
+
+export async function update_Course_Logo(item:Models.Course, new_src:string) : Promise<void> {
+  let res = await fetch(`/api/v1/Course/${item.Id}/Logo`, { method: 'put', body: JSON.stringify({ Content: new_src }), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+  if (!res.ok) throw Error(res.statusText)
+  return
+}
 
 
 

@@ -6,7 +6,7 @@ import * as Immutable from "immutable"
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
-import {C, unit, bind, bind_once, lift_promise, retract, delay, repeat, string, int, bool, any, custom, selector, multi_selector} from './react_monad/monad'
+import {C, unit, bind, bind_once, lift_promise, retract, delay, repeat, string, int, bool, image, any, custom, selector, multi_selector} from './react_monad/monad'
 import * as Monad from './react_monad/monad'
 import {Interpreter, InterpreterProps} from './react_monad/interpreter'
 
@@ -19,7 +19,13 @@ let course_form : (_:Models.Course) => C<Models.Course> = c =>
         string("edit", `course_name_${c.Id}`), `course_retract_${c.Id}`)(c),
       c => retract<Models.Course, number>(
         c => c.Points || 0, c => p => ({...c, Points:p}),
-        int("edit", `course_points_${c.Id}`), `course_retract_${c.Id}`)(c)
+        int("edit", `course_points_${c.Id}`), `course_retract_${c.Id}`)(c),
+      c => retract<Models.Course, void>(
+        c => null, c => _ => c,
+        _ => download_logo(c).bind(`logo_downloader${c.Id}`, src =>
+        repeat<string>((src:string) =>
+          image("edit", `course_logo_${c.Id}`)(src).bind(`logo_uploader${c.Id}`, new_src =>
+          upload_logo(c)(new_src)))(src)).ignore(), `course_retract_${c.Id}`)(c),
     ], `inner_course_form_${c.Id}`)(c), `course_repeater_${c.Id}`)(c)
 
 let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), ((p,q) => false), `course_downloader_lift_${c_id}`)(null)
@@ -27,6 +33,11 @@ let upload_course : (_:Models.Course) => C<Models.Course> = c =>
   lift_promise<Models.Course, Models.Course>(c => Api.update_Course(c).then(_ => c),
   (c1,c2) => c1.Id != c2.Id || c1.Name != c2.Name || c1.Points != c2.Points || c1.CreatedDate.toDate().getTime() != c2.CreatedDate.toDate().getTime(),
    `course_uploader_lift_${c.Id}`)(c)
+
+let download_logo : (c:Models.Course) => C<string> = c => lift_promise<void, string>(x => Api.get_Course_Logo(c), ((p,q) => false), `course_logo_downloader_lift_${c.Id}`)(null)
+let upload_logo : (c:Models.Course) => (logo:string) => C<string> = c => l =>
+  lift_promise<[Models.Course, string], string>(([c,src]) => Api.update_Course_Logo(c, src).then(_ => src),
+  (c1,c2) => c1[1] != c2[1], `course_logo_uploader_lift${c.Id}`)([c,l])
 
 
 let sample1 : C<void> =
@@ -113,8 +124,6 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       // add new
       // add existing
     // page manager (with url's)
-    // images
-      // lazy loading
     // multiple images and labels
     // files
   // routing

@@ -282,6 +282,38 @@ using System.IO;
         Editable = editable_items.Any(e => e.Id == item.Id) });
     }
     
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpGet("{id}/Logo")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult /*Container<string>*/ GetLogoById(int id)
+    {
+var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Course : _context.Course;
+      var full_item = allowed_items.FirstOrDefault(e => e.Id == id);
+      if (full_item == null) return NotFound();
+      var item = MonadicComponents.Models.Course.FilterViewableAttributesLocal()(full_item);
+      return Ok(new Container<string> { Content = item.Logo });
+    }
+
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpPut("{id}/Logo")]
+    [ValidateAntiForgeryToken]
+    public void ChangeLogo(int id, [FromBody] Container<string> Logo)
+    {
+      var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Course : _context.Course;
+      if (!allowed_items.Any(i => i.Id == id)) return;
+      var item = new Course() { Id = id, Logo = Logo.Content };
+      _context.Course.Update(item);
+      
+      _context.Entry(item).Property(x => x.Name).IsModified = false;
+      _context.Entry(item).Property(x => x.Points).IsModified = false;
+      _context.Entry(item).Property(x => x.CreatedDate).IsModified = false;
+      _context.Entry(item).Property(x => x.Logo).IsModified = true;
+      _context.SaveChanges();
+    }
 
     [RestrictToUserType(new string[] {"*"})]
     [HttpPost]
@@ -317,6 +349,7 @@ using System.IO;
         return Unauthorized();
         // throw new Exception("Unauthorized edit attempt");
       _context.Update(new_item);
+      _context.Entry(new_item).Property(x => x.Logo).IsModified = false;
       _context.Entry(new_item).Property(x => x.CreatedDate).IsModified = false;
       _context.SaveChanges();
       return Ok();

@@ -72,16 +72,16 @@ namespace MonadicComponents.Data
           
           
             
-            _Course.Add(new Course { Id = 1, CreatedDate = DateTime.Now, Name = "Dev 1", Points = 4,   });
+            _Course.Add(new Course { Id = 1, CreatedDate = DateTime.Now, Name = "Dev 1", Points = 4, Logo = hoppinger_logo,   });
 
             
-            _Course.Add(new Course { Id = 2, CreatedDate = DateTime.Now, Name = "Dev 2", Points = 4,   });
+            _Course.Add(new Course { Id = 2, CreatedDate = DateTime.Now, Name = "Dev 2", Points = 4, Logo = hoppinger_logo,   });
 
             
-            _Course.Add(new Course { Id = 3, CreatedDate = DateTime.Now, Name = "Dev 3", Points = 4,   });
+            _Course.Add(new Course { Id = 3, CreatedDate = DateTime.Now, Name = "Dev 3", Points = 4, Logo = hoppinger_logo,   });
 
             
-            _Course.Add(new Course { Id = 4, CreatedDate = DateTime.Now, Name = "Dev 4", Points = 4,   });
+            _Course.Add(new Course { Id = 4, CreatedDate = DateTime.Now, Name = "Dev 4", Points = 4, Logo = hoppinger_logo,   });
 
           foreach (var x in _Course)
           {

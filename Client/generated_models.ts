@@ -13,6 +13,7 @@ export type Course = {
     CreatedDate:Moment.Moment
     Name : string
   Points : number
+  Logo : string
     
   }
   

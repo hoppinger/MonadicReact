@@ -39,6 +39,7 @@ namespace MonadicComponents.Models
     [Newtonsoft.Json.JsonProperty(ItemConverterType = typeof(Newtonsoft.Json.Converters.JavaScriptDateTimeConverter))] public DateTime CreatedDate{ get; set; }
         public string Name {get;set;}
     public int Points {get;set;}
+    public string Logo {get;set;}
     
     static public Expression<Func<Course,Course>> FilterViewableAttributes() {
       return self => self;
@@ -47,7 +48,7 @@ namespace MonadicComponents.Models
       return self => self;
     }
     static public Course WithoutImages(Course self) {
-      
+      self.Logo = null;
       return self;
     }
   }

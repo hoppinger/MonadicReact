@@ -32,6 +32,10 @@ export let can_view_Course_Points = () => true
 
 export let can_edit_Course_Points = () => true
 
+export let can_view_Course_Logo = () => true
+
+export let can_edit_Course_Logo = () => true
+
 
 
 export let can_view_Lecture = () => true

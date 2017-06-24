@@ -36,6 +36,8 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<any>(MultiSelector, this.props.cmd)
     : this.props.cmd.kind == "string" ?
       React.createElement<StringProps>(String, this.props.cmd)
+    : this.props.cmd.kind == "image" ?
+      React.createElement<ImageProps>(Image, this.props.cmd)
     : this.props.cmd.kind == "int" ?
       React.createElement<IntProps>(Int, this.props.cmd)
     : this.props.cmd.kind == "bool" ?
@@ -430,5 +432,42 @@ class Bool extends React.Component<BoolProps,BoolState> {
               </form>
 
     // return this.props.mode == "edit" ?
+  }
+}
+
+type ImageProps = Monad.Image
+type ImageState = { src:string }
+class Image extends React.Component<ImageProps,ImageState> {
+  constructor(props:ImageProps,context:any) {
+    super()
+    this.state = { src:props.src }
+  }
+  componentWillReceiveProps(new_props:ImageProps) {
+    if (new_props.src != this.state.src) this.setState({...this.state, src: new_props.src})
+  }
+  render() {
+    return <div>
+              <img src={this.state.src} />
+              {
+                this.props.mode == "edit" ?
+                  <input type="file" accept="image/*" onChange={(e:any) => {
+                      let files:FileList = (e.target as any).files;
+                      let file_reader = new FileReader()
+
+                      file_reader.onload = ((e) => {
+                        let new_value = file_reader.result
+
+                        this.setState({...this.state, src:new_value }, () =>
+                        this.props.cont(() => null)(new_value))
+                      })
+
+                    file_reader.readAsDataURL(files[0]);
+                    }
+                  } />
+                :
+                  null
+              }
+            </div>
+
   }
 }

@@ -8,6 +8,7 @@ export type Unit<A> = { kind:"unit", value:A } & CmdCommon<A>
 export type Bind<A> = { kind:"bind", once:boolean, p:C<any>, k:(_:any) => C<A> } & CmdCommon<A>
 export type String = { kind:"string", value:string, mode:Mode } & CmdCommon<string>
 export type Int = { kind:"int", value:number, mode:Mode } & CmdCommon<number>
+export type Image = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
 export type BooleanStyle = { kind: "checkbox", label:string, name:string }|"fancy toggle"|"plus/minus"
 export type Bool = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
 export type Delay<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
@@ -27,6 +28,7 @@ export type Cmd<A> =
   | String
   | Int
   | Bool
+  | Image
   | Delay<A>
   | LiftPromise<A>
   | Retract<A>
@@ -126,4 +128,9 @@ export let int = (mode:Mode, key?:string, dbg?:() => string) => function(value:n
 export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string) => function(value:boolean) : C<boolean> {
   return make_C<boolean>(cont =>
     ({ kind:"bool", debug_info:dbg, style:style, mode:mode, value:value, cont:cont, key:key }))
+}
+
+export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:string) : C<string> {
+  return make_C<string>(cont =>
+    ({ kind:"image", debug_info:dbg, mode:mode, src:src, cont:cont, key:key }))
 }

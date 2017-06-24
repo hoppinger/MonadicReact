@@ -557,7 +557,7 @@ export function render_new_Lecture_Course_Lecture(self:LectureContext) {
                           Api.create_linked_Lecture_Course_Lectures_Course(self.props.entity).then(e => {
                               e.length > 0 &&
                               Api.update_Course(
-                                ({ ...e[0], Name:"", Points:0 } as Models.Course)).then(() =>
+                                ({ ...e[0], Name:"", Points:0, Logo:"" } as Models.Course)).then(() =>
                                 load_relation_Lecture_Course_Lecture(self, true, () =>
                                     self.setState({...self.state(), add_step_Course:"closed"})
                                   )

@@ -170,6 +170,22 @@ export function render_Course_Points_editable_minimised(self:CourseContext) : JS
 </div>
 }
 
+export function render_Course_Logo_editable_minimised(self:CourseContext) : JSX.Element {
+  if (!Permissions.can_edit_Course()) return render_Course_Logo_minimised(self)
+  else
+    return !Permissions.can_view_Course_Logo() ? <div /> :
+          <div className="model__attribute logo">
+  <label className="attribute-label attribute-label-logo">{i18next.t(`Course:Logo`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.Image(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Logo(),
+        self.props.mode,
+        () => Api.get_Course_Logo(self.props.entity),
+        (new_src:string) => Api.update_Course_Logo(self.props.entity, new_src)) }
+  </div>
+</div>
+}
+
 
 export function render_Course_Name_editable_maximised(self:CourseContext) : JSX.Element {
   if (!Permissions.can_edit_Course()) return render_Course_Name_maximised(self)
@@ -203,11 +219,28 @@ export function render_Course_Points_editable_maximised(self:CourseContext) : JS
 </div>
 }
 
+export function render_Course_Logo_editable_maximised(self:CourseContext) : JSX.Element {
+  if (!Permissions.can_edit_Course()) return render_Course_Logo_maximised(self)
+  else
+    return !Permissions.can_view_Course_Logo() ? <div /> :
+          <div className="model__attribute logo">
+  <label className="attribute-label attribute-label-logo">{i18next.t(`Course:Logo`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.Image(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Logo(),
+        self.props.mode,
+        () => Api.get_Course_Logo(self.props.entity),
+        (new_src:string) => Api.update_Course_Logo(self.props.entity, new_src)) }
+  </div>
+</div>
+}
+
 
 export function render_editable_attributes_minimised_Course(self:CourseContext) {
   let attributes = (<div>
       {render_Course_Name_editable_minimised(self)}
         {render_Course_Points_editable_minimised(self)}
+        {render_Course_Logo_editable_minimised(self)}
     </div>)
   return attributes
 }
@@ -217,6 +250,7 @@ export function render_editable_attributes_maximised_Course(self:CourseContext) 
     let attributes = (<div>
         {render_Course_Name_editable_maximised(self)}
         {render_Course_Points_editable_maximised(self)}
+        {render_Course_Logo_editable_maximised(self)}
         
         
         
@@ -384,6 +418,19 @@ export function render_Course_Name_minimised(self:CourseContext) : JSX.Element {
 </div>
       
 }
+        export function render_Course_Logo_minimised(self:CourseContext) : JSX.Element {
+      return !Permissions.can_view_Course_Logo() ? null : <div className="model__attribute logo">
+  <label className="attribute-label attribute-label-logo">{i18next.t(`Course:Logo`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.Image(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Logo(),
+        self.props.mode,
+        () => Api.get_Course_Logo(self.props.entity),
+        (new_src:string) => Api.update_Course_Logo(self.props.entity, new_src)) }
+  </div>
+</div>
+      
+}
 
 export function render_Course_Name_maximised(self:CourseContext) : JSX.Element {
         return !Permissions.can_view_Course_Name() ? null : <div className="model__attribute name">
@@ -409,6 +456,18 @@ export function render_Course_Name_maximised(self:CourseContext) : JSX.Element {
   </div>
 </div>
 }
+        export function render_Course_Logo_maximised(self:CourseContext) : JSX.Element {
+        return !Permissions.can_view_Course_Logo() ? null : <div className="model__attribute logo">
+  <label className="attribute-label attribute-label-logo">{i18next.t(`Course:Logo`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.Image(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Logo(),
+        self.props.mode,
+        () => Api.get_Course_Logo(self.props.entity),
+        (new_src:string) => Api.update_Course_Logo(self.props.entity, new_src)) }
+  </div>
+</div>
+}
 
 export function render_preview_Course(self:CourseContext) {
   let attributes:JSX.Element = null
@@ -416,6 +475,7 @@ export function render_preview_Course(self:CourseContext) {
     attributes = (<div className="model__attributes">
       { render_Course_Name_minimised(self) }
         { render_Course_Points_minimised(self) }
+        { render_Course_Logo_minimised(self) }
     </div>)
   else
     attributes = render_editable_attributes_minimised_Course(self)
@@ -431,6 +491,7 @@ export function render_large_Course(self:CourseContext) {
     attributes = (<div className="model__attributes">
       { render_Course_Name_maximised(self) }
         { render_Course_Points_maximised(self) }
+        { render_Course_Logo_maximised(self) }
         
     </div>)
   else

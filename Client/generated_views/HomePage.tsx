@@ -392,7 +392,7 @@ export function render_new_HomePage_HomePage_Course(self:HomePageContext) {
                       onClick={() =>
                           Api.create_Course().then(e => {
                               Api.update_Course(
-                                ({ ...e, Name:"", Points:0 } as Models.Course)).then(() =>
+                                ({ ...e, Name:"", Points:0, Logo:"" } as Models.Course)).then(() =>
                                 load_relation_HomePage_HomePage_Course(self, true, () =>
                                     self.setState({...self.state(), add_step_Course:"closed"})
                                   )
