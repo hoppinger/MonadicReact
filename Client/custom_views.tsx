@@ -119,12 +119,14 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
     // label
     // menu
     // tabs
+    // button
+    // mapM
     // paginated list
       // select
       // add new
       // add existing
     // page manager (with url's)
-    // multiple images and labels
+    // sample with multiple independent elements (any [repeat(el_i)])
     // files
   // routing
   // show to designers for feedback

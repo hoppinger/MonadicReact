@@ -266,14 +266,14 @@ class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
           this.props.items.map((i,i_index) => {
             let i_s = this.props.to_string(i)
             return <div key={i_s}>
-                <input id={`${name}_${i_index}`} key={i_s} name={name} type="radio" checked={i_index == this.state.selected}
-                      onChange={e => {
-                        if (e.currentTarget.checked == false) return
-                        let selected = this.props.items.get(i_index)
-                        this.setState({...this.state, selected: i_index}, () =>
-                          this.props.cont(() => {})(selected))
-                      } } />
-                  <label htmlFor={`${name}_${i_index}`}>{i_s}
+                <label htmlFor={`${name}_${i_index}`}>{i_s}
+                  <input id={`${name}_${i_index}`} key={i_s} name={name} type="radio" checked={i_index == this.state.selected}
+                        onChange={e => {
+                          if (e.currentTarget.checked == false) return
+                          let selected = this.props.items.get(i_index)
+                          this.setState({...this.state, selected: i_index}, () =>
+                            this.props.cont(() => {})(selected))
+                        } } />
                 </label>
               </div>
           })
