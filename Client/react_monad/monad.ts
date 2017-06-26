@@ -9,7 +9,7 @@ export type Bind<A> = { kind:"bind", once:boolean, p:C<any>, k:(_:any) => C<A> }
 export type String = { kind:"string", value:string, mode:Mode } & CmdCommon<string>
 export type Int = { kind:"int", value:number, mode:Mode } & CmdCommon<number>
 export type Image = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
-export type BooleanStyle = { kind: "checkbox", label:string, name:string }|"fancy toggle"|"plus/minus"
+export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"
 export type Bool = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
 export type Delay<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type Lift<A> = { kind:"custom", props_data:any, react_class:React.ClassicComponentClass<Lift<A>> } & CmdCommon<A>
@@ -19,8 +19,9 @@ export type Repeat<A> = { kind:"repeat", value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type Any<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<A>
 export type SelectorType = "dropdown"|{ kind:"radio", name:string }
 export type Selector<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
-export type MultiSelectorType = "list"|{ kind:"checkbox", name:string }
+export type MultiSelectorType = "list"|"checkbox"
 export type MultiSelector<A> = { kind:"multi selector", type:MultiSelectorType, to_string:(_:any)=>string, items:A, selected_items:undefined|A } & CmdCommon<A>
+export type Label<A> = { kind:"label", text:string, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 
 export type Cmd<A> =
   Unit<A>
@@ -37,6 +38,7 @@ export type Cmd<A> =
   | MultiSelector<A>
   | Any<A>
   | Lift<A>
+  | Label<A>
 
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = {
@@ -133,4 +135,9 @@ export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string
 export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:string) : C<string> {
   return make_C<string>(cont =>
     ({ kind:"image", debug_info:dbg, mode:mode, src:src, cont:cont, key:key }))
+}
+
+export let label = <A>(text:string, key?:string, dbg?:() => string) => (p:(_:A)=>C<A>) : ((_:A) => C<A>) => {
+  return value => make_C<A>(cont =>
+    ({ kind:"label", debug_info:dbg, text:text, value:value, p:p as (_:A)=>C<A>, cont:cont, key:key }))
 }

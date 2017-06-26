@@ -42,6 +42,8 @@ export class Interpreter<A> extends React.Component<InterpreterProps<A>,Interpre
       React.createElement<IntProps>(Int, this.props.cmd)
     : this.props.cmd.kind == "bool" ?
       React.createElement<BoolProps>(Bool, this.props.cmd)
+    : this.props.cmd.kind == "label" ?
+      React.createElement<LabelProps<A>>(Label, this.props.cmd)
     :
       null
   }
@@ -322,20 +324,20 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
           })
         }
       </select>
-    } else if (this.props.type.kind == "checkbox") {
-      let name = this.props.type.name
+    } else if (this.props.type == "checkbox") {
       return <form>
         {
           this.props.items.map((i,i_index) => {
             let i_s = this.props.to_string(i)
             return <div key={i_s}>
-                <input id={`${name}_${i_index}`} key={i_s} name={name} type="checkbox" checked={this.state.selected.has(i_index)}
-                      onChange={e => {
-                        let selected = this.props.items.get(i_index)
-                        let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index)
-                        this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
-                      } } />
-                  <label htmlFor={`${name}_${i_index}`}>{i_s}
+                <label>
+                  <span>{i_s}</span>
+                  <input key={i_s} type="checkbox" checked={this.state.selected.has(i_index)}
+                        onChange={e => {
+                          let selected = this.props.items.get(i_index)
+                          let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index)
+                          this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
+                        } } />
                 </label>
               </div>
           })
@@ -404,7 +406,6 @@ class Bool extends React.Component<BoolProps,BoolState> {
     if (new_props.value != this.state.value) this.setState({...this.state, value: new_props.value})
   }
   render() {
-    // disable if mode is not edit!!!
     return this.props.style == "fancy toggle" ?
               <a disabled={this.props.mode == "view"}
                  className={`toggle-mode toggle-mode--${this.state.value ? "edit" : "view"}`}
@@ -419,17 +420,13 @@ class Bool extends React.Component<BoolProps,BoolState> {
                   <span></span>
                 </a>
             :
-              <form>
-                <input type="checkbox"
-                      id={this.props.style.name}
-                      disabled={this.props.mode == "view"}
-                      checked={this.state.value}
-                      onChange={e =>
-                        this.setState({...this.state,
-                          value:e.currentTarget.checked },
-                          () => this.props.cont(()=>null)(this.state.value))} />
-                <label htmlFor={this.props.style.name}>{this.props.style.label}</label>
-              </form>
+              <input type="checkbox"
+                    disabled={this.props.mode == "view"}
+                    checked={this.state.value}
+                    onChange={e =>
+                      this.setState({...this.state,
+                        value:e.currentTarget.checked },
+                        () => this.props.cont(()=>null)(this.state.value))} />
 
     // return this.props.mode == "edit" ?
   }
@@ -469,5 +466,21 @@ class Image extends React.Component<ImageProps,ImageState> {
               }
             </div>
 
+  }
+}
+
+type LabelProps<A> = Monad.Label<A>
+type LabelState<A> = {}
+class Label<A> extends React.Component<LabelProps<A>,LabelState<A>> {
+  constructor(props:LabelProps<A>,context:any) {
+    super()
+    this.state = {}
+  }
+  render() {
+    return <label>
+                  <span>{this.props.text}</span>
+                  <Interpreter cmd={this.props.p(this.props.value).comp(callback => x =>
+                             this.props.cont(callback)(x))} />
+           </label>
   }
 }
