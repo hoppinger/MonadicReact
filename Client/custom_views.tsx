@@ -1,14 +1,16 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-import * as createReactClass from 'create-react-class'
 import {List, Map, Set} from "immutable"
 import * as Immutable from "immutable"
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
-import {C, unit, bind, bind_once, lift_promise, retract, delay, repeat, string, int, bool, image, label, any, custom, selector, multi_selector} from './react_monad/monad'
+import {C, unit, bind, bind_once,                          // core
+        string, int, bool, image,                          // primitive
+        selector, multi_selector, label,                   // html
+        Cont, custom, repeat, any, lift_promise, retract, delay, // combinators
+        } from './react_monad/monad'
 import * as Monad from './react_monad/monad'
-import {Interpreter, InterpreterProps} from './react_monad/interpreter'
 
 // sample 1
 let course_form : (_:Models.Course) => C<Models.Course> = c =>
@@ -16,16 +18,16 @@ let course_form : (_:Models.Course) => C<Models.Course> = c =>
     any<Models.Course>([
       c => retract<Models.Course, string>(
         c => c.Name || "", c => n => ({...c, Name:n}),
-        string("edit", `course_name_${c.Id}`), `course_retract_${c.Id}`)(c),
+        string("edit", `course_name_${c.Id}`), `course_name_retract_${c.Id}`)(c),
       c => retract<Models.Course, number>(
         c => c.Points || 0, c => p => ({...c, Points:p}),
-        int("edit", `course_points_${c.Id}`), `course_retract_${c.Id}`)(c),
+        int("edit", `course_points_${c.Id}`), `course_points_retract_${c.Id}`)(c),
       c => retract<Models.Course, void>(
         c => null, c => _ => c,
         _ => download_logo(c).bind(`logo_downloader${c.Id}`, src =>
         repeat<string>((src:string) =>
           image("edit", `course_logo_${c.Id}`)(src).bind(`logo_uploader${c.Id}`, new_src =>
-          upload_logo(c)(new_src)))(src)).ignore(), `course_retract_${c.Id}`)(c),
+          upload_logo(c)(new_src)))(src)).ignore(), `course_logo_retract_${c.Id}`)(c),
     ], `inner_course_form_${c.Id}`)(c), `course_repeater_${c.Id}`)(c)
 
 let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), ((p,q) => false), `course_downloader_lift_${c_id}`)(null)
@@ -47,26 +49,31 @@ let sample1 : C<void> =
     upload_course(c))(c)).ignore())
 
 // sample 2
+type CounterProps = { target:number, cont:Cont<number> }
 type CounterState = { current:number, signals_sent:number }
-let Counter = createReactClass({
-    getInitialState: () => ({ current:0, signals_sent:0 }),
-    render: function() {
-      return <div>
-        <label style={{margin:"10px"}}>Progress: {this.state.current}/{this.props.props_data.target}</label>
-        <button onClick={() => this.setState({...this.state, current: this.state.current+1}, () =>
-          this.state.current >= this.props.props_data.target + 1 && this.setState({...this.state, current: 0}, () =>
-          this.props.cont(() =>
-            this.setState({...this.state, signals_sent:this.state.signals_sent+1}))
-            (this.state.signals_sent + 1)))}>+1</button>
-      </div>
-    }
-  })
+class Counter extends React.Component<CounterProps, CounterState> {
+  constructor(props:CounterProps, context:any) {
+    super(props, context)
+
+    this.state = { current:0, signals_sent:0 }
+  }
+
+  render() {
+    return <div>
+      <label style={{margin:"10px"}}>Progress: {this.state.current}/{this.props.target}</label>
+      <button onClick={() => this.setState({...this.state, current: this.state.current+1}, () =>
+        this.state.current >= this.props.target + 1 && this.setState({...this.state, current: 0}, () =>
+        this.props.cont(() =>
+          this.setState({...this.state, signals_sent:this.state.signals_sent+1}))
+          (this.state.signals_sent + 1)))}>+1</button>
+    </div>
+  }
+}
 
 let sample2 : C<void> =
   selector<number>("dropdown", x => x.toString())(List<number>([1, 3, 5])).bind(`target_selector`, n =>
-  custom<number>()(Counter, { target:n }).bind<void>(`counter`, s =>
+  custom<number>()(cont => <Counter target={n} cont={cont} />).bind<void>(`counter`, s =>
   string("view")(`The component has ticked ${s} times.`).ignore()))
-
 
 // sample 3
 let sample3 : C<void> =
@@ -78,9 +85,9 @@ let sample3 : C<void> =
 let sample4 : C<void> =
   repeat<boolean>(b =>
     any<boolean>([
-      label<boolean>("My toggle: ")(b => bool("edit", "checkbox", `toggle`)(b)),
-      bool("edit", "fancy toggle", `toggle`),
-      bool("edit", "plus/minus", `toggle`),
+      label<boolean>("My toggle: ")(b => bool("edit", "checkbox", `basic toggle`)(b)),
+      bool("edit", "fancy toggle", `fancy toggle`),
+      bool("edit", "plus/minus", `plus/minus toggle`),
     ], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
 
@@ -108,9 +115,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
           <div style={{border:"solid black 2px", padding:"20px", margin:"5px"}}>
             Sample {i+1} - {s.description}
             {
-              React.createElement<InterpreterProps<void>>(Interpreter, {
-                cmd: s.sample.comp(continuation => value => console.log("done"))
-                })
+              s.sample.comp(continuation => value => console.log("done"))
             }
           </div>
         )
@@ -124,21 +129,24 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
     // all
     // disable boolean checkboxes if mode is not edit
     // div
-    // menu
-    // tabs
-    // button
+    // menu selector (just a selector which binds)
+      // menu
+      // tabs
+    // button: (A => B) => A => C<B>
     // mapM
     // paginated list
       // select
       // add new
       // add existing
     // page manager (with url's)
+      // routing
     // sample with multiple independent elements repeat(any [repeat(el_i)])
     // files
-  // routing
+    // image clearing
   // show to designers for feedback
   // documentation
   // linkedin post linked on reddit
+  // better library file structure
   // better sample file structure
   // all samples, each hidden by toggle
   // npm package
