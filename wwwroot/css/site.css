@@ -1986,10 +1986,6 @@ th {
 	width: 250px;
 }
 
-.footer__inner {
-	margin-left: 250px;
-}
-
 }
 
 @media (min-width: 1280px) {
@@ -2024,10 +2020,6 @@ label {
 
 .menu_entry--sub a {
 	padding: 10px 50px;
-}
-
-.footer__inner {
-	margin-left: 320px;
 }
 
 .model-content {
