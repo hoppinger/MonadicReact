@@ -1304,7 +1304,7 @@ th {
 .input--checkbox [type="checkbox"] + span:after {
 	content: "\2713 ";
 	text-align: center;
-	color: #5EC78A;
+	color: #32da4e;
 	font-size: 20px;
 	opacity: 0;
 	-webkit-transform: scale(0);
