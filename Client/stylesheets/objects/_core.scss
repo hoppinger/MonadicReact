@@ -3,18 +3,6 @@
 // ==========================================================================
 
 .main {
-  &__inner {
-    @include tablet {
-      margin-left: $width-sidebar-tablet;
-    }
-    @include desktop {
-      margin-left: $width-sidebar-desktop;
-    }
-    @include tablet-desktop {
-      margin-top: $topbar-height;
-    }
-  }
-
   &__title {
     text-transform: uppercase;
     letter-spacing: 1px;

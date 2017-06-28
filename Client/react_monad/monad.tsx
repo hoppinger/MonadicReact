@@ -494,12 +494,16 @@ class Bool extends React.Component<BoolProps,BoolState> {
   }
   render() {
     return this.props.style == "fancy toggle" ?
-              <a disabled={this.props.mode == "view"}
-                 className={`toggle-mode toggle-mode--${this.state.value ? "edit" : "view"}`}
-                 onClick={() => this.setState({...this.state, value:!this.state.value},
-                                  () => this.props.cont(()=>null)(this.state.value))}>
-                  <span></span>
-              </a>
+              <label className="input input--switch">
+                <input type="checkbox"
+                  disabled={this.props.mode == "view"}
+                  checked={this.state.value}
+                  onChange={e =>
+                    this.setState({...this.state,
+                      value:e.currentTarget.checked },
+                      () => this.props.cont(()=>null)(this.state.value))} />
+                  <span className="input__label">Bellissimo?</span>
+              </label>
             : this.props.style == "plus/minus" ?
                 <a disabled={this.props.mode == "view"} className={`button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
                   onClick={() => this.setState({...this.state, value:!this.state.value},
@@ -507,13 +511,16 @@ class Bool extends React.Component<BoolProps,BoolState> {
                   <span></span>
                 </a>
             :
-              <input type="checkbox"
-                    disabled={this.props.mode == "view"}
-                    checked={this.state.value}
-                    onChange={e =>
-                      this.setState({...this.state,
-                        value:e.currentTarget.checked },
-                        () => this.props.cont(()=>null)(this.state.value))} />
+              <label className="input input--checkbox">
+                <input type="checkbox"
+                      disabled={this.props.mode == "view"}
+                      checked={this.state.value}
+                      onChange={e =>
+                        this.setState({...this.state,
+                          value:e.currentTarget.checked },
+                          () => this.props.cont(()=>null)(this.state.value))} />
+                <span></span>
+              </label>
 
     // return this.props.mode == "edit" ?
   }
