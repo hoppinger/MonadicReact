@@ -125,7 +125,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
   return <div>
       {
         all_samples.map((s,i) =>
-          <div style={{border:"solid black 2px", padding:"20px", margin:"5px"}}>
+          <div className="component">
             Sample {i+1} - {s.description}
             {
               s.sample.comp(continuation => value => console.log("done"))
