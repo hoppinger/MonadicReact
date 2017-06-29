@@ -9,6 +9,7 @@ import {C, unit, bind, bind_once,                          // core
         string, int, bool, image,                          // primitive
         selector, multi_selector, label,                   // html
         Cont, custom, repeat, any, lift_promise, retract, delay, // combinators
+        menu // constructions
         } from './react_monad/monad'
 import * as Monad from './react_monad/monad'
 
@@ -99,6 +100,17 @@ let sample5 : C<void> =
       `input number`)(0).bind(`input number bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
 
+// sample 6
+type FictionalPage = { title:string, content:string }
+
+let sample6 : C<void> =
+  menu<FictionalPage, string>("side menu", p => p.title, `fictional pages menu`)(
+    List<FictionalPage>([
+      { title:"About", content:"This page talks about us"},
+      { title:"Content", content:"This page is full of interesting content"}
+    ]), p => string("view")(p.content)
+  ).ignore()
+
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples =
     [
@@ -106,7 +118,8 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       { sample: sample2, description:"A selector." },
       { sample: sample3, description:"A multi-selector." },
       { sample: sample4, description:"A series of (coordinated) switches." },
-      { sample: sample5, description:"A labelled item." }
+      { sample: sample5, description:"A labelled item." },
+      { sample: sample6, description:"A menu with content." },
     ]
 
   return <div>
@@ -127,11 +140,13 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
   // add () in front of all combinators to enforce laziness and improve closures
   // various operators
     // all
-    // disable boolean checkboxes if mode is not edit
     // div
-    // menu selector (just a selector which binds)
-      // menu
+    // menu selector: ([A] => (A => C<B>) => C<B>)
       // tabs
+    // remove menu blank space when using custom headless renderer in scaffolder (move classes from _Layout to individual react model renderer)
+    // add styling to menu with content, and perhaps also a size
+    // add styling to tabs with content, and perhaps also a size
+    // disable boolean checkboxes if mode is not edit
     // button: (A => B) => A => C<B>
     // mapM
     // paginated list

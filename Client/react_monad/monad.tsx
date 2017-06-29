@@ -20,8 +20,10 @@ export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorT
 export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, value:any, is_value_changed:(old_value:B,new_value:B)=>boolean } & CmdCommon<A>
-export type SelectorType = "dropdown"|{ kind:"radio", name:string }
+export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
+export type MenuType = "side menu"|"tabs"
+export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
 
 export type Cont<A> = (callback:() => void) => (_:A) => void
@@ -377,15 +379,14 @@ class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
           })
         }
       </select>
-    else if (this.props.type.kind == "radio") {
-      let name = this.props.type.name
+    else if (this.props.type == "radio") {
       return <form>
         {
           this.props.items.map((i,i_index) => {
             let i_s = this.props.to_string(i)
             return <div key={i_s}>
-                <label htmlFor={`${name}_${i_index}`}>{i_s}
-                  <input id={`${name}_${i_index}`} key={i_s} name={name} type="radio" checked={i_index == this.state.selected}
+                <label>{i_s}
+                  <input key={i_s} name={name} type="radio" checked={i_index == this.state.selected}
                         onChange={e => {
                           if (e.currentTarget.checked == false) return
                           let selected = this.props.items.get(i_index)
@@ -566,3 +567,54 @@ export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:s
     React.createElement<ImageProps>(Image, { kind:"image", debug_info:dbg, mode:mode, src:src, cont:cont, key:key }))
 }
 
+type MenuState<A,B> = { selected:undefined|number, content:undefined|JSX.Element }
+class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
+  constructor(props:MenuProps<A,B>,context:any) {
+    super()
+    this.state = { selected:props.selected_item != undefined ? props.items.findIndex(i => props.to_string(i) == props.to_string(props.selected_item)) : undefined,
+                   content:undefined }
+  }
+  componentWillMount() {
+    if (this.state.selected != undefined)
+      this.setState({...this.state,
+          content:this.state.selected != undefined ? this.props.p(this.props.items.get(this.state.selected)).comp(this.props.cont) : undefined})
+  }
+  render() {
+    if (this.props.type == "side menu")
+      return <div className="content_with_menu">
+        <div className="side_menu">
+          <img className="logo" src={"/images/logo.png"} alt="Logo"/>
+          <div className="side_menu_entries">
+
+            {this.props.items.map((i, i_i) =>
+                  <div className={`side_menu_entry${i_i == this.state.selected ? " active" : ""}`}>
+                    <a onClick={() =>
+                        {
+                          this.setState({...this.state, selected:i_i,
+                              content:this.props.p(this.props.items.get(i_i)).comp(this.props.cont)})
+                        }
+                      }>
+                      { this.props.to_string(i) }
+                    </a>
+                  </div>)
+                }
+                {/*<div className="menu_entry menu_entry--with-sub">
+
+                </div>*/}
+          </div>
+        </div>
+        <div className="content">
+          { this.state.content }
+        </div>
+      </div>
+    else if (this.props.type == "tabs") {
+      return <div>Not implemented</div>
+    }
+  }
+}
+
+export let menu = function<A,B>(type:MenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, p:(_:A)=>C<B>, selected_item?:A) => C<B>) {
+  return (items, p, selected_item) => make_C<B>(cont =>
+    React.createElement<MenuProps<A,B>>(Menu,
+      { kind:"menu", debug_info:dbg, items:items, selected_item:selected_item, type:type, to_string:to_string, p:p, cont:cont, key:key }))
+}
