@@ -86,9 +86,12 @@ let sample3 : C<void> =
 let sample4 : C<void> =
   repeat<boolean>(b =>
     any<boolean>([
-      label<boolean>("My toggle: ")(b => bool("edit", "checkbox", `basic toggle`)(b)),
-      bool("edit", "fancy toggle", `fancy toggle`),
-      bool("edit", "plus/minus", `plus/minus toggle`),
+      label<boolean>("My toggle: ")(b =>
+        bool("edit", "checkbox", `basic toggle`)(b)),
+      label<boolean>("Bellissimo!!! ")(b =>
+        bool("edit", "fancy toggle", `fancy toggle`)(b)),
+      label<boolean>("Meno bellissimo ")(b =>
+        bool("edit", "plus/minus", `plus/minus toggle`)(b)),
     ], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
 
@@ -141,6 +144,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
   // various operators
     // all
     // div
+    // optional class on the label
     // menu selector: ([A] => (A => C<B>) => C<B>)
       // tabs
     // remove menu blank space when using custom headless renderer in scaffolder (move classes from _Layout to individual react model renderer)
