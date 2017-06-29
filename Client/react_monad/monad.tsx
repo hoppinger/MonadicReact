@@ -138,9 +138,9 @@ class Label<A> extends React.Component<LabelProps<A>,LabelState<A>> {
   }
   render() {
     return <label>
-                  <span>{this.props.text}</span>
                   {this.props.p(this.props.value).comp(callback => x =>
                              this.props.cont(callback)(x))}
+                  <span>{this.props.text}</span>
            </label>
   }
 }
@@ -496,6 +496,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
   render() {
     return this.props.style == "fancy toggle" ?
             <input type="checkbox"
+              className="input input--switch"
               disabled={this.props.mode == "view"}
               checked={this.state.value}
               onChange={e =>
@@ -510,12 +511,13 @@ class Bool extends React.Component<BoolProps,BoolState> {
                 </a>
             :
               <input type="checkbox"
-                    disabled={this.props.mode == "view"}
-                    checked={this.state.value}
-                    onChange={e =>
-                      this.setState({...this.state,
-                        value:e.currentTarget.checked },
-                        () => this.props.cont(()=>null)(this.state.value))} />
+                className="input input--checkbox"
+                disabled={this.props.mode == "view"}
+                checked={this.state.value}
+                onChange={e =>
+                  this.setState({...this.state,
+                    value:e.currentTarget.checked },
+                    () => this.props.cont(()=>null)(this.state.value))} />
 
     // return this.props.mode == "edit" ?
   }
