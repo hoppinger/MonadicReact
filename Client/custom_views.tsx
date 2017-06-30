@@ -5,9 +5,9 @@ import * as Immutable from "immutable"
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
-import {C, unit, bind, bind_once,                          // core
+import {C, unit, bind,                          // core
         string, int, bool, image,                          // primitive
-        selector, multi_selector, label,                   // html
+        button, selector, multi_selector, label,                   // html
         Cont, custom, repeat, any, lift_promise, retract, delay, // combinators
         menu // constructions
         } from './react_monad/monad'
@@ -44,7 +44,8 @@ let upload_logo : (c:Models.Course) => (logo:string) => C<string> = c => l =>
 
 
 let sample1 : C<void> =
-  download_course(1).bind_once(`course_downloader_${1}`, c =>
+  download_course(1).bind(`course_downloader_${1}`, c =>
+  console.log("Downloaded course") ||
   course_form(c).bind(`course_form_${c.Id}`, c =>
   delay<Models.Course>(200, `course_delayer_${c.Id}`)(c =>
     upload_course(c))(c)).ignore())
@@ -86,11 +87,11 @@ let sample3 : C<void> =
 let sample4 : C<void> =
   repeat<boolean>(b =>
     any<boolean>([
-      label<boolean>("My toggle: ")(b =>
+      label<boolean, boolean>("My toggle: ")(b =>
         bool("edit", "checkbox", `basic toggle`)(b)),
-      label<boolean>("Bellissimo!!! ")(b =>
+      label<boolean, boolean>("Bellissimo!!! ")(b =>
         bool("edit", "fancy toggle", `fancy toggle`)(b)),
-      label<boolean>("Meno bellissimo ")(b =>
+      label<boolean, boolean>("Meno bellissimo ")(b =>
         bool("edit", "plus/minus", `plus/minus toggle`)(b)),
     ], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
@@ -98,7 +99,7 @@ let sample4 : C<void> =
 // sample 5
 let sample5 : C<void> =
   repeat<number>(n =>
-      label<number>("number: ")(n =>
+      label<number, number>("number: ")(n =>
         int("edit", "int")(n))(n),
       `input number`)(0).bind(`input number bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
@@ -114,6 +115,15 @@ let sample6 : C<void> =
     ]), p => string("view")(p.content)
   ).ignore()
 
+// sample 7
+let sample7 : C<void> =
+  repeat<number>(n =>
+      label<number, number>("number: ")(n =>
+        int("edit", "int")(n))(n),
+      `input number`)(0).bind(`input number bind`, n =>
+  button<number,string>(`Send ${n.toString()} further`)(n => `Your selection is ${n.toString()}`, n).bind(`button to string`, s =>
+  string("view")(s).ignore()))
+
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples =
     [
@@ -123,6 +133,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       { sample: sample4, description:"A series of (coordinated) switches." },
       { sample: sample5, description:"A labelled item." },
       { sample: sample6, description:"A menu with content." },
+      { sample: sample7, description:"A button." }
     ]
 
   return <div>
@@ -141,18 +152,14 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
 
 // TODO:
   // add () in front of all combinators to enforce laziness and improve closures
+  // better library file structure (core, primitives, ...)
+  // all samples, each hidden by toggle
+  // some components, when they get a default value, should propagate right away
   // various operators
     // all
-    // div
-    // optional class on the label
-    // menu selector: ([A] => (A => C<B>) => C<B>)
-      // tabs
-    // remove menu blank space when using custom headless renderer in scaffolder (move classes from _Layout to individual react model renderer)
-    // add styling to menu with content, and perhaps also a size
-    // add styling to tabs with content, and perhaps also a size
-    // disable boolean checkboxes if mode is not edit
-    // button: (A => B) => A => C<B>
     // mapM
+    // map
+    // filter
     // paginated list
       // select
       // add new
@@ -161,13 +168,10 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       // routing
     // sample with multiple independent elements repeat(any [repeat(el_i)])
     // files
-    // image clearing
   // show to designers for feedback
   // documentation
   // linkedin post linked on reddit
-  // better library file structure
   // better sample file structure
-  // all samples, each hidden by toggle
   // npm package
   // Api.download/upload operators should already be lifted out the box (from the scaffolder)
   // default scaffolder views should use the monadic library

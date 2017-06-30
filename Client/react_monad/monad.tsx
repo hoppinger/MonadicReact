@@ -7,7 +7,8 @@ export type CmdCommon<A> = { cont:Cont<A>, key:string, debug_info:() => string }
 export type UnitProps<A> = { kind:"unit", value:A } & CmdCommon<A>
 export type BindProps<B,A> = { kind:"bind", once:boolean, p:C<B>, k:(_:B) => C<A> } & CmdCommon<A>
 export type IntProps = { kind:"int", value:number, mode:Mode } & CmdCommon<number>
-export type LabelProps<A> = { kind:"label", text:string, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
+export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type RepeatProps<A> = { kind:"repeat", value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type StringProps = { kind:"string", value:string, mode:Mode } & CmdCommon<string>
 export type AnyProps<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<A>
@@ -24,13 +25,14 @@ export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type MenuType = "side menu"|"tabs"
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
+export type ButtonProps<A,B> = { kind:"button", label:string, f:(_:A)=>B, x:A } & CmdCommon<B>
 
 
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = {
   comp:(cont:Cont<A>) => JSX.Element
   bind:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
-  bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
+  // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   ignore:()=>C<void>
 }
 
@@ -40,9 +42,9 @@ function make_C<A>(comp:(cont:Cont<A>) => JSX.Element) : C<A> {
     bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
             return bind<A,B>(key || "", this, k, dbg)
           },
-    bind_once:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
-            return bind_once<A,B>(key || "", this, k, dbg)
-          },
+    // bind_once:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
+    //         return bind_once<A,B>(key || "", this, k, dbg)
+    //       },
     ignore:function(this:C<A>) : C<void> {
       return this.bind(``, _ => unit<void>(null))
     }
@@ -105,11 +107,11 @@ export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => 
       { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, key:key })))
 }
 
-export let bind_once = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {
-  return make_C<B>(cont =>
-    (React.createElement<BindProps<A,B>>(Bind,
-      ({ kind:"bind", debug_info:dbg, p:p, k:k, once:true, cont:cont, key:key }))))
-}
+// export let bind_once = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {
+//   return make_C<B>(cont =>
+//     (React.createElement<BindProps<A,B>>(Bind,
+//       ({ kind:"bind", debug_info:dbg, p:p, k:k, once:true, cont:cont, key:key }))))
+// }
 
 type RepeatState<A> = { current_value:A, frame_index:number }
 class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
@@ -130,14 +132,14 @@ export let repeat = function<A>(p:(_:A)=>C<A>, key?:string, dbg?:() => string) :
     ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, cont:cont, key:key })))
 }
 
-type LabelState<A> = {}
-class Label<A> extends React.Component<LabelProps<A>,LabelState<A>> {
-  constructor(props:LabelProps<A>,context:any) {
+type LabelState<A,B> = {}
+class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
+  constructor(props:LabelProps<A,B>,context:any) {
     super()
     this.state = {}
   }
   render() {
-    return <label>
+    return <label className={this.props.className}>
                   {this.props.p(this.props.value).comp(callback => x =>
                              this.props.cont(callback)(x))}
                   <span>{this.props.text}</span>
@@ -145,10 +147,30 @@ class Label<A> extends React.Component<LabelProps<A>,LabelState<A>> {
   }
 }
 
-export function label<A>(text:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<A>) => ((_:A) => C<A>) {
-  return p => value => make_C<A>(cont =>
-    (React.createElement<LabelProps<A>>(Label,
-    { kind:"label", debug_info:dbg, text:text, value:value, p:p as (_:A)=>C<A>, cont:cont, key:key })))
+export function label<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(cont =>
+    (React.createElement<LabelProps<A,B>>(Label,
+    { kind:"label", className:className, debug_info:dbg, text:text, value:value, p:p, cont:cont, key:key })))
+}
+
+type DivState<A,B> = {}
+class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
+  constructor(props:DivProps<A,B>,context:any) {
+    super()
+    this.state = {}
+  }
+  render() {
+    return <div className={this.props.className}>
+                  {this.props.p(this.props.value).comp(callback => x =>
+                             this.props.cont(callback)(x))}
+           </div>
+  }
+}
+
+export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(cont =>
+    (React.createElement<DivProps<A,B>>(Div,
+    { kind:"div", className:className, debug_info:dbg, value:value, p:p, cont:cont, key:key })))
 }
 
 type IntState = { value:number }
@@ -543,20 +565,32 @@ class Image extends React.Component<ImageProps,ImageState> {
               <img src={this.state.src} />
               {
                 this.props.mode == "edit" ?
-                  <input type="file" accept="image/*" onChange={(e:any) => {
-                      let files:FileList = (e.target as any).files;
-                      let file_reader = new FileReader()
+                  <div className="image-controls">
+                    <a className="user button button--delete"
+                        onClick={() => {
+                            if(confirm('Are you sure?')) {
+                              let new_value = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY/j//z8ABf4C/qc1gYQAAAAASUVORK5CYII="
+                              this.setState({...this.state, src:new_value }, () =>
+                              this.props.cont(() => null)(new_value))
+                            }
+                          }
+                        }>
+                    </a>
+                    <input type="file" accept="image/*" onChange={(e:any) => {
+                        let files:FileList = (e.target as any).files;
+                        let file_reader = new FileReader()
 
-                      file_reader.onload = ((e) => {
-                        let new_value = file_reader.result
+                        file_reader.onload = ((e) => {
+                          let new_value = file_reader.result
 
-                        this.setState({...this.state, src:new_value }, () =>
-                        this.props.cont(() => null)(new_value))
-                      })
+                          this.setState({...this.state, src:new_value }, () =>
+                          this.props.cont(() => null)(new_value))
+                        })
 
-                    file_reader.readAsDataURL(files[0]);
-                    }
-                  } />
+                      file_reader.readAsDataURL(files[0]);
+                      }
+                    } />
+                  </div>
                 :
                   null
               }
@@ -583,41 +617,71 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
           content:this.state.selected != undefined ? this.props.p(this.props.items.get(this.state.selected)).comp(this.props.cont) : undefined})
   }
   render() {
-    if (this.props.type == "side menu")
-      return <div className="content_with_menu">
-        <div className="side_menu">
-          <img className="logo" src={"/images/logo.png"} alt="Logo"/>
-          <div className="side_menu_entries">
+    let content_menu_class:string, content_class:string, menu_class:string, entries_class:string, entry_class:string
+    if (this.props.type == "side menu") {
+      content_menu_class = "content_with_menu"
+      content_class = "content"
+      menu_class = "side_menu"
+      entries_class = "side_menu_entries"
+      entry_class = "side_menu_entry"
+    } else if (this.props.type == "tabs"){
+      content_menu_class = "content_with_tabs"
+      content_class = "content"
+      menu_class = "tabs"
+      entries_class = "tab_entries"
+      entry_class = "tab_entry"
+    }
+    return <div className={content_menu_class}>
+      <div className={menu_class}>
+        <div className={entries_class}>
 
-            {this.props.items.map((i, i_i) =>
-                  <div className={`side_menu_entry${i_i == this.state.selected ? " active" : ""}`}>
-                    <a onClick={() =>
-                        {
-                          this.setState({...this.state, selected:i_i,
-                              content:this.props.p(this.props.items.get(i_i)).comp(this.props.cont)})
-                        }
-                      }>
-                      { this.props.to_string(i) }
-                    </a>
-                  </div>)
-                }
-                {/*<div className="menu_entry menu_entry--with-sub">
+          {this.props.items.map((i, i_i) =>
+                <div className={`${entry_class} ${i_i == this.state.selected ? " active" : ""}`}>
+                  <a onClick={() =>
+                      {
+                        this.setState({...this.state, selected:i_i,
+                            content:this.props.p(this.props.items.get(i_i)).comp(this.props.cont)})
+                      }
+                    }>
+                    { this.props.to_string(i) }
+                  </a>
+                </div>)
+              }
+              {/*<div className="menu_entry menu_entry--with-sub">
 
-                </div>*/}
-          </div>
-        </div>
-        <div className="content">
-          { this.state.content }
+              </div>*/}
         </div>
       </div>
-    else if (this.props.type == "tabs") {
-      return <div>Not implemented</div>
-    }
+      <div className={content_class}>
+        { this.state.content }
+      </div>
+    </div>
   }
 }
 
 export let menu = function<A,B>(type:MenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, p:(_:A)=>C<B>, selected_item?:A) => C<B>) {
   return (items, p, selected_item) => make_C<B>(cont =>
     React.createElement<MenuProps<A,B>>(Menu,
-      { kind:"menu", debug_info:dbg, items:items, selected_item:selected_item, type:type, to_string:to_string, p:p, cont:cont, key:key }))
+      { kind:"menu", debug_info:dbg, items:items, selected_item:selected_item, p:p, type:type, to_string:to_string, cont:cont, key:key }))
+}
+
+type ButtonState<A,B> = { x:A }
+class Button<A,B> extends React.Component<ButtonProps<A,B>,ButtonState<A,B>> {
+  constructor(props:ButtonProps<A,B>,context:any) {
+    super()
+    this.state = { x:props.x }
+  }
+  componentWillReceiveProps(new_props:ButtonProps<A,B>) {
+    this.setState({...this.state, x:new_props.x})
+  }
+  render() {
+    return <button className="button"
+                   onClick={() => this.props.cont(() => {})(this.props.f(this.state.x))} >{this.props.label}</button>
+  }
+}
+
+export let button = function<A,B>(label:string, key?:string, dbg?:() => string) : ((f:(_:A)=>B, x:A) => C<B>) {
+  return (f, x) => make_C<B>(cont =>
+    React.createElement<ButtonProps<A,B>>(Button,
+      { kind:"button", debug_info:dbg, label:label, f:f, x:x, cont:cont, key:key }))
 }
