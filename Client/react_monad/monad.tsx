@@ -475,13 +475,14 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
             let i_s = this.props.to_string(i)
             return <div key={i_s}>
                 <label>
-                  <span>{i_s}</span>
                   <input key={i_s} type="checkbox" checked={this.state.selected.has(i_index)}
+                        className="monadic-input-choices monadic-input-choices--checkbox"
                         onChange={e => {
                           let selected = this.props.items.get(i_index)
                           let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index)
                           this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
                         } } />
+                  <span>{i_s}</span>
                 </label>
               </div>
           })
@@ -518,7 +519,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
   render() {
     return this.props.style == "fancy toggle" ?
             <input type="checkbox"
-              className="input input--switch"
+              className="monadic-input-choices monadic-input-choices--switch"
               disabled={this.props.mode == "view"}
               checked={this.state.value}
               onChange={e =>
@@ -533,7 +534,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
                 </a>
             :
               <input type="checkbox"
-                className="input input--checkbox"
+                className="monadic-input-choices monadic-input-choices--checkbox"
                 disabled={this.props.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
