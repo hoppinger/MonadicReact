@@ -643,7 +643,7 @@ export class LectureComponent extends React.Component<Utils.EntityComponentProps
     return <div id={`Lecture_${this.props.entity.Id.toString()}_${this.state.update_count}`} className={`model lecture`}>
       { render_saving_animations_Lecture(this.get_self()) }
       { this.props.nesting_depth == 0 ? render_menu_Lecture(this.get_self()) : null }
-      <div className="content" >
+      <div className={this.props.nesting_depth == 0 ? 'main__content' : ''}>
         {
           this.props.nesting_depth == 0 && !!this.props.toggle_button ?
           <div className="topbar">

@@ -118,7 +118,7 @@ export function Number(
   set_item:(v:number)=>void,
   validation?:(_:number)=>"ok"|{ error:string }) : JSX.Element {
   return mode == "view" ?
-      <div>{(get_item() == NaN || get_item() == undefined) ? '' : get_item()}</div>
+      <div>{(get_item() == NaN || get_item() == undefined ? '' : get_item())}</div>
     :
       <input disabled={!can_edit} type="number"
         value={`${get_item()}`}

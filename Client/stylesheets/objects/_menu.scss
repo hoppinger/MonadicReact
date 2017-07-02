@@ -67,6 +67,14 @@
       }
     }
   }
+  + .main__content {
+    @include tablet {
+      margin-left: $width-sidebar-tablet;
+    }
+    @include desktop {
+      margin-left: $width-sidebar-desktop;
+    }
+  }
 }
 
 .menu_entry {

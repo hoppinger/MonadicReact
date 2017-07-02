@@ -469,7 +469,7 @@ html {
 }
 
 body {
-	background-color: #fff;
+	background-color: #f1f1f1;
 	color: #444;
 	font-size: 16px;
 	font-family: "Palanquin", sans-serif;
@@ -779,6 +779,11 @@ textarea {
 
 select {
 	width: 100%;
+}
+
+[type="checkbox"],
+[type="radio"] {
+	display: inline;
 }
 
 table {
@@ -1215,6 +1220,7 @@ th {
 	padding: 0;
 	height: 47px;
 	line-height: 47px;
+	margin-left: 20px;
 	overflow: hidden;
 	text-align: center;
 	font-weight: normal;
@@ -1931,6 +1937,10 @@ th {
 
 @media (min-width: 768px) {
 
+.main__content {
+	margin-top: 70px;
+}
+
 .logo {
 	margin: 20px auto;
 }
@@ -2012,6 +2022,14 @@ th {
 	width: 250px;
 }
 
+.menu + .main__content {
+	margin-left: 250px;
+}
+
+.footer__inner {
+	margin-left: 250px;
+}
+
 }
 
 @media (min-width: 1280px) {
@@ -2044,8 +2062,16 @@ label {
 	padding: 21px 50px;
 }
 
+.menu + .main__content {
+	margin-left: 320px;
+}
+
 .menu_entry--sub a {
 	padding: 10px 50px;
+}
+
+.footer__inner {
+	margin-left: 320px;
 }
 
 .model-content {
