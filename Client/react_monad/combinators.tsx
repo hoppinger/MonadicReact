@@ -270,3 +270,4 @@ export let hide = (f_name:string, f:C<void>) =>
       unit<void>(null)
     :
       f.bind(`visible ${f_name}`, _ => unit<void>(null)))
+

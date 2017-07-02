@@ -20,14 +20,14 @@ import {toggles_sample} from './samples/toggles'
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<{ sample:C<void>, description:string }> =
     [
-      { sample: workflow_sample, description:"A workflow." },
+      { sample: button_sample, description:"A button." },
       { sample: course_form_sample, description:"A form with upload and download." },
+      { sample: workflow_sample, description:"A workflow." },
       { sample: selector_sample, description:"A selector." },
       { sample: multiselector_sample, description:"A multi-selector." },
       { sample: toggles_sample, description:"A series of (coordinated) toggles." },
       { sample: label_sample, description:"A labelled item." },
-      { sample: menu_sample, description:"A menu with content." },
-      { sample: button_sample, description:"A button." }
+      { sample: menu_sample, description:"A menu with content." }
     ]
 
   return <div>
@@ -47,13 +47,11 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
 // TODO:
   // various operators
     // samples
-      // sample with map
-      // sample with filter
       // sample with all
-    // map : (_:A => B) => (C<A> => C<B>)
-    // filter : (_:A => boolean) => (C<A> => C<A>)
+    // form validation
+      // use filter?
+    // workflow via forms (and one retract per form)
     // abstract form
-      // validation
     // abstract workflow
       // also with validation (implicitly via form?)
     // date, time, datetime
@@ -67,6 +65,7 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       // routing
     // sample with multiple independent elements repeat(any [repeat(el_i)])
     // files
+    // fold
   // show to designers for feedback
   // documentation
   // linkedin post linked on reddit

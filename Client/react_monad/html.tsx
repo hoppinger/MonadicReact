@@ -12,7 +12,7 @@ export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorT
 export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
-export type ButtonProps<A,B> = { kind:"button", label:string, f:(_:A)=>B, x:A } & CmdCommon<B>
+export type ButtonProps<A> = { kind:"button", label:string, x:A, disabled:boolean } & CmdCommon<A>
 
 type LabelState<A,B> = {}
 class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
@@ -243,23 +243,23 @@ export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:s
     React.createElement<ImageProps>(Image, { kind:"image", debug_info:dbg, mode:mode, src:src, cont:cont, key:key }))
 }
 
-type ButtonState<A,B> = { x:A }
-class Button<A,B> extends React.Component<ButtonProps<A,B>,ButtonState<A,B>> {
-  constructor(props:ButtonProps<A,B>,context:any) {
+type ButtonState<A> = { x:A }
+class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
+  constructor(props:ButtonProps<A>,context:any) {
     super()
     this.state = { x:props.x }
   }
-  componentWillReceiveProps(new_props:ButtonProps<A,B>) {
+  componentWillReceiveProps(new_props:ButtonProps<A>) {
     this.setState({...this.state, x:new_props.x})
   }
   render() {
-    return <button className="button"
-                   onClick={() => this.props.cont(() => {})(this.props.f(this.state.x))} >{this.props.label}</button>
+    return <button className="button" disabled={this.props.disabled}
+                   onClick={() => this.props.cont(() => {})(this.state.x)} >{this.props.label}</button>
   }
 }
 
-export let button = function<A,B>(label:string, key?:string, dbg?:() => string) : ((f:(_:A)=>B) => (x:A) => C<B>) {
-  return f => x => make_C<B>(cont =>
-    React.createElement<ButtonProps<A,B>>(Button,
-      { kind:"button", debug_info:dbg, label:label, f:f, x:x, cont:cont, key:key }))
+export let button = function<A>(label:string, disabled?:boolean, key?:string, dbg?:() => string) : ((x:A) => C<A>) {
+  return x => make_C<A>(cont =>
+    React.createElement<ButtonProps<A>>(Button,
+      { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, cont:cont, key:key }))
 }
