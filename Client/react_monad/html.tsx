@@ -22,9 +22,9 @@ class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
   }
   render() {
     return <label className={this.props.className}>
-                  <span>{this.props.text}</span>
                   {this.props.p(this.props.value).comp(callback => x =>
                              this.props.cont(callback)(x))}
+                  <span>{this.props.text}</span>
            </label>
   }
 }
