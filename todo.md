@@ -1,4 +1,5 @@
 ## various operators (1 week)
+- [ ] div with multiple children
 - [ ] moment
   - [ ] date
   - [ ] time
@@ -13,19 +14,21 @@
   - [ ] add existing
 - [ ] page manager (with url's)
   - [ ] routing
+- [ ] disabled plus/minus toggle
 
 ## samples
 - [ ] all
-- [ ] tabs
+- [V] tabs
 - [ ] sample with multiple independent elements repeat(any [repeat(el_i)])
+- [/] form validation (div around the input fields with "form error" class)
 
 ## styling
-- [ ] checkboxes
+- [V] checkboxes
 - [ ] menu
 - [ ] tabs
 
 ## templates (1 week)
-- [ ] form validation
+- [V] form validation
 - [ ] workflow via forms (and one retract per form)
 - [ ] abstract form
 - [ ] abstract workflow

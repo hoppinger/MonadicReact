@@ -14,6 +14,7 @@ export type C<A> = {
   bind:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   ignore:()=>C<void>
+  ignore_with:<B>(x:B)=>C<B>
   map:<B>(f:(_:A)=>B, key?:string, dbg?:()=>string)=>C<B>,
   filter:(f:(_:A)=>boolean, key?:string, dbg?:()=>string)=>C<A>
 }
@@ -33,6 +34,9 @@ export function make_C<A>(comp:(cont:Cont<A>) => JSX.Element) : C<A> {
     // bind_once:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
     //         return bind_once<A,B>(key, this, k, dbg)
     //       },
+    ignore_with:function<B>(this:C<A>, x:B) : C<B> {
+      return this.bind<B>(``, _ => unit<B>(x))
+    },
     ignore:function(this:C<A>) : C<void> {
       return this.bind(``, _ => unit<void>(null))
     }
