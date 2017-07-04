@@ -1,6 +1,5 @@
 ## various operators (1 week)
-- [V] unit must call continuation when new properties come in
-- [V] div with multiple children
+- [ ] div propagates too much (since multiple children? use any instead!)
 - [ ] number vs int vs double
 - [ ] moment
   - [ ] date
@@ -16,37 +15,32 @@
   - [ ] add existing
 - [ ] page manager (with url's)
   - [ ] routing
-- [ ] disabled plus/minus toggle
 
 ## samples
 - [ ] all
-- [V] tabs
-- [ ] sample with multiple independent elements repeat(any [repeat(el_i)])
-- [V] form validation (div around the input fields with "form error" class)
+- [ ] non-lazy pictures in form
+- [ ] multiple independent elements repeat(any [repeat(el_i)])
+- [ ] form with list of related entities
 
 ## styling
-- [V] checkboxes
 - [ ] menu
 - [ ] tabs
 - [/] form errors
+- [ ] disabled plus/minus toggle
 
 ## templates (1 week)
-- [V] form validation
-- [ ] abstract form
-  - [V] basic form
-  - [ ] auto-uploader
-  - [ ] with save button
-  - [ ] with next/prev buttons
-- [ ] workflow via forms (and one retract per form)
+- [ ] form mode (view/edit)
 - [ ] abstract workflow
 
 ## external (1 week)
 - [ ] show to designers for feedback
-- [ ] linkedin post linked on reddit
+- [ ] linkedin post
+- [ ] reddit post
 - [ ] npm package
 - [ ] documentation
-- [ ] translations
+- [ ] i18n
 
 ##  scaffolder (1 week)
-- [ ] Api.download/upload operators should already be lifted out the box (from the scaffolder)
+- [ ] Api.getMWithPictures/updateMWithPictures operators should be added and already lifted out of the box (from the scaffolder)
+- [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
 - [ ] default scaffolder views should use the monadic library

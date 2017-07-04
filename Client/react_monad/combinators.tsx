@@ -10,7 +10,8 @@ export type AllProps<A> = { kind:"all", ps:Array<C<A>> } & CmdCommon<Array<A>>
 export type AnyProps<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<A>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
-export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, value:any, is_value_changed:(old_value:B,new_value:B)=>boolean } & CmdCommon<A>
+export type RetryStrategy = "never" | "semi exponential"
+export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B, is_value_changed:(old_value:B,new_value:B)=>boolean } & CmdCommon<A>
 export type MenuType = "side menu"|"tabs"
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
@@ -124,13 +125,22 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
     this.setState({...this.state, input:new_props.value}, () =>
     this.load(new_props))
   }
+  wait_time:number = 500
   load(props:LiftPromiseProps<A,B>) {
     this.setState({...this.state, result:"busy"}, () =>
-    props.p(this.state.input).then(x =>
-      (this.props.debug_info && console.log("Promise done:", this.props.debug_info())) ||
-      this.setState({...this.state, result:x}, () =>
-      props.cont(() => null)(x)))
-    .catch(() => this.setState({...this.state, result:"error"})))
+    props.p(this.state.input).then(x => {
+      this.wait_time = 500
+      if (this.props.debug_info) console.log("Promise done:", this.props.debug_info())
+      this.setState({...this.state, result:x}, () => props.cont(() => null)(x))
+    })
+    .catch(() => {
+      if (props.retry_strategy == "never")
+        this.setState({...this.state, result:"error"})
+      else {
+        this.wait_time = Math.floor(Math.max(this.wait_time * 1.5, 2500))
+        setTimeout(() => this.load(props), this.wait_time)
+      }
+    }))
   }
   componentWillMount() {
     this.props.debug_info && console.log("Mount:", this.props.debug_info())
@@ -144,10 +154,10 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
 }
 
-export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, is_value_changed:(old_value:A,new_value:A)=>boolean, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
+export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, is_value_changed:(old_value:A,new_value:A)=>boolean, retry_strategy:RetryStrategy, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
   return x => make_C<B>(cont =>
     React.createElement<LiftPromiseProps<B,A>>(LiftPromise,
-      { kind:"lift promise", debug_info:dbg, is_value_changed:is_value_changed, value:x, p:p as (_:any)=>Promise<B>, cont:cont, key:key }))
+      { kind:"lift promise", debug_info:dbg, is_value_changed:is_value_changed, value:x, retry_strategy:retry_strategy, p:p, cont:cont, key:key }))
 }
 
 
