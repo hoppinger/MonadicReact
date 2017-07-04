@@ -9,41 +9,7 @@ import {C, unit, bind} from '../react_monad/core'
 import {string, int, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image, div} from '../react_monad/html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_monad/combinators'
-
-type CourseFormData = Models.Course & { errors:Immutable.Map<string,string> }
-
-let validate : (_:Models.Course) => CourseFormData = c => {
-  let errors = Immutable.Map<string,string>()
-  if (c.Name.length < 3)
-    errors = errors.set("Name", "The name cannot be shorter than three characters.")
-  if (c.Points < 1)
-    errors = errors.set("Points", "The course must be worth at least one point.")
-  return {...c, errors:errors}
-}
-
-
-let inner_form : (_:CourseFormData) => C<CourseFormData> = c =>
-  repeat<CourseFormData>(c =>
-    any<CourseFormData>([
-      retract<CourseFormData, string>(
-        c => c.Name || "", c => n => validate({...c, Name:n}),
-        any<string>([
-          _ => (c.errors.has("Name") ? string("view", `course_name_${c.Id}`)(`Error: ${c.errors.get("Name")}`) : unit<string>("")).filter(_ => false),
-          string("edit", `course_name_${c.Id}`)
-        ]), `course_name_retract_${c.Id}`),
-      retract<CourseFormData, number>(
-        c => c.Points || 0, c => p => validate({...c, Points:p}),
-        any<number>([
-          _ => (c.errors.has("Points") ? string("view", `course_name_${c.Id}`)(`Error: ${c.errors.get("Points")}`).ignore_with<number>(0) : unit<number>(0)).filter(_ => false),
-          int("edit", `course_points_${c.Id}`)
-        ]), `course_points_retract_${c.Id}`),
-      retract<CourseFormData, void>(
-        c => null, c => _ => c,
-        _ => download_logo(c).bind(`logo_downloader${c.Id}`, src =>
-        repeat<string>((src:string) =>
-          image("edit", `course_logo_${c.Id}`)(src).bind(`logo_uploader${c.Id}`, new_src =>
-          upload_logo(c)(new_src)))(src)).ignore(), `course_logo_retract_${c.Id}`),
-    ], `inner_course_form_${c.Id}`)(c), `course_repeater_${c.Id}`)(c)
+import * as Form from '../react_monad/templates'
 
 let download_course : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course(c_id).then(c => c.Item), ((p,q) => false), `course_downloader_lift_${c_id}`)(null)
 let upload_course : (_:Models.Course) => C<Models.Course> = c =>
@@ -56,33 +22,42 @@ let upload_logo : (c:Models.Course) => (logo:string) => C<string> = c => l =>
   lift_promise<[Models.Course, string], string>(([c,src]) => Api.update_Course_Logo(c, src).then(_ => src),
   (c1,c2) => c1[1] != c2[1], `course_logo_uploader_lift${c.Id}`)([c,l])
 
+let course_form_name = c => `course_${c.Id}`
+let course_form_entries_with_autosave : Array<Form.FormEntry<Models.Course>> = [
+    { kind:"string", field_name:"Name", in:c => c.Name || "", out:c => n => ({...c, Name:n}), get_errors:c=>c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
+    { kind:"number", field_name:"Points", in:c => c.Points || 0, out:c => p => ({...c, Points:p}), get_errors:c=>c.Points < 1 ? ["The course must be worth at least one point."] : [] },
+    { kind:"image", field_name:"Logo", download:download_logo, upload:upload_logo }
+  ]
+
+let inner_form_with_autosave =
+  Form.inner_form<Models.Course>(course_form_name, course_form_entries_with_autosave)
 
 export let course_form_with_autosave_sample : C<void> =
   download_course(1).bind(`course_downloader_${1}`, c =>
-  inner_form(validate(c))
-  .filter(c => c.errors.isEmpty())
-  .map<Models.Course>(c => ({Id:c.Id, Name:c.Name, Points:c.Points, Logo:c.Logo, CreatedDate:c.CreatedDate})).bind(`course_form_${c.Id}`,
+  inner_form({ model:c, errors:Immutable.Map<string,Array<string>>() }).bind(`course_error_recap_${c.Id}`,
+  any<Form.FormData<Models.Course>>([
+    c => Form.form_errors<Models.Course>(course_form_name, course_form_entries_with_autosave)(c).ignore_with(c).filter(_ => false),
+    c => unit<Form.FormData<Models.Course>>(c)
+  ]))
+  .filter(c => c.errors.isEmpty(), `course_error_filter_${c.Id}`)
+  .map<Models.Course>(c => c.model).bind(`course_uploader_${c.Id}`,
   delay<Models.Course>(200, `course_delayer_${c.Id}`)(upload_course)).ignore())
+
+
+let course_form_entries : Array<Form.FormEntry<Models.Course>> = [
+    { kind:"string", field_name:"Name", in:c => c.Name || "", out:c => n => ({...c, Name:n}), get_errors:c=>c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
+    { kind:"number", field_name:"Points", in:c => c.Points || 0, out:c => p => ({...c, Points:p}), get_errors:c=>c.Points < 1 ? ["The course must be worth at least one point."] : [] }
+  ]
+
+let inner_form =
+  Form.inner_form<Models.Course>(course_form_name, course_form_entries)
 
 export let course_form_sample : C<void> =
   download_course(1).bind(`course_downloader_${1}`, c =>
-  inner_form(validate(c)).bind(`course_form_${c.Id}`, c =>
-  any<CourseFormData>([
-    div<CourseFormData, CourseFormData>("errors")(
-      any<CourseFormData>([
-        c => retract<CourseFormData, string>(
-          c => "", c => n => c,
-          _ => (c.errors.has("Name") ?
-                  string("view", `course_name_error_${c.Id}`)(`${c.errors.get("Name")}`)
-                : unit<string>("")).filter(_ => false))(c),
-        c => retract<CourseFormData, string>(
-          c => "", c => n => c,
-          _ => (c.errors.has("Points") ?
-                  string("view", `course_points_error_${c.Id}`)(`${c.errors.get("Points")}`)
-                : unit<string>("")).filter(_ => false))(c),
-      ])
-    ),
-     c => button<CourseFormData>(`Save`, !c.errors.isEmpty())(c)
-  ])(c)
-  .map<Models.Course>(c => ({Id:c.Id, Name:c.Name, Points:c.Points, Logo:c.Logo, CreatedDate:c.CreatedDate})).bind(`course_uploader`,
-  delay<Models.Course>(200, `course_delayer_${c.Id}`)(upload_course)).ignore()))
+  inner_form({ model:c, errors:Immutable.Map<string,Array<string>>() }).bind(`course_form_${c.Id}`, c =>
+    any<Form.FormData<Models.Course>>([
+      Form.form_errors<Models.Course>(course_form_name, course_form_entries),
+      c => button<Form.FormData<Models.Course>>(`Save`, !c.errors.isEmpty())(c)
+    ])(c)
+  ).map<Models.Course>(c => c.model).bind(`course_uploader`,
+  delay<Models.Course>(200, `course_delayer_${c.Id}`)(upload_course)).ignore())

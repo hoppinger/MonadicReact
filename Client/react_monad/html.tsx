@@ -4,8 +4,8 @@ import * as Immutable from "immutable"
 import {C, Cont, CmdCommon, make_C, unit, bind} from './core'
 
 export type Mode = "edit"|"view"
-export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, ps:Array<(_:A)=>C<void>>, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
 export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorType, to_string:(_:A)=>string, items:Immutable.List<A>,
           selected_items:undefined|Immutable.List<A> } & CmdCommon<Immutable.List<A>>
@@ -21,18 +21,19 @@ class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
     this.state = {}
   }
   render() {
+    let content = this.props.p(this.props.value).comp(callback => x =>
+                             this.props.cont(callback)(x))
+    let span = <span>{this.props.text}</span>
     return <label className={this.props.className}>
-                  {this.props.p(this.props.value).comp(callback => x =>
-                             this.props.cont(callback)(x))}
-                  <span>{this.props.text}</span>
+             {this.props.span_before_content ? [span,content] : [content,span]}
            </label>
   }
 }
 
-export function label<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+export function label<A,B>(text:string, span_before_content?:boolean, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
   return p => value => make_C<B>(cont =>
     (React.createElement<LabelProps<A,B>>(Label,
-    { kind:"label", className:className, debug_info:dbg, text:text, value:value, p:p, cont:cont, key:key })))
+    { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, cont:cont, key:key })))
 }
 
 type DivState<A,B> = {}
@@ -43,16 +44,19 @@ class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   }
   render() {
     return <div className={this.props.className}>
+                  {
+                    this.props.ps.map(p => p(this.props.value).comp(callback => x => {}))
+                  }
                   {this.props.p(this.props.value).comp(callback => x =>
                              this.props.cont(callback)(x))}
            </div>
   }
 }
 
-export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return p => value => make_C<B>(cont =>
+export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return ps => p => value => make_C<B>(cont =>
     (React.createElement<DivProps<A,B>>(Div,
-    { kind:"div", className:className, debug_info:dbg, value:value, p:p, cont:cont, key:key })))
+    { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, cont:cont, key:key })))
 }
 
 type SelectorState<A> = { selected:undefined|number }

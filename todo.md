@@ -1,5 +1,7 @@
 ## various operators (1 week)
-- [ ] div with multiple children
+- [V] unit must call continuation when new properties come in
+- [V] div with multiple children
+- [ ] number vs int vs double
 - [ ] moment
   - [ ] date
   - [ ] time
@@ -20,17 +22,22 @@
 - [ ] all
 - [V] tabs
 - [ ] sample with multiple independent elements repeat(any [repeat(el_i)])
-- [/] form validation (div around the input fields with "form error" class)
+- [V] form validation (div around the input fields with "form error" class)
 
 ## styling
 - [V] checkboxes
 - [ ] menu
 - [ ] tabs
+- [/] form errors
 
 ## templates (1 week)
 - [V] form validation
-- [ ] workflow via forms (and one retract per form)
 - [ ] abstract form
+  - [V] basic form
+  - [ ] auto-uploader
+  - [ ] with save button
+  - [ ] with next/prev buttons
+- [ ] workflow via forms (and one retract per form)
 - [ ] abstract workflow
 
 ## external (1 week)
@@ -38,6 +45,7 @@
 - [ ] linkedin post linked on reddit
 - [ ] npm package
 - [ ] documentation
+- [ ] translations
 
 ##  scaffolder (1 week)
 - [ ] Api.download/upload operators should already be lifted out the box (from the scaffolder)

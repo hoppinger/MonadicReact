@@ -13,7 +13,7 @@ export type C<A> = {
   comp:(cont:Cont<A>) => JSX.Element
   bind:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
-  ignore:()=>C<void>
+  ignore:(key?:string)=>C<void>
   ignore_with:<B>(x:B)=>C<B>
   map:<B>(f:(_:A)=>B, key?:string, dbg?:()=>string)=>C<B>,
   filter:(f:(_:A)=>boolean, key?:string, dbg?:()=>string)=>C<A>
@@ -37,8 +37,8 @@ export function make_C<A>(comp:(cont:Cont<A>) => JSX.Element) : C<A> {
     ignore_with:function<B>(this:C<A>, x:B) : C<B> {
       return this.bind<B>(``, _ => unit<B>(x))
     },
-    ignore:function(this:C<A>) : C<void> {
-      return this.bind(``, _ => unit<void>(null))
+    ignore:function(this:C<A>, key?:string) : C<void> {
+      return this.bind(key, _ => unit<void>(null))
     }
   }
 }
@@ -48,6 +48,14 @@ class Unit<A> extends React.Component<UnitProps<A>,UnitState<A>> {
   constructor(props:UnitProps<A>,context:any) {
     super()
     this.state = {}
+  }
+  componentWillReceiveProps(new_props:UnitProps<A>) {
+    new_props.debug_info && console.log("New props:", new_props.debug_info(), new_props.value)
+    new_props.cont(() => {})(new_props.value)
+  }
+  componentWillMount() {
+    this.props.debug_info && console.log("Component will mount:", this.props.debug_info(), this.props.value)
+    this.props.cont(() => {})(this.props.value)
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
@@ -113,6 +121,7 @@ class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
     this.state = {}
   }
   render() {
+    this.props.debug_info && console.log("Render:", this.props.debug_info())
     return this.props.p.comp(callback => x => this.props.cont(callback)(this.props.f(x)))
   }
 }
@@ -131,7 +140,8 @@ class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
     this.state = {}
   }
   render() {
-    return this.props.p.comp(callback => x => { if (this.props.f(x)) this.props.cont(callback)(x) })
+    this.props.debug_info && console.log("Render:", this.props.debug_info())
+    return this.props.p.comp(callback => x => { if (this.props.f(x)) { this.props.cont(callback)(x) } })
   }
 }
 

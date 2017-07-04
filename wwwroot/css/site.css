@@ -946,6 +946,11 @@ th {
 	background: #cecece;
 }
 
+.monadic-field-error {
+	-webkit-box-shadow: 0 0 3px #CC0000;
+	box-shadow: 0 0 3px #CC0000;
+}
+
 .hide {
 	display: none;
 	visibility: hidden;

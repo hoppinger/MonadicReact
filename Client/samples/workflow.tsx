@@ -16,13 +16,13 @@ type CreateCourseFormData = Models.Course & { step:"name" | "points" | "recap" |
 let create_course_step1 : ((_:CreateCourseFormData) => C<CreateCourseFormData>) = cd =>
   repeat<CreateCourseFormData>(cd =>
     retract<CreateCourseFormData, string>(cd => cd.Name, cd => n => ({...cd, Name:n}),
-      label<string, string>("Name: ")(string("edit")))(cd))(cd).bind(`step1 next`,
+      label<string, string>("Name: ", true)(string("edit")))(cd))(cd).bind(`step1 next`,
   cd => button<CreateCourseFormData>(`next`)({...cd, step:"points"}))
 
 let create_course_step2 : ((_:CreateCourseFormData) => C<CreateCourseFormData>) = cd =>
   repeat<CreateCourseFormData>(cd =>
     retract<CreateCourseFormData, number>(cd => cd.Points, cd => n => ({...cd, Points:n}),
-      label<number, number>("Points: ")(int("edit")))(cd))(cd).bind(`step2 next`, cd =>
+      label<number, number>("Points: ", true)(int("edit")))(cd))(cd).bind(`step2 next`, cd =>
     any<CreateCourseFormData>([
       cd => button<CreateCourseFormData>(`prev`)({...cd, step:"name"}),
       cd => button<CreateCourseFormData>(`next`)({...cd, step:"recap"})
@@ -30,8 +30,8 @@ let create_course_step2 : ((_:CreateCourseFormData) => C<CreateCourseFormData>) 
 
 let create_course_recap : ((_:CreateCourseFormData) => C<CreateCourseFormData>) = cd =>
   any<CreateCourseFormData>([
-    label<CreateCourseFormData, CreateCourseFormData>("Name: ")(_ => string("view")(cd.Name).bind(`name recap`, _ => unit<CreateCourseFormData>(cd))),
-    label<CreateCourseFormData, CreateCourseFormData>("Points: ")(_ => int("view")(cd.Points).bind(`points recap`, _ => unit<CreateCourseFormData>(cd))),
+    label<CreateCourseFormData, CreateCourseFormData>("Name: ", true)(_ => string("view")(cd.Name).bind(`name recap`, _ => unit<CreateCourseFormData>(cd))),
+    label<CreateCourseFormData, CreateCourseFormData>("Points: ", true)(_ => int("view")(cd.Points).bind(`points recap`, _ => unit<CreateCourseFormData>(cd))),
     cd => button<CreateCourseFormData>(`prev`)({...cd, step:"points"}),
     cd => button<CreateCourseFormData>(`next`)({...cd, step:"sent"})
   ])(cd)
