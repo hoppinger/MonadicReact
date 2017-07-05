@@ -17,11 +17,12 @@ import {multiselector_sample} from './samples/multiselector'
 import {menu_sample} from './samples/menu'
 import {tabbed_menu_sample} from './samples/tabbed menu'
 import {toggles_sample} from './samples/toggles'
+import {moments_sample} from './samples/moments'
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<{ sample:C<void>, description:string }> =
     [
-      { sample: button_sample, description:"A button." },
+      { sample: moments_sample, description:"Moment input." },
       { sample: course_form_sample, description:"A form with save button." },
       { sample: course_form_with_autosave_sample, description:"A form with autosave." },
       { sample: workflow_sample, description:"A workflow." },
@@ -30,7 +31,8 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       { sample: toggles_sample, description:"A series of (coordinated) toggles." },
       { sample: label_sample, description:"A labelled item." },
       { sample: menu_sample, description:"A menu with content." },
-      { sample: tabbed_menu_sample, description:"A tabbed menu with content." }
+      { sample: tabbed_menu_sample, description:"A tabbed menu with content." },
+      { sample: button_sample, description:"A button." }
     ]
 
   return <div>

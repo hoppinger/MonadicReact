@@ -6,7 +6,7 @@ import * as Models from '../generated_models'
 import * as Api from '../generated_api'
 import * as ViewUtils from '../generated_views/view_utils'
 import {C, unit, bind} from '../react_monad/core'
-import {string, int, bool} from '../react_monad/primitives'
+import {string, number, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image} from '../react_monad/html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_monad/combinators'
 

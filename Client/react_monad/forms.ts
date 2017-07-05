@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom"
 import {List, Map, Set} from "immutable"
 import * as Immutable from "immutable"
 import {C, unit, bind, Mode} from './core'
-import {string, int, bool} from './primitives'
+import {string, number, bool} from './primitives'
 import {button, selector, multi_selector, label, image, div} from './html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from './combinators'
 
@@ -45,7 +45,7 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
               //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
               // :
                 []
-            )(int(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            )(number(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
         : e.kind == "image" ?
           retract<FormData<M>, string>(
             c => e.in(c.model), c => s => {

@@ -1,9 +1,8 @@
+## doing
+- Api.getMWithPictures/updateMWithPictures operators should be added
+
 ## primitives (1 day)
-- [ ] moment
-  - [ ] date
-  - [ ] time
-  - [ ] datetime
-- [ ] number vs int vs double
+- [ ] tel, mail, url
 - [ ] rich text
 - [ ] files
 
@@ -21,6 +20,7 @@
 - [ ] list
   - [ ] pagination
   - [ ] mapM
+  - [ ] mapL
   - [ ] select
   - [ ] add new
   - [ ] add existing
@@ -29,8 +29,9 @@
 ## samples (3 days)
 - [ ] all
 - [ ] non-lazy pictures in form
-- [ ] multiple independent elements repeat(any [repeat(el_i)])
+- [ ] workflow/form with selection from list of other entities
 - [ ] form with list of related entities
+- [ ] form with date, time, date-time
 
 ## styling
 - [ ] menu
