@@ -5,12 +5,12 @@ import * as Immutable from "immutable"
 import * as Models from '../generated_models'
 import * as Api from '../generated_api'
 import * as ViewUtils from '../generated_views/view_utils'
-import {C, Cont, unit, bind} from '../react_monad/core'
+import {C, Cont, Context, unit, bind} from '../react_monad/core'
 import {string, int, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image} from '../react_monad/html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_monad/combinators'
 
-type CounterProps = { target:number, cont:Cont<number> }
+type CounterProps = { target:number, context:Context, cont:Cont<number> }
 type CounterState = { current:number, signals_sent:number }
 class Counter extends React.Component<CounterProps, CounterState> {
   constructor(props:CounterProps, context:any) {
@@ -33,5 +33,5 @@ class Counter extends React.Component<CounterProps, CounterState> {
 
 export let selector_sample : C<void> =
   selector<number>("dropdown", x => x.toString())(List<number>([1, 3, 5])).bind(`target_selector`, n =>
-  custom<number>()(cont => <Counter target={n} cont={cont} />).bind<void>(`counter`, s =>
+  custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).bind<void>(`counter`, s =>
   string("view")(`The component has ticked ${s} times.`).ignore()))

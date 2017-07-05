@@ -39,7 +39,9 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
           <div className="component">
             Sample {i+1} - {s.description}
             {
-              hide(s.description, s.sample).comp(continuation => value => console.log("done"))
+              hide(s.description, s.sample).comp(
+                { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
+              })(continuation => value => console.log("done"))
             }
           </div>
         )

@@ -1,9 +1,8 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
-import {C, Cont, CmdCommon, make_C, unit, bind} from './core'
+import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 
-export type Mode = "edit"|"view"
 export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, ps:Array<(_:A)=>C<void>>, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
@@ -21,7 +20,7 @@ class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
     this.state = {}
   }
   render() {
-    let content = this.props.p(this.props.value).comp(callback => x =>
+    let content = this.props.p(this.props.value).comp(this.props.context)(callback => x =>
                              this.props.cont(callback)(x))
     let span = <span>{this.props.text}</span>
     return <label className={this.props.className}>
@@ -31,9 +30,9 @@ class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
 }
 
 export function label<A,B>(text:string, span_before_content?:boolean, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return p => value => make_C<B>(cont =>
+  return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<LabelProps<A,B>>(Label,
-    { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, cont:cont, key:key })))
+    { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
 type DivState<A,B> = {}
@@ -45,18 +44,18 @@ class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   render() {
     return <div className={this.props.className}>
                   {
-                    this.props.ps.map(p => p(this.props.value).comp(callback => x => {}))
+                    this.props.ps.map(p => p(this.props.value).comp(this.props.context)(callback => x => {}))
                   }
-                  {this.props.p(this.props.value).comp(callback => x =>
+                  {this.props.p(this.props.value).comp(this.props.context)(callback => x =>
                              this.props.cont(callback)(x))}
            </div>
   }
 }
 
 export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return ps => p => value => make_C<B>(cont =>
+  return ps => p => value => make_C<B>(ctxt => cont =>
     (React.createElement<DivProps<A,B>>(Div,
-    { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, cont:cont, key:key })))
+    { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, context:ctxt, cont:cont, key:key })))
 }
 
 type SelectorState<A> = { selected:undefined|number }
@@ -112,9 +111,9 @@ class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
 }
 
 export let selector = function<A>(type:SelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, selected_item?:A) => C<A>) {
-  return (items, selected_item) => make_C<A>(cont =>
+  return (items, selected_item) => make_C<A>(ctxt => cont =>
     React.createElement<SelectorProps<A>>(Selector,
-      { kind:"selector", debug_info:dbg, items:items, selected_item:selected_item, type:type, to_string:to_string, cont:cont, key:key }))
+      { kind:"selector", debug_info:dbg, items:items, selected_item:selected_item, type:type, to_string:to_string, context:ctxt, cont:cont, key:key }))
 }
 
 type MultiSelectorState<A> = { selected:Immutable.Set<number> }
@@ -180,7 +179,7 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
 }
 
 export let multi_selector = function<A>(type:MultiSelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, selected_items?:Immutable.List<A>) => C<Immutable.List<A>>) {
-  return (items, selected_items) => make_C<Immutable.List<A>>((cont:Cont<Immutable.List<A>>) =>
+  return (items, selected_items) => make_C<Immutable.List<A>>(ctxt => (cont:Cont<Immutable.List<A>>) =>
     React.createElement<MultiSelectorProps<A>>(
       MultiSelector,
       { kind:"multi selector",
@@ -190,6 +189,7 @@ export let multi_selector = function<A>(type:MultiSelectorType, to_string:(_:A)=
         type:type,
         to_string:to_string,
         cont:cont,
+        context:ctxt,
         key:key }))
 }
 
@@ -243,8 +243,8 @@ class Image extends React.Component<ImageProps,ImageState> {
 }
 
 export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:string) : C<string> {
-  return make_C<string>(cont =>
-    React.createElement<ImageProps>(Image, { kind:"image", debug_info:dbg, mode:mode, src:src, cont:cont, key:key }))
+  return make_C<string>(ctxt => cont =>
+    React.createElement<ImageProps>(Image, { kind:"image", debug_info:dbg, mode:mode, src:src, context:ctxt, cont:cont, key:key }))
 }
 
 type ButtonState<A> = { x:A }
@@ -263,7 +263,7 @@ class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
 }
 
 export let button = function<A>(label:string, disabled?:boolean, key?:string, dbg?:() => string) : ((x:A) => C<A>) {
-  return x => make_C<A>(cont =>
+  return x => make_C<A>(ctxt => cont =>
     React.createElement<ButtonProps<A>>(Button,
-      { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, cont:cont, key:key }))
+      { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key }))
 }

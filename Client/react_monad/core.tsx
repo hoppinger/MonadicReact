@@ -2,15 +2,23 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
 
-export type CmdCommon<A> = { cont:Cont<A>, key:string, debug_info:() => string }
+export type CmdCommon<A> = { cont:Cont<A>, context:Context, key:string, debug_info:() => string }
 export type UnitProps<A> = { kind:"unit", value:A } & CmdCommon<A>
 export type BindProps<B,A> = { kind:"bind", once:boolean, p:C<B>, k:(_:B) => C<A> } & CmdCommon<A>
 export type MapProps<A,B> = { kind:"map", p:C<A>, f:(_:A)=>B } & CmdCommon<B>
 export type FilterProps<A> = { kind:"filter", p:C<A>, f:(_:A)=>boolean } & CmdCommon<A>
+export type Mode = "edit"|"view"
+
+export type Context = {
+  mode:Mode
+  set_mode:(new_mode:Mode, callback?:()=>void) => void
+  logic_frame:number,
+  force_reload:(callback?:()=>void) => void
+}
 
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = {
-  comp:(cont:Cont<A>) => JSX.Element
+  comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element
   bind:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   ignore:(key?:string)=>C<void>
@@ -19,7 +27,7 @@ export type C<A> = {
   filter:(f:(_:A)=>boolean, key?:string, dbg?:()=>string)=>C<A>
 }
 
-export function make_C<A>(comp:(cont:Cont<A>) => JSX.Element) : C<A> {
+export function make_C<A>(comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element) : C<A> {
   return {
     comp:comp,
     bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
@@ -63,8 +71,8 @@ class Unit<A> extends React.Component<UnitProps<A>,UnitState<A>> {
   }
 }
 
-export let unit = function<A>(x:A, dbg?:() => string) : C<A> { return make_C<A>(cont =>
-  (React.createElement<UnitProps<A>>(Unit, { kind:"unit", debug_info:dbg, value:x, cont:cont, key:null }))) }
+export let unit = function<A>(x:A, dbg?:() => string) : C<A> { return make_C<A>(ctxt => cont =>
+  (React.createElement<UnitProps<A>>(Unit, { kind:"unit", debug_info:dbg, value:x, context:ctxt, cont:cont, key:null }))) }
 
 type BindState<B,A> = { k:"waiting for p"|JSX.Element }
 class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
@@ -83,9 +91,9 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
     return <div className="bind">
       {
         (this.state.k == "waiting for p" || !this.props.once) ?
-          this.props.p.comp(callback => x =>
+          this.props.p.comp(this.props.context)(callback => x =>
             this.setState({...this.state,
-              k:this.props.k(x).comp(callback => x =>
+              k:this.props.k(x).comp(this.props.context)(callback => x =>
                 this.props.cont(callback)(x))}, callback)
           )
         :
@@ -102,9 +110,9 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
 }
 
 export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {
-  return make_C<B>(cont =>
+  return make_C<B>(ctxt => cont =>
     (React.createElement<BindProps<A,B>>(Bind,
-      { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, key:key })))
+      { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key })))
 }
 
 // export let bind_once = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {
@@ -122,15 +130,15 @@ class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.props.p.comp(callback => x => this.props.cont(callback)(this.props.f(x)))
+    return this.props.p.comp(this.props.context)(callback => x => this.props.cont(callback)(this.props.f(x)))
   }
 }
 
 export let map = function<A,B>(key?:string, dbg?:() => string) : ((_:(_:A) => B) => (_:C<A>) => C<B>) {
   return f => p =>
-    make_C<B>(cont =>
+    make_C<B>(ctxt => cont =>
       React.createElement<MapProps<A,B>>(Map,
-        { kind:"map", debug_info:dbg, p:p, f:f, cont:cont, key:key }))
+        { kind:"map", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
 }
 
 type FilterState<A> = {}
@@ -141,13 +149,13 @@ class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.props.p.comp(callback => x => { if (this.props.f(x)) { this.props.cont(callback)(x) } })
+    return this.props.p.comp(this.props.context)(callback => x => { if (this.props.f(x)) { this.props.cont(callback)(x) } })
   }
 }
 
 export let filter = function<A>(key?:string, dbg?:() => string) : ((_:(_:A) => boolean) => (_:C<A>) => C<A>) {
   return f => p =>
-    make_C<A>(cont =>
+    make_C<A>(ctxt => cont =>
       React.createElement<FilterProps<A>>(Filter,
-        { kind:"filter", debug_info:dbg, p:p, f:f, cont:cont, key:key }))
+        { kind:"filter", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
 }

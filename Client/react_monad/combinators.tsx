@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
-import {C, Cont, CmdCommon, make_C, unit, bind} from './core'
+import {C, Cont, CmdCommon, Context, make_C, unit, bind} from './core'
 import {bool} from './primitives'
 
 export type Mode = "edit"|"view"
@@ -22,16 +22,16 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
     this.state = { current_value: props.value, frame_index:1 }
   }
   render() {
-    return this.props.p(this.state.current_value).comp(callback => new_value =>
+    return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value =>
       this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
         this.props.cont(callback)(new_value)))
   }
 }
 
 export let repeat = function<A>(p:(_:A)=>C<A>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return initial_value => make_C<A>(cont =>
+  return initial_value => make_C<A>(ctxt => cont =>
     React.createElement<RepeatProps<A>>(Repeat,
-    ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, cont:cont, key:key })))
+    ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key })))
 }
 
 type AnyState<A> = {}
@@ -44,7 +44,7 @@ class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
     return <div>
       {
         this.props.ps.map(p =>
-          p(this.props.value).comp(callback => new_value =>
+          p(this.props.value).comp(this.props.context)(callback => new_value =>
             this.props.cont(callback)(new_value))
         )
       }
@@ -53,9 +53,9 @@ class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
 }
 
 export let any = function<A>(ps:Array<(_:A)=>C<A>>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return initial_value => make_C<A>(cont =>
+  return initial_value => make_C<A>(ctxt => cont =>
     React.createElement<AnyProps<A>>(Any,
-      { kind:"any", debug_info:dbg, ps:ps as Array<(_:A)=>C<A>>, value:initial_value, cont:cont, key:key }))
+      { kind:"any", debug_info:dbg, ps:ps as Array<(_:A)=>C<A>>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
 type AllState<A> = { results:Immutable.Map<number,A> }
@@ -68,7 +68,7 @@ class All<A> extends React.Component<AllProps<A>,AllState<A>> {
     return <div>
       {
         this.props.ps.map((p,p_i) =>
-          p.comp(callback => result =>
+          p.comp(this.props.context)(callback => result =>
             this.setState({...this.state, results:this.state.results.set(p_i, result) }, () => {
               if (this.state.results.keySeq().toSet().equals(Immutable.Range(0, this.props.ps.length).toSet())) {
                 let results = this.state.results.sortBy((r,r_i) => r_i).toArray()
@@ -83,9 +83,9 @@ class All<A> extends React.Component<AllProps<A>,AllState<A>> {
 }
 
 export let all = function<A>(ps:Array<C<A>>, key?:string, dbg?:() => string) : C<Array<A>> {
-  return make_C<A[]>(cont =>
+  return make_C<A[]>(ctxt => cont =>
     React.createElement<AllProps<A>>(All,
-      { kind:"all", debug_info:dbg, ps:ps, cont:cont, key:key }))
+      { kind:"all", debug_info:dbg, ps:ps, context:ctxt, cont:cont, key:key }))
 }
 
 type RetractState<A,B> = {}
@@ -95,7 +95,7 @@ class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> 
     this.state = {}
   }
   render() {
-    return this.props.p(this.props.inb(this.props.value)).comp
+    return this.props.p(this.props.inb(this.props.value)).comp(this.props.context)
             (callback => new_value =>
               this.props.cont(callback)
                 (this.props.out(this.props.value)(new_value)))
@@ -103,9 +103,9 @@ class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> 
 }
 
 export let retract = function<A,B>(inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return (initial_value:A) => make_C<A>((cont:Cont<A>) =>
+  return (initial_value:A) => make_C<A>(ctxt => (cont:Cont<A>) =>
     React.createElement<RetractProps<A,B>>(Retract,
-      { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p as (_:any)=>C<any>, value:initial_value, cont:cont, key:key }))
+      { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p as (_:any)=>C<any>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
 
@@ -155,9 +155,9 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
 }
 
 export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, is_value_changed:(old_value:A,new_value:A)=>boolean, retry_strategy:RetryStrategy, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
-  return x => make_C<B>(cont =>
+  return x => make_C<B>(ctxt => cont =>
     React.createElement<LiftPromiseProps<B,A>>(LiftPromise,
-      { kind:"lift promise", debug_info:dbg, is_value_changed:is_value_changed, value:x, retry_strategy:retry_strategy, p:p, cont:cont, key:key }))
+      { kind:"lift promise", debug_info:dbg, is_value_changed:is_value_changed, value:x, retry_strategy:retry_strategy, p:p, context:ctxt, cont:cont, key:key }))
 }
 
 
@@ -165,7 +165,7 @@ type DelayState<A> = { status:"dirty"|"waiting", value:A, last_command:JSX.Eleme
 class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   constructor(props:DelayProps<A>,context:any) {
     super()
-    this.state = { status:"dirty", value:props.value, last_command:props.p(props.value).comp(props.cont) }
+    this.state = { status:"dirty", value:props.value, last_command:props.p(props.value).comp(props.context)(props.cont) }
   }
   running:boolean = false
   componentWillMount() {
@@ -177,7 +177,7 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
       // console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
         // console.log("delay is submitting the data to save")
-        self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(callback => new_value => {
+        self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
           // console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
@@ -203,9 +203,9 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
 }
 
 export let delay = function<A>(dt:number, key?:string, dbg?:() => string) : (p:(_:A)=>C<A>) => ((_:A) => C<A>) {
-  return p => initial_value => make_C<A>(cont =>
+  return p => initial_value => make_C<A>(ctxt => cont =>
     React.createElement<DelayProps<A>>(Delay,
-      { kind:"delay", debug_info:dbg, dt:dt, p:p as (_:A)=>C<A>, value:initial_value, cont:cont, key:key }))
+      { kind:"delay", debug_info:dbg, dt:dt, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
 type MenuState<A,B> = { selected:undefined|number, content:undefined|JSX.Element }
@@ -218,7 +218,7 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
   componentWillMount() {
     if (this.state.selected != undefined)
       this.setState({...this.state,
-          content:this.state.selected != undefined ? this.props.p(this.props.items.get(this.state.selected)).comp(this.props.cont) : undefined})
+          content:this.state.selected != undefined ? this.props.p(this.props.items.get(this.state.selected)).comp(this.props.context)(this.props.cont) : undefined})
   }
   render() {
     let content_menu_class:string, content_class:string, menu_class:string, entries_class:string, entry_class:string
@@ -244,7 +244,7 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
                   <a onClick={() =>
                       {
                         this.setState({...this.state, selected:i_i,
-                            content:this.props.p(this.props.items.get(i_i)).comp(this.props.cont)})
+                            content:this.props.p(this.props.items.get(i_i)).comp(this.props.context)(this.props.cont)})
                       }
                     }>
                     { this.props.to_string(i) }
@@ -264,13 +264,13 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
 }
 
 export let menu = function<A,B>(type:MenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, p:(_:A)=>C<B>, selected_item?:A) => C<B>) {
-  return (items, p, selected_item) => make_C<B>(cont =>
+  return (items, p, selected_item) => make_C<B>(ctxt => cont =>
     React.createElement<MenuProps<A,B>>(Menu,
-      { kind:"menu", debug_info:dbg, items:items, selected_item:selected_item, p:p, type:type, to_string:to_string, cont:cont, key:key }))
+      { kind:"menu", debug_info:dbg, items:items, selected_item:selected_item, p:p, type:type, to_string:to_string, context:ctxt, cont:cont, key:key }))
 }
 
-export let custom = function<A>(key?:string, dbg?:() => string) : (render:(_:Cont<A>) => JSX.Element) => C<A> {
-  return (render) => make_C<A>(cont => render(cont))
+export let custom = function<A>(key?:string, dbg?:() => string) : (render:(ctxt:Context) => (_:Cont<A>) => JSX.Element) => C<A> {
+  return (render) => make_C<A>(ctxt => cont => render(ctxt)(cont))
 }
 
 export let hide = (f_name:string, f:C<void>) =>

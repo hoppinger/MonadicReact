@@ -1,22 +1,32 @@
-## various operators (1 week)
-- [ ] div propagates too much (since multiple children? use any instead!)
-- [ ] number vs int vs double
+## primitives (1 day)
 - [ ] moment
   - [ ] date
   - [ ] time
   - [ ] datetime
+- [ ] number vs int vs double
+- [ ] rich text
 - [ ] files
+
+## root container (1 week)
+- [ ] root container
+- [ ] get context, set context
+- [ ] routing
+
+## core/combinators (3 days)
+- [ ] unit propagates too much (since multiple children? use any instead!)
+- [ ] div propagates too much (since multiple children? use any instead!)
 - [ ] fold
+
+## lists (3 days)
 - [ ] list
   - [ ] pagination
   - [ ] mapM
   - [ ] select
   - [ ] add new
   - [ ] add existing
-- [ ] page manager (with url's)
-  - [ ] routing
+  - [ ] delete
 
-## samples
+## samples (3 days)
 - [ ] all
 - [ ] non-lazy pictures in form
 - [ ] multiple independent elements repeat(any [repeat(el_i)])
@@ -28,12 +38,8 @@
 - [/] form errors
 - [ ] disabled plus/minus toggle
 
-## templates (1 week)
-- [ ] form mode (view/edit)
-- [ ] abstract workflow
-
 ## external (1 week)
-- [ ] show to designers for feedback
+- [ ] publish online for designers
 - [ ] linkedin post
 - [ ] reddit post
 - [ ] npm package

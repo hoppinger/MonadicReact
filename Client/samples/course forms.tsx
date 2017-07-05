@@ -24,7 +24,7 @@ let upload_logo : (c:Models.Course) => (logo:string) => C<string> = c => l =>
 
 
 export let course_form_with_autosave_sample : C<void> =
-  Form.simple_form_with_autosave(c => `course_${c.Id}`,
+  Form.simple_form_with_autosave("edit", c => `course_${c.Id}`,
   [
     { kind:"string", field_name:"Name", in:c => c.Name || "", out:c => n => ({...c, Name:n}), get_errors:c=>c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
     { kind:"number", field_name:"Points", in:c => c.Points || 0, out:c => p => ({...c, Points:p}), get_errors:c=>c.Points < 1 ? ["The course must be worth at least one point."] : [] },
@@ -33,7 +33,7 @@ export let course_form_with_autosave_sample : C<void> =
   download_course(1), upload_course)
 
 export let course_form_sample : C<void> =
-  Form.simple_form_with_save_button(c => `course_${c.Id}`,
+  Form.simple_form_with_save_button("edit", c => `course_${c.Id}`,
   [
     { kind:"string", field_name:"Name", in:c => c.Name || "", out:c => n => ({...c, Name:n}), get_errors:c=>c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
     { kind:"number", field_name:"Points", in:c => c.Points || 0, out:c => p => ({...c, Points:p}), get_errors:c=>c.Points < 1 ? ["The course must be worth at least one point."] : [] }

@@ -26,7 +26,7 @@ class Int extends React.Component<IntProps,IntState> {
     this.props.cont(()=>null)(value)
   }
   render() {
-    return this.props.mode == "edit" ? <input type="number"
+    return this.props.mode == "edit" && this.props.context.mode == "edit" ? <input type="number"
                   value={this.state.value}
                   onChange={e => {
                     let new_value = isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber
@@ -40,9 +40,9 @@ class Int extends React.Component<IntProps,IntState> {
 }
 
 export let int = (mode:Mode, key?:string, dbg?:() => string) => function(value:number) : C<number> {
-  return make_C<number>(cont =>
+  return make_C<number>(ctxt => cont =>
     React.createElement<IntProps>(Int,
-    { kind:"int", debug_info:dbg, mode:mode, value:value, cont:cont, key:key }))
+    { kind:"int", debug_info:dbg, mode:mode, value:value, context:ctxt, cont:cont, key:key }))
 }
 
 type StringState = { value:string }
@@ -62,7 +62,7 @@ class String extends React.Component<StringProps,StringState> {
     this.props.cont(()=>null)(value)
   }
   render() {
-    return this.props.mode == "edit" ? <input type="text"
+    return this.props.mode == "edit" && this.props.context.mode == "edit" ? <input type="text"
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
@@ -76,8 +76,8 @@ class String extends React.Component<StringProps,StringState> {
 }
 
 export let string = (mode:Mode, key?:string, dbg?:() => string) => function(value:string) : C<string> {
-  return make_C<string>(cont =>
-    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, mode:mode, value:value, cont:cont, key:key }))
+  return make_C<string>(ctxt => cont =>
+    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, mode:mode, value:value, context:ctxt, cont:cont, key:key }))
 }
 
 
@@ -101,14 +101,14 @@ class Bool extends React.Component<BoolProps,BoolState> {
     return this.props.style == "fancy toggle" ?
             <input type="checkbox"
               className="monadic-input-choices monadic-input-choices--switch"
-              disabled={this.props.mode == "view"}
+              disabled={this.props.mode == "view" || this.props.context.mode == "view"}
               checked={this.state.value}
               onChange={e =>
                 this.setState({...this.state,
                   value:e.currentTarget.checked },
                   () => this.props.cont(()=>null)(this.state.value))} />
             : this.props.style == "plus/minus" ?
-                <a disabled={this.props.mode == "view"} className={`button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
+                <a disabled={this.props.mode == "view" || this.props.context.mode == "view"} className={`button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
                   onClick={() => this.setState({...this.state, value:!this.state.value},
                                   () => this.props.cont(()=>null)(this.state.value))}>
                   <span></span>
@@ -116,18 +116,16 @@ class Bool extends React.Component<BoolProps,BoolState> {
             :
               <input type="checkbox"
                 className="monadic-input-choices monadic-input-choices--checkbox"
-                disabled={this.props.mode == "view"}
+                disabled={this.props.mode == "view" || this.props.context.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
                   this.setState({...this.state,
                     value:e.currentTarget.checked },
                     () => this.props.cont(()=>null)(this.state.value))} />
-
-    // return this.props.mode == "edit" ?
   }
 }
 
 export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string) => function(value:boolean) : C<boolean> {
-  return make_C<boolean>(cont =>
-    React.createElement<BoolProps>(Bool, { kind:"bool", debug_info:dbg, style:style, mode:mode, value:value, cont:cont, key:key }))
+  return make_C<boolean>(ctxt => cont =>
+    React.createElement<BoolProps>(Bool, { kind:"bool", debug_info:dbg, style:style, mode:mode, value:value, context:ctxt, cont:cont, key:key }))
 }
