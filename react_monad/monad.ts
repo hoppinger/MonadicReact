@@ -45,10 +45,10 @@ function make_C<A>(comp:(cont:Cont<A>) => Cmd<A>) : C<A> {
   return {
     comp:comp,
     bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>) : C<B> {
-            return bind<A,B>(key || "", this, k)
+            return bind<A,B>(key, this, k)
           },
     bind_once:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>) : C<B> {
-            return bind_once<A,B>(key || "", this, k)
+            return bind_once<A,B>(key, this, k)
           },
     ignore:function(this:C<A>) : C<void> {
       return this.bind(``, _ => unit<void>(null))

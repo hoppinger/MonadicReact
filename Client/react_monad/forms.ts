@@ -32,7 +32,7 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
               //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
               // :
                 []
-            )(string(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            )(string(mode, "text", `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
         : e.kind == "number" ?
           retract<FormData<M>, number>(
             c => e.in(c.model), c => s => {
@@ -75,7 +75,7 @@ export let form_errors = function<M>(model_name:(_:M)=>string, entries:FormEntry
         entries.map(e =>
           e.kind != "lazy image" && e.kind != "image" ?
             c => (c.errors.has(e.field_name) ?
-              string("view", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`)
+              string("view", "text", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`)
             : unit<void>(null)).filter(_ => false)
           :
             c => unit<void>(null).filter(_ => false)

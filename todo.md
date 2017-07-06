@@ -1,8 +1,9 @@
 ## doing
-- Api.getMWithPictures/updateMWithPictures operators should be added
+- bind(key, k, dbg) -> bind(key, dbg)(k)
+- rich text
 
 ## primitives (1 day)
-- [ ] tel, mail, url
+- [V] tel, mail, url
 - [ ] rich text
 - [ ] files
 
@@ -12,8 +13,10 @@
 - [ ] routing
 
 ## core/combinators (3 days)
-- [ ] unit propagates too much (since multiple children? use any instead!)
-- [ ] div propagates too much (since multiple children? use any instead!)
+- [ ] bind(key, k, dbg) -> bind(key, dbg)(k)
+- [ ] repeater(p, key, dbg) -> repeater(key, dbg)(p)
+- [V] unit propagates too much
+- [V] div propagates too much
 - [ ] fold
 
 ## lists (3 days)
@@ -26,12 +29,14 @@
   - [ ] add existing
   - [ ] delete
 
-## samples (3 days)
+## samples
 - [ ] all
-- [ ] non-lazy pictures in form
+- [V] non-lazy pictures in form
 - [ ] workflow/form with selection from list of other entities
 - [ ] form with list of related entities
-- [ ] form with date, time, date-time
+- [ ] form with date, time, date-time, rich-text, tel, url, email, rich-text
+- [ ] richt text
+
 
 ## styling
 - [ ] menu
@@ -48,6 +53,7 @@
 - [ ] i18n
 
 ##  scaffolder (1 week)
-- [ ] Api.getMWithPictures/updateMWithPictures operators should be added and already lifted out of the box (from the scaffolder)
+- [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
 - [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
+- [ ] per-attribute comparison functions should be scaffolded, with and without pictures
 - [ ] default scaffolder views should use the monadic library

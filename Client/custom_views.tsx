@@ -6,8 +6,10 @@ import * as Moment from 'moment'
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
-import {C} from './react_monad/core'
-import {hide} from './react_monad/combinators'
+import {C, unit, bind} from './react_monad/core'
+import {string, number, bool} from './react_monad/primitives'
+import {button, selector, multi_selector, label, image} from './react_monad/html'
+import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
 import {button_sample} from './samples/button'
 import {course_form_with_autosave_sample, course_form_sample} from './samples/course forms'
 import {workflow_sample} from './samples/workflow'
@@ -18,6 +20,13 @@ import {menu_sample} from './samples/menu'
 import {tabbed_menu_sample} from './samples/tabbed menu'
 import {toggles_sample} from './samples/toggles'
 import {moments_sample} from './samples/moments'
+
+
+// this is a simple unit test, it is used sometimes to validate basic monadic laws
+// let course : Models.Course = { Id:1, Name:"Dev 1", Points:3, Logo:null, CreatedDate:Moment(Moment.now())}
+// let axiom_test : C<void> =
+//   unit<Models.Course>(course, undefined, () => `first course ${course.Id}`).bind(`unit_bind_${course.Id}`, c =>
+//     unit<Models.Course>(c, undefined, () => `last course ${c.Id}`), () => `binder`).ignore()
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<{ sample:C<void>, description:string }> =

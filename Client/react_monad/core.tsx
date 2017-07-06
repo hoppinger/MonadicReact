@@ -71,31 +71,32 @@ class Unit<A> extends React.Component<UnitProps<A>,UnitState<A>> {
   }
 }
 
-export let unit = function<A>(x:A, dbg?:() => string) : C<A> { return make_C<A>(ctxt => cont =>
-  (React.createElement<UnitProps<A>>(Unit, { kind:"unit", debug_info:dbg, value:x, context:ctxt, cont:cont, key:null }))) }
+export let unit = function<A>(x:A, key?:string, dbg?:() => string) : C<A> { return make_C<A>(ctxt => cont =>
+  (React.createElement<UnitProps<A>>(Unit, { kind:"unit", debug_info:dbg, value:x, context:ctxt, cont:cont, key:key }))) }
 
-type BindState<B,A> = { k:"waiting for p"|JSX.Element }
+type BindState<B,A> = { k:"waiting for p"|JSX.Element, p:"creating"|JSX.Element }
 class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
   constructor(props:BindProps<B,A>,context:any) {
     super()
-    this.state = { k:"waiting for p" }
+    this.state = { k:"waiting for p", p:"creating" }
   }
   componentWillReceiveProps(new_props:BindProps<B,A>) {
     this.props.debug_info && console.log("New props:", this.props.debug_info())
     if (this.props.once) this.setState({...this.state, step:"waiting for p" })
   }
   componentWillMount() {
+    this.setState({...this.state, p:this.props.p.comp(this.props.context)(callback => x =>
+            this.setState({...this.state,
+              k:this.props.k(x).comp(this.props.context)(callback => x =>
+                this.props.cont(callback)(x))}, callback)
+          )})
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
     return <div className="bind">
       {
-        (this.state.k == "waiting for p" || !this.props.once) ?
-          this.props.p.comp(this.props.context)(callback => x =>
-            this.setState({...this.state,
-              k:this.props.k(x).comp(this.props.context)(callback => x =>
-                this.props.cont(callback)(x))}, callback)
-          )
+        (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating" ?
+          this.state.p
         :
           null
       }

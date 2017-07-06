@@ -281,6 +281,23 @@ using System.IO;
         Item = item,
         Editable = editable_items.Any(e => e.Id == item.Id) });
     }
+
+[RestrictToUserType(new string[] {"*"})]
+    [HttpGet("{id}/WithPictures")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult /*ItemWithEditable<Course>*/ GetByIdWithPictures(int id)
+    {
+      var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Course : _context.Course;
+      var editable_items = ApiTokenValid ? _context.Course : _context.Course;
+      var item_full = allowed_items.FirstOrDefault(e => e.Id == id);
+      if (item_full == null) return NotFound();
+      var item = MonadicComponents.Models.Course.FilterViewableAttributesLocal()(item_full);
+      return Ok(new ItemWithEditable<Course>() {
+        Item = item,
+        Editable = editable_items.Any(e => e.Id == item.Id) });
+    }
     
     [RestrictToUserType(new string[] {"*"})]
     [HttpGet("{id}/Logo")]
@@ -350,6 +367,27 @@ var session = HttpContext.Get<LoggableEntities>(_context);
         // throw new Exception("Unauthorized edit attempt");
       _context.Update(new_item);
       _context.Entry(new_item).Property(x => x.Logo).IsModified = false;
+      _context.Entry(new_item).Property(x => x.CreatedDate).IsModified = false;
+      _context.SaveChanges();
+      return Ok();
+    }
+
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpPut("WithPictures")]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateWithPictures([FromBody] Course item)
+    {
+      var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Course : _context.Course;
+      if (!allowed_items.Any(i => i.Id == item.Id)) return Unauthorized();
+      var new_item = item;
+      
+      var can_edit_by_token = ApiTokenValid || true;
+      if (item == null || !can_edit_by_token)
+        return Unauthorized();
+        // throw new Exception("Unauthorized edit attempt");
+      _context.Update(new_item);
       _context.Entry(new_item).Property(x => x.CreatedDate).IsModified = false;
       _context.SaveChanges();
       return Ok();

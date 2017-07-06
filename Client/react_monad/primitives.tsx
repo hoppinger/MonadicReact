@@ -10,7 +10,8 @@ function format_int(num:number, length:number) : string {
 
 export type Mode = "edit"|"view"
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
-export type StringProps = { kind:"string", value:string, mode:Mode } & CmdCommon<string>
+export type StringType = "email"|"tel"|"text"|"url"
+export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
 export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
 export type DateProps = { kind:"date", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
@@ -71,7 +72,7 @@ class String extends React.Component<StringProps,StringState> {
     this.props.cont(()=>null)(value)
   }
   render() {
-    return this.props.mode == "edit" && this.props.context.mode == "edit" ? <input type="text"
+    return this.props.mode == "edit" && this.props.context.mode == "edit" ? <input type={this.props.type}
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
@@ -80,13 +81,22 @@ class String extends React.Component<StringProps,StringState> {
                       () => this.call_cont(this.state.value))}
                   } />
             :
-              <span>{this.state.value}</span>
+              this.props.type == "text" ?
+                 <span>{this.state.value}</span>
+              : this.props.type == "tel" ?
+                <a href={`tel:${this.state.value}`}>{this.state.value}</a>
+              : this.props.type == "email" ?
+                <a href={`mailto:${this.state.value}`}>{this.state.value}</a>
+              : this.props.type == "url" ?
+                <a href={this.state.value}>{this.state.value}</a>
+              :
+                <span>{this.state.value}</span>
   }
 }
 
-export let string = (mode:Mode, key?:string, dbg?:() => string) => function(value:string) : C<string> {
+export let string = (mode:Mode, type?:StringType, key?:string, dbg?:() => string) => function(value:string) : C<string> {
   return make_C<string>(ctxt => cont =>
-    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, mode:mode, value:value, context:ctxt, cont:cont, key:key }))
+    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, type:type || "text", mode:mode, value:value, context:ctxt, cont:cont, key:key }))
 }
 
 

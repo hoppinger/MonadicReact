@@ -15,13 +15,24 @@ export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, 
 export type MenuType = "side menu"|"tabs"
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
-type RepeatState<A> = { current_value:A, frame_index:number }
+type RepeatState<A> = { current_value:A, frame_index:number, p:"creating"|JSX.Element }
 class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   constructor(props:RepeatProps<A>,context:any) {
     super()
-    this.state = { current_value: props.value, frame_index:1 }
+    this.state = { current_value: props.value, frame_index:1, p:"creating" }
+  }
+  componentWillReceiveProps(new_props:RepeatProps<A>) {
+    this.props.debug_info && console.log("Component will receive props:", this.props.debug_info(), new_props.value)
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => new_value =>
+      this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
+        this.props.cont(callback)(new_value)))})
+  }
+  componentWillMount() {
+    this.props.debug_info && console.log("Component will mount:", this.props.debug_info(), this.props.value)
+    // this.setState({...this.state, p:})
   }
   render() {
+    this.props.debug_info && console.log("Render:", this.props.debug_info(), this.state.current_value)
     return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value =>
       this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
         this.props.cont(callback)(new_value)))
@@ -105,7 +116,7 @@ class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> 
 export let retract = function<A,B>(inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
   return (initial_value:A) => make_C<A>(ctxt => (cont:Cont<A>) =>
     React.createElement<RetractProps<A,B>>(Retract,
-      { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p as (_:any)=>C<any>, value:initial_value, context:ctxt, cont:cont, key:key }))
+      { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
 

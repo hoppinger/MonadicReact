@@ -25,7 +25,7 @@ export type AuthenticationMenuState =
   | { kind:"resetting-password", action:(username:string) => void }
   | { kind:"error", message:string, action:() => void }
 export class AuthenticationMenu extends React.Component<AuthenticationMenuProps, AuthenticationMenuState> {
-  constructor(props:PaginatorProps, context:any) {
+  constructor(props:AuthenticationMenuProps, context:any) {
     super(props, context)
     this.state = { kind:"menu" }
   }

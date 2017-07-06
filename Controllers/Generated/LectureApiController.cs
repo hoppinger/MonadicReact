@@ -221,6 +221,23 @@ using System.IO;
         Item = item,
         Editable = editable_items.Any(e => e.Id == item.Id) });
     }
+
+[RestrictToUserType(new string[] {"*"})]
+    [HttpGet("{id}/WithPictures")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult /*ItemWithEditable<Lecture>*/ GetByIdWithPictures(int id)
+    {
+      var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Lecture : _context.Lecture;
+      var editable_items = ApiTokenValid ? _context.Lecture : _context.Lecture;
+      var item_full = allowed_items.FirstOrDefault(e => e.Id == id);
+      if (item_full == null) return NotFound();
+      var item = MonadicComponents.Models.Lecture.FilterViewableAttributesLocal()(item_full);
+      return Ok(new ItemWithEditable<Lecture>() {
+        Item = item,
+        Editable = editable_items.Any(e => e.Id == item.Id) });
+    }
     
 
     [RestrictToUserType(new string[] {"*"})]
@@ -245,6 +262,27 @@ using System.IO;
     [HttpPut]
     [ValidateAntiForgeryToken]
     public IActionResult Update([FromBody] Lecture item)
+    {
+      var session = HttpContext.Get<LoggableEntities>(_context);
+
+      var allowed_items = ApiTokenValid ? _context.Lecture : _context.Lecture;
+      if (!allowed_items.Any(i => i.Id == item.Id)) return Unauthorized();
+      var new_item = item;
+      
+      var can_edit_by_token = ApiTokenValid || true;
+      if (item == null || !can_edit_by_token)
+        return Unauthorized();
+        // throw new Exception("Unauthorized edit attempt");
+      _context.Update(new_item);
+      _context.Entry(new_item).Property(x => x.CreatedDate).IsModified = false;
+      _context.SaveChanges();
+      return Ok();
+    }
+
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpPut("WithPictures")]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateWithPictures([FromBody] Lecture item)
     {
       var session = HttpContext.Get<LoggableEntities>(_context);
 

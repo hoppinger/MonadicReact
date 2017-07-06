@@ -69,6 +69,13 @@ export async function update_HomePage(item:Models.HomePage) : Promise<void> {
   return
 }
 
+export async function update_HomePage_with_pictures(item:Models.HomePage) : Promise<void> {
+  let res = await fetch(`/api/v1/HomePage/WithPictures`, { method: 'put',
+      body: JSON.stringify({...item, CreatedDate:undefined}), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+  if (!res.ok) throw Error(res.statusText)
+  return
+}
+
 export async function delete_HomePage(source:Models.HomePage) : Promise<void> {
   let res = await fetch(`/api/v1/HomePage/${source.Id}`, { method: 'delete', credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value} })
   if (!res.ok) throw Error(res.statusText)
@@ -77,6 +84,14 @@ export async function delete_HomePage(source:Models.HomePage) : Promise<void> {
 
 export async function get_HomePage(id:number) : Promise<ItemWithEditable<Models.HomePage>> {
   let res = await fetch(`/api/v1/HomePage/${id}`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
+  if (!res.ok) throw Error(res.statusText)
+  let json = await res.json()
+  return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.HomePage,
+           Editable: !!json.Editable, JustCreated:false }
+}
+
+export async function get_HomePage_with_pictures(id:number) : Promise<ItemWithEditable<Models.HomePage>> {
+  let res = await fetch(`/api/v1/HomePage/${id}/WithPictures`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
   if (!res.ok) throw Error(res.statusText)
   let json = await res.json()
   return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.HomePage,
@@ -189,6 +204,13 @@ export async function update_Course(item:Models.Course) : Promise<void> {
   return
 }
 
+export async function update_Course_with_pictures(item:Models.Course) : Promise<void> {
+  let res = await fetch(`/api/v1/Course/WithPictures`, { method: 'put',
+      body: JSON.stringify({...item, CreatedDate:undefined}), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+  if (!res.ok) throw Error(res.statusText)
+  return
+}
+
 export async function delete_Course(source:Models.Course) : Promise<void> {
   let res = await fetch(`/api/v1/Course/${source.Id}`, { method: 'delete', credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value} })
   if (!res.ok) throw Error(res.statusText)
@@ -197,6 +219,14 @@ export async function delete_Course(source:Models.Course) : Promise<void> {
 
 export async function get_Course(id:number) : Promise<ItemWithEditable<Models.Course>> {
   let res = await fetch(`/api/v1/Course/${id}`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
+  if (!res.ok) throw Error(res.statusText)
+  let json = await res.json()
+  return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.Course,
+           Editable: !!json.Editable, JustCreated:false }
+}
+
+export async function get_Course_with_pictures(id:number) : Promise<ItemWithEditable<Models.Course>> {
+  let res = await fetch(`/api/v1/Course/${id}/WithPictures`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
   if (!res.ok) throw Error(res.statusText)
   let json = await res.json()
   return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.Course,
@@ -297,6 +327,13 @@ export async function update_Lecture(item:Models.Lecture) : Promise<void> {
   return
 }
 
+export async function update_Lecture_with_pictures(item:Models.Lecture) : Promise<void> {
+  let res = await fetch(`/api/v1/Lecture/WithPictures`, { method: 'put',
+      body: JSON.stringify({...item, CreatedDate:undefined}), credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+  if (!res.ok) throw Error(res.statusText)
+  return
+}
+
 export async function delete_Lecture(source:Models.Lecture) : Promise<void> {
   let res = await fetch(`/api/v1/Lecture/${source.Id}`, { method: 'delete', credentials: 'include', headers:{'content-type': 'application/json', 'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value} })
   if (!res.ok) throw Error(res.statusText)
@@ -305,6 +342,14 @@ export async function delete_Lecture(source:Models.Lecture) : Promise<void> {
 
 export async function get_Lecture(id:number) : Promise<ItemWithEditable<Models.Lecture>> {
   let res = await fetch(`/api/v1/Lecture/${id}`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
+  if (!res.ok) throw Error(res.statusText)
+  let json = await res.json()
+  return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.Lecture,
+           Editable: !!json.Editable, JustCreated:false }
+}
+
+export async function get_Lecture_with_pictures(id:number) : Promise<ItemWithEditable<Models.Lecture>> {
+  let res = await fetch(`/api/v1/Lecture/${id}/WithPictures`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
   if (!res.ok) throw Error(res.statusText)
   let json = await res.json()
   return { Item: {...json.Item, CreatedDate: Moment.utc(json.Item.CreatedDate),  } as Models.Lecture,

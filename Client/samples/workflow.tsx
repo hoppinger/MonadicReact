@@ -49,4 +49,4 @@ export let workflow_sample : C<void> =
       ["recap", create_course_recap],
       ["sent", sent_page]
     ]),
-    { Id:-1, Name:"Name of the course", Points:1,  Logo:"", CreatedDate:Moment(Moment.now()) }, "name").ignore()
+    unit<Models.Course>({ Id:-1, Name:"Name of the course", Points:1,  Logo:"", CreatedDate:Moment(Moment.now()) }), "name").ignore()
