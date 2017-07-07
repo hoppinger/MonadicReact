@@ -11,6 +11,5 @@ import {button, selector, multi_selector, label, image} from '../react_monad/htm
 import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_monad/combinators'
 
 export let multiselector_sample : C<void> =
-  multi_selector<number>("checkbox",
-    x => x.toString())(List<number>([1, 3, 5]), List<number>([1, 5])).bind(`multi_selector`, n =>
+  multi_selector<number>("checkbox",x => x.toString())(List<number>([1, 3, 5]), List<number>([1, 5])).bind(`multi_selector`, n =>
   string("view")(JSON.stringify(n.toArray())).ignore())

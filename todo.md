@@ -1,4 +1,5 @@
 ## doing
+- monadic-title-preview around title and hidden checkbox
 - rich text
 - list
 

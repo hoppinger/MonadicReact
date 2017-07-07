@@ -8,7 +8,7 @@ import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
 import {C, unit, bind} from './react_monad/core'
 import {string, number, bool} from './react_monad/primitives'
-import {button, selector, multi_selector, label, image} from './react_monad/html'
+import {button, selector, multi_selector, label, div, image} from './react_monad/html'
 import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
 import {button_sample} from './samples/button'
 import {course_form_with_autosave_sample, course_form_sample} from './samples/forms'
@@ -22,11 +22,16 @@ import {toggles_sample} from './samples/toggles'
 import {moments_sample} from './samples/moments'
 
 
-// this is a simple unit test, it is used sometimes to validate basic monadic laws
-// let course : Models.Course = { Id:1, Name:"Dev 1", Points:3, Logo:null, CreatedDate:Moment(Moment.now())}
-// let axiom_test : C<void> =
-//   unit<Models.Course>(course, undefined, () => `first course ${course.Id}`).bind(`unit_bind_${course.Id}`, c =>
-//     unit<Models.Course>(c, undefined, () => `last course ${c.Id}`), () => `binder`).ignore()
+type MiniPage = { visible:boolean, page:C<void> }
+export let sample_minipage = (f_name:string, title:string, f:C<void>) =>
+  repeat<boolean>(
+    div<boolean, boolean>("monadic-title-preview")([])(
+    label<boolean, boolean>(title, true)(bool("edit", "plus/minus"))))(false).bind(`${f_name} toggle`, visible =>
+    !visible ?
+      unit<void>(null)
+    :
+      f.bind(`visible ${f_name}`, _ => unit<void>(null)))
+
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<{ sample:C<void>, description:string }> =
@@ -48,11 +53,11 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       {
         all_samples.map((s,i) =>
           <div className="component">
-            Sample {i+1} - {s.description}
             {
-              hide(s.description, s.sample).comp(
-                { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
-              })(continuation => value => console.log("done"))
+              sample_minipage(`Sample ${i+1} - ${s.description}`, `Sample ${i+1} - ${s.description}`, s.sample).comp(
+                  { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
+                })(continuation => value => console.log("done"))
+
             }
           </div>
         )
