@@ -964,6 +964,30 @@ th {
 	color: #efefef;
 }
 
+.tabs__entries {
+	overflow: hidden;
+	margin-bottom: 25px;
+}
+
+.tabs__entry {
+	background: #efefef;
+	padding: 5px 25px;
+	margin-right: 1px;
+	float: left;
+}
+
+.tabs__entry a {
+	display: block;
+}
+
+.tabs__entry--active {
+	background: #08ABCE;
+}
+
+.tabs__entry--active a {
+	color: #efefef;
+}
+
 .hide {
 	display: none;
 	visibility: hidden;

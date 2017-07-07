@@ -240,11 +240,11 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
       entries_class = "content-menu__entries"
       entry_class = "content-menu__entry"
     } else if (this.props.type == "tabs"){
-      content_menu_class = "content_with_tabs"
+      content_menu_class = "content-with-tabs"
       content_class = "content"
       menu_class = "tabs"
-      entries_class = "tab_entries"
-      entry_class = "tab_entry"
+      entries_class = "tabs__entries"
+      entry_class = "tabs__entry"
     }
     return <div className={content_menu_class}>
       <div className={menu_class}>
