@@ -1,9 +1,9 @@
-.tabs__entries {
+.monadic-tabs__entries {
   overflow: hidden;
   margin-bottom: 25px;
 }
 
-.tabs__entry  {
+.monadic-tabs__entry  {
   background: #efefef;
   padding: 5px 25px;
   margin-right: 1px;
@@ -13,7 +13,7 @@
   }
 }
 
-.tabs__entry--active  {
+.monadic-tabs__entry--active  {
   background: $main-color;
   a {
     color: #efefef;

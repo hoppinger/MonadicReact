@@ -254,17 +254,17 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
   render() {
     let content_menu_class:string, content_class:string, menu_class:string, entries_class:string, entry_class:string
     if (this.props.type == "side menu") {
-      content_menu_class = "content-with-menu"
-      content_class = "content"
-      menu_class = "content-menu"
-      entries_class = "content-menu__entries"
-      entry_class = "content-menu__entry"
+      content_menu_class = "monadic-content-with-menu"
+      content_class = "monadic-content"
+      menu_class = "monadic-content-menu"
+      entries_class = "monadic-content-menu__entries"
+      entry_class = "monadic-content-menu__entry"
     } else if (this.props.type == "tabs"){
-      content_menu_class = "content-with-tabs"
-      content_class = "content"
-      menu_class = "tabs"
-      entries_class = "tabs__entries"
-      entry_class = "tabs__entry"
+      content_menu_class = "monadic-content-with-tabs"
+      content_class = "monadic-content"
+      menu_class = "monadic-tabs"
+      entries_class = "monadic-tabs__entries"
+      entry_class = "monadic-tabs__entry"
     }
     return <div className={content_menu_class}>
       <div className={menu_class}>
