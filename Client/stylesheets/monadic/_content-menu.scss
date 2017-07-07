@@ -1,0 +1,36 @@
+.content-menu {
+  @include tablet-desktop {
+    width: 250px;
+  }
+}
+
+.content-with-menu {
+  @include tablet-desktop {
+    display: flex;
+    .content {
+      width: calc(100% - 250px);
+    }
+  }
+}
+
+.content-menu__entries  {
+  @include tablet-desktop {
+    padding-right: 25px;
+  }
+}
+
+.content-menu__entry  {
+  background: #efefef;
+  padding: 5px 25px;
+  margin-bottom: 1px;
+  a {
+    display: block;
+  }
+}
+
+.content-menu__entry--active  {
+  background: $main-color;
+  a {
+    color: #efefef;
+  }
+}
