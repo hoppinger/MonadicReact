@@ -13,15 +13,24 @@ export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type ButtonProps<A> = { kind:"button", label:string, x:A, disabled:boolean } & CmdCommon<A>
 
-type LabelState<A,B> = {}
+type LabelState<A,B> = { p:"creating"|JSX.Element }
 class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
   constructor(props:LabelProps<A,B>,context:any) {
     super()
-    this.state = {}
+    this.state = { p:"creating" }
   }
+  componentWillReceiveProps(new_props:LabelProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x))})
+  }
+
   render() {
-    let content = this.props.p(this.props.value).comp(this.props.context)(callback => x =>
-                             this.props.cont(callback)(x))
+    let content : JSX.Element = this.state.p == "creating" ? null : this.state.p
     let span = <span>{this.props.text}</span>
     return <label className={this.props.className}>
              {this.props.span_before_content ? [span,content] : [content,span]}
@@ -35,20 +44,28 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
     { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
-type DivState<A,B> = {}
+type DivState<A,B> = { p:"creating"|JSX.Element,ps:"creating"|Array<JSX.Element> }
 class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   constructor(props:DivProps<A,B>,context:any) {
     super()
-    this.state = {}
+    this.state = { p:"creating", ps:"creating" }
+  }
+  componentWillReceiveProps(new_props:DivProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x)),
+                      ps:new_props.ps.map(p => p(new_props.value).comp(new_props.context)(callback => x => {}))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x)),
+                      ps:this.props.ps.map(p => p(this.props.value).comp(this.props.context)(callback => x => {}))})
   }
   render() {
     return <div className={this.props.className}>
-                  {
-                    this.props.ps.map(p => p(this.props.value).comp(this.props.context)(callback => x => {}))
-                  }
-                  {this.props.p(this.props.value).comp(this.props.context)(callback => x =>
-                             this.props.cont(callback)(x))}
-           </div>
+        { this.state.ps != "creating" ? this.state.ps : null }
+        { this.state.p  != "creating" ? this.state.p  : null }
+      </div>
   }
 }
 

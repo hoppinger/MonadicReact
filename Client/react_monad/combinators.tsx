@@ -15,21 +15,11 @@ export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, 
 export type MenuType = "side menu"|"tabs"
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
-type RepeatState<A> = { current_value:A, frame_index:number, p:"creating"|JSX.Element }
+type RepeatState<A> = { current_value:A, frame_index:number }
 class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   constructor(props:RepeatProps<A>,context:any) {
     super()
-    this.state = { current_value: props.value, frame_index:1, p:"creating" }
-  }
-  componentWillReceiveProps(new_props:RepeatProps<A>) {
-    this.props.debug_info && console.log("Component will receive props:", this.props.debug_info(), new_props.value)
-    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => new_value =>
-      this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
-        this.props.cont(callback)(new_value)))})
-  }
-  componentWillMount() {
-    this.props.debug_info && console.log("Component will mount:", this.props.debug_info(), this.props.value)
-    // this.setState({...this.state, p:})
+    this.state = { current_value: props.value, frame_index:1 }
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info(), this.state.current_value)
@@ -45,21 +35,26 @@ export let repeat = function<A>(p:(_:A)=>C<A>, key?:string, dbg?:() => string) :
     ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key })))
 }
 
-type AnyState<A> = {}
+type AnyState<A> = { ps:"creating"|Array<JSX.Element> }
 class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
   constructor(props:AnyProps<A>,context:any) {
     super()
-    this.state = {}
+    this.state = { ps:"creating" }
+  }
+  componentWillReceiveProps(new_props:AnyProps<A>) {
+    this.setState({...this.state,
+      ps:new_props.ps.map(p =>
+          p(new_props.value).comp(new_props.context)(callback => new_value =>
+            new_props.cont(callback)(new_value)))})
+  }
+  componentWillMount() {
+    this.setState({...this.state,
+      ps:this.props.ps.map(p =>
+          p(this.props.value).comp(this.props.context)(callback => new_value =>
+            this.props.cont(callback)(new_value)))})
   }
   render() {
-    return <div>
-      {
-        this.props.ps.map(p =>
-          p(this.props.value).comp(this.props.context)(callback => new_value =>
-            this.props.cont(callback)(new_value))
-        )
-      }
-    </div>
+    return <div> { this.state.ps != "creating" ? this.state.ps : null } </div>
   }
 }
 
@@ -69,16 +64,29 @@ export let any = function<A>(ps:Array<(_:A)=>C<A>>, key?:string, dbg?:() => stri
       { kind:"any", debug_info:dbg, ps:ps as Array<(_:A)=>C<A>>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
-type AllState<A> = { results:Immutable.Map<number,A> }
+type AllState<A> = { results:Immutable.Map<number,A>, ps:"creating"|Array<JSX.Element> }
 class All<A> extends React.Component<AllProps<A>,AllState<A>> {
   constructor(props:AllProps<A>,context:any) {
     super()
-    this.state = { results:Immutable.Map<number,A>() }
+    this.state = { results:Immutable.Map<number,A>(), ps:"creating" }
   }
-  render() {
-    return <div>
-      {
-        this.props.ps.map((p,p_i) =>
+
+  componentWillReceiveProps(new_props:AllProps<A>) {
+    this.setState({...this.state,
+      ps:new_props.ps.map((p,p_i) =>
+          p.comp(new_props.context)(callback => result =>
+            this.setState({...this.state, results:this.state.results.set(p_i, result) }, () => {
+              if (this.state.results.keySeq().toSet().equals(Immutable.Range(0, new_props.ps.length).toSet())) {
+                let results = this.state.results.sortBy((r,r_i) => r_i).toArray()
+                this.setState({...this.state, results:Immutable.Map<number,A>()}, () =>
+                new_props.cont(callback)(results))
+              }
+            })
+        ))})
+  }
+  componentWillMount() {
+    this.setState({...this.state,
+      ps:this.props.ps.map((p,p_i) =>
           p.comp(this.props.context)(callback => result =>
             this.setState({...this.state, results:this.state.results.set(p_i, result) }, () => {
               if (this.state.results.keySeq().toSet().equals(Immutable.Range(0, this.props.ps.length).toSet())) {
@@ -87,9 +95,10 @@ class All<A> extends React.Component<AllProps<A>,AllState<A>> {
                 this.props.cont(callback)(results))
               }
             })
-        ))
-      }
-    </div>
+        ))})
+  }
+  render() {
+    return <div> { this.state.ps != "creating" ? this.state.ps : null } </div>
   }
 }
 
@@ -99,17 +108,28 @@ export let all = function<A>(ps:Array<C<A>>, key?:string, dbg?:() => string) : C
       { kind:"all", debug_info:dbg, ps:ps, context:ctxt, cont:cont, key:key }))
 }
 
-type RetractState<A,B> = {}
+type RetractState<A,B> = { p:"creating"|JSX.Element }
 class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> {
   constructor(props:RetractProps<A,B>,context:any) {
     super()
-    this.state = {}
+    this.state = { p:"creating" }
   }
-  render() {
-    return this.props.p(this.props.inb(this.props.value)).comp(this.props.context)
+  componentWillReceiveProps(new_props:RetractProps<A,B>) {
+    this.setState({...this.state,
+      p:new_props.p(new_props.inb(new_props.value)).comp(new_props.context)
+            (callback => new_value =>
+              new_props.cont(callback)
+                (new_props.out(new_props.value)(new_value)))})
+  }
+  componentWillMount() {
+    this.setState({...this.state,
+      p:this.props.p(this.props.inb(this.props.value)).comp(this.props.context)
             (callback => new_value =>
               this.props.cont(callback)
-                (this.props.out(this.props.value)(new_value)))
+                (this.props.out(this.props.value)(new_value)))})
+  }
+  render() {
+    return this.state.p != "creating" ? this.state.p : null
   }
 }
 

@@ -82,7 +82,14 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
   }
   componentWillReceiveProps(new_props:BindProps<B,A>) {
     this.props.debug_info && console.log("New props:", this.props.debug_info())
-    if (this.props.once) this.setState({...this.state, step:"waiting for p" })
+    if (this.props.once)
+      this.setState({...this.state, p:"creating" })
+    else
+      this.setState({...this.state, p:new_props.p.comp(new_props.context)(callback => x =>
+              this.setState({...this.state,
+                k:new_props.k(x).comp(new_props.context)(callback => x =>
+                  new_props.cont(callback)(x))}, callback)
+            )})
   }
   componentWillMount() {
     this.setState({...this.state, p:this.props.p.comp(this.props.context)(callback => x =>
@@ -123,15 +130,22 @@ export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => 
 // }
 
 
-type MapState<A,B> = {}
+type MapState<A,B> = { p:"creating"|JSX.Element }
 class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
   constructor(props:MapProps<A,B>,context:any) {
     super()
-    this.state = {}
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:MapProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p.comp(new_props.context)(callback => x => new_props.cont(callback)(new_props.f(x)))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p.comp(this.props.context)(callback => x => this.props.cont(callback)(this.props.f(x)))})
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.props.p.comp(this.props.context)(callback => x => this.props.cont(callback)(this.props.f(x)))
+    return this.state.p != "creating" ? this.state.p : null
   }
 }
 
@@ -142,15 +156,22 @@ export let map = function<A,B>(key?:string, dbg?:() => string) : ((_:(_:A) => B)
         { kind:"map", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
 }
 
-type FilterState<A> = {}
+type FilterState<A> = { p:"creating"|JSX.Element }
 class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
   constructor(props:FilterProps<A>,context:any) {
     super()
-    this.state = {}
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:FilterProps<A>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p.comp(new_props.context)(callback => x => { if (new_props.f(x)) { new_props.cont(callback)(x) } })})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p.comp(this.props.context)(callback => x => { if (this.props.f(x)) { this.props.cont(callback)(x) } })})
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.props.p.comp(this.props.context)(callback => x => { if (this.props.f(x)) { this.props.cont(callback)(x) } })
+    return this.state.p != "creating" ? this.state.p : null
   }
 }
 

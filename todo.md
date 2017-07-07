@@ -1,9 +1,8 @@
 ## doing
-- bind(key, k, dbg) -> bind(key, dbg)(k)
 - rich text
+- list
 
 ## primitives (1 day)
-- [V] tel, mail, url
 - [ ] rich text
 - [ ] files
 
@@ -13,11 +12,8 @@
 - [ ] routing
 
 ## core/combinators (3 days)
-- [ ] bind(key, k, dbg) -> bind(key, dbg)(k)
-- [ ] repeater(p, key, dbg) -> repeater(key, dbg)(p)
-- [V] unit propagates too much
-- [V] div propagates too much
 - [ ] fold
+- [V] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
 
 ## lists (3 days)
 - [ ] list
