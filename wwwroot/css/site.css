@@ -946,9 +946,46 @@ th {
 	background: #cecece;
 }
 
-.monadic-field-error {
-	-webkit-box-shadow: 0 0 3px #CC0000;
-	box-shadow: 0 0 3px #CC0000;
+.content-menu__entry {
+	background: #efefef;
+	padding: 5px 25px;
+	margin-bottom: 1px;
+}
+
+.content-menu__entry a {
+	display: block;
+}
+
+.content-menu__entry--active {
+	background: #08ABCE;
+}
+
+.content-menu__entry--active a {
+	color: #efefef;
+}
+
+.tabs__entries {
+	overflow: hidden;
+	margin-bottom: 25px;
+}
+
+.tabs__entry {
+	background: #efefef;
+	padding: 5px 25px;
+	margin-right: 1px;
+	float: left;
+}
+
+.tabs__entry a {
+	display: block;
+}
+
+.tabs__entry--active {
+	background: #08ABCE;
+}
+
+.tabs__entry--active a {
+	color: #efefef;
 }
 
 .hide {
@@ -1938,9 +1975,34 @@ th {
 	background: #fff;
 	margin: 50px;
 	padding: 50px;
+	position: relative;
+}
+
+.component .button--toggle {
+	position: absolute;
+	right: 50px;
+	top: 40px;
 }
 
 @media (min-width: 768px) {
+
+.content-menu {
+	width: 250px;
+}
+
+.content-with-menu {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.content-with-menu .content {
+	width: calc(100% - 250px);
+}
+
+.content-menu__entries {
+	padding-right: 25px;
+}
 
 .main__content {
 	margin-top: 70px;

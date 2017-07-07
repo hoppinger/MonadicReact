@@ -254,24 +254,24 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
   render() {
     let content_menu_class:string, content_class:string, menu_class:string, entries_class:string, entry_class:string
     if (this.props.type == "side menu") {
-      content_menu_class = "content_with_menu"
+      content_menu_class = "content-with-menu"
       content_class = "content"
-      menu_class = "side_menu"
-      entries_class = "side_menu_entries"
-      entry_class = "side_menu_entry"
+      menu_class = "content-menu"
+      entries_class = "content-menu__entries"
+      entry_class = "content-menu__entry"
     } else if (this.props.type == "tabs"){
-      content_menu_class = "content_with_tabs"
+      content_menu_class = "content-with-tabs"
       content_class = "content"
       menu_class = "tabs"
-      entries_class = "tab_entries"
-      entry_class = "tab_entry"
+      entries_class = "tabs__entries"
+      entry_class = "tabs__entry"
     }
     return <div className={content_menu_class}>
       <div className={menu_class}>
         <div className={entries_class}>
 
           {this.props.items.map((i, i_i) =>
-                <div className={`${entry_class} ${i_i == this.state.selected ? " active" : ""}`}>
+                <div className={`${entry_class} ${i_i == this.state.selected ? ` ${entry_class}--active` : ""}`}>
                   <a onClick={() =>
                       {
                         this.setState({...this.state, selected:i_i,

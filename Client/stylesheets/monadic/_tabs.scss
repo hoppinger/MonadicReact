@@ -1,0 +1,21 @@
+.tabs__entries {
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.tabs__entry  {
+  background: #efefef;
+  padding: 5px 25px;
+  margin-right: 1px;
+  float: left;
+  a {
+    display: block;
+  }
+}
+
+.tabs__entry--active  {
+  background: $main-color;
+  a {
+    color: #efefef;
+  }
+}
