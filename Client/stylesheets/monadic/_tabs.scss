@@ -1,21 +1,41 @@
 .monadic-tabs__entries {
-  overflow: hidden;
+  @include clearfix;
+  border-bottom: 1px solid $grey-400;
   margin-bottom: 25px;
 }
 
 .monadic-tabs__entry  {
-  background: #efefef;
-  padding: 5px 25px;
+  background: #fff;
+  border: 1px solid transparent;
   margin-right: 1px;
   float: left;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+  }
+
   a {
+    color: inherit !important;
     display: block;
+    padding: 5px 25px;
+  }
+
+  &:hover {
+    color: $main-color;    
   }
 }
 
 .monadic-tabs__entry--active  {
-  background: $main-color;
-  a {
-    color: #efefef;
+  border-color: $grey-400;
+  color: $main-color;
+
+  &:after {
+    background-color:white;
   }
 }
