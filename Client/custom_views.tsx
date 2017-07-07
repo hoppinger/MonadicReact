@@ -26,7 +26,7 @@ type MiniPage = { visible:boolean, page:C<void> }
 export let sample_minipage = (f_name:string, title:string, f:C<void>) =>
   repeat<boolean>(
     div<boolean, boolean>("monadic-title-preview")([])(
-    label<boolean, boolean>(title, true)(bool("edit", "plus/minus"))))(false).bind(`${f_name} toggle`, visible =>
+    label<boolean, boolean>(title, false)(bool("edit", "plus/minus"))))(false).bind(`${f_name} toggle`, visible =>
     !visible ?
       unit<void>(null)
     :

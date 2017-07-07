@@ -127,11 +127,14 @@ class Bool extends React.Component<BoolProps,BoolState> {
                   value:e.currentTarget.checked },
                   () => this.props.cont(()=>null)(this.state.value))} />
             : this.props.style == "plus/minus" ?
-                <a disabled={this.props.mode == "view" || this.props.context.mode == "view"} className={`button button--toggle ${this.state.value ? 'button--toggle--open' : ''}`}
-                  onClick={() => this.setState({...this.state, value:!this.state.value},
-                                  () => this.props.cont(()=>null)(this.state.value))}>
-                  <span></span>
-                </a>
+              <input type="checkbox"
+                className="monadic-input-choices monadic-input-choices--toggle"
+                disabled={this.props.mode == "view" || this.props.context.mode == "view"}
+                checked={this.state.value}
+                onChange={e =>
+                  this.setState({...this.state,
+                    value:e.currentTarget.checked },
+                    () => this.props.cont(()=>null)(this.state.value))} />
             :
               <input type="checkbox"
                 className="monadic-input-choices monadic-input-choices--checkbox"

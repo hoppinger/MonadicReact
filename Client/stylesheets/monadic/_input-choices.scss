@@ -7,6 +7,7 @@
     display: inline-block;
     vertical-align: top;
     margin-right: 50px;
+    user-select: none;
   }
   + span:before,
   + span:after {
@@ -15,6 +16,9 @@
   }
   + span:before {
     content: '';
+  }
+  &:disabled + span {
+    cursor: default;
   }
 }
 
@@ -118,5 +122,51 @@
   &:disabled + span:before,
   &:disabled:checked + span:before {
     background: #cecece;
+  }
+}
+
+.monadic-input-choices--toggle {
+  + span {
+    display: inline-block;
+    padding-left: 45px;
+    position: relative;
+  }
+  + span:before {
+    background-color: $button--toggle-bg;
+    color: #fff;
+    content: $icon-plus;
+    display: block;
+    font-family: 'icomoon';
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    float: left;
+    text-align: center;
+    left: 0;
+    top: -4px;
+  }
+
+  &:checked + span:before {
+    content: $icon-minus;
+  }
+
+  &:disabled + span:before,
+  &:disabled:checked + span:before {
+    background: #cecece;
+  }
+
+  .monadic-title-preview & {
+    + span {
+      display: block;
+      padding-left: 0;
+      padding-right: 45px;
+      margin-right: 0;
+      width: 100%;
+    }
+    + span:before {
+      left: auto;
+      right: 0;
+    }
   }
 }
