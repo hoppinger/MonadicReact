@@ -1975,6 +1975,13 @@ th {
 	background: #fff;
 	margin: 50px;
 	padding: 50px;
+	position: relative;
+}
+
+.component .button--toggle {
+	position: absolute;
+	right: 50px;
+	top: 40px;
 }
 
 @media (min-width: 768px) {

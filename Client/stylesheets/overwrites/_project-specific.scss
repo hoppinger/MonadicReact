@@ -7,4 +7,10 @@
   background: #fff;
   margin: 50px;
   padding: 50px;
+  position: relative;
+  .button--toggle {
+    position: absolute;
+    right: 50px;
+    top: 40px;
+  }
 }
