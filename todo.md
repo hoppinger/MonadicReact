@@ -1,5 +1,4 @@
 ## doing
-- monadic-title-preview around title and hidden checkbox
 - rich text
 - list
 
@@ -14,32 +13,39 @@
 
 ## core/combinators (3 days)
 - [ ] fold
-- [V] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
+- [x] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
+- [ ] p.retract, p.with\_div, p.with\_label, ...
+- [ ] more than N tabs render ... and "paginate"
+
+## overlays (1 days)
+- [ ] overlay as a div with a special class, overlay : bool -> C<bool>
 
 ## lists (3 days)
 - [ ] list
   - [ ] pagination
-  - [ ] mapM
-  - [ ] mapL
   - [ ] select
   - [ ] add new
   - [ ] add existing
   - [ ] delete
+- [ ] mapM
+- [ ] mapL
 
 ## samples
 - [ ] all
-- [V] non-lazy pictures in form
+- [x] non-lazy pictures in form
 - [ ] workflow/form with selection from list of other entities
 - [ ] form with list of related entities
 - [ ] form with date, time, date-time, rich-text, tel, url, email, rich-text
-- [ ] richt text
+- [ ] rich text
 
 
 ## styling
-- [ ] menu
-- [ ] tabs
+- [x] menu
+- [x] tabs
 - [/] form errors
-- [ ] disabled plus/minus toggle
+- [x] disabled plus/minus toggle
+- [ ] lists
+- [ ] overlays
 
 ## external (1 week)
 - [ ] publish online for designers

@@ -3,6 +3,8 @@ import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 
+export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, ps:Array<(_:A)=>C<void>>, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
@@ -42,6 +44,70 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
   return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<LabelProps<A,B>>(Label,
     { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
+}
+
+type H1State<A,B> = { p:"creating"|JSX.Element }
+class H1<A,B> extends React.Component<H1Props<A,B>,H1State<A,B>> {
+  constructor(props:H1Props<A,B>,context:any) {
+    super()
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:H1Props<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x))})
+  }
+
+  render() {
+    let content : JSX.Element = this.state.p == "creating" ? null : this.state.p
+    let span = <span>{this.props.text}</span>
+    return <div className={this.props.className}>
+             <h1>{span}</h1>
+             {content}
+           </div>
+  }
+}
+
+export function h1<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<H1Props<A,B>>(H1,
+    { kind:"h1", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key })))
+}
+
+type H2State<A,B> = { p:"creating"|JSX.Element }
+class H2<A,B> extends React.Component<H2Props<A,B>,H2State<A,B>> {
+  constructor(props:H2Props<A,B>,context:any) {
+    super()
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:H2Props<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x))})
+  }
+
+  render() {
+    let content : JSX.Element = this.state.p == "creating" ? null : this.state.p
+    let span = <span>{this.props.text}</span>
+    return <div className={this.props.className}>
+             <h2>{span}</h2>
+             {content}
+           </div>
+  }
+}
+
+export function h2<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<H2Props<A,B>>(H2,
+    { kind:"h2", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
 type DivState<A,B> = { p:"creating"|JSX.Element,ps:"creating"|Array<JSX.Element> }

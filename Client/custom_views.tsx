@@ -8,7 +8,7 @@ import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
 import {C, unit, bind} from './react_monad/core'
 import {string, number, bool} from './react_monad/primitives'
-import {button, selector, multi_selector, label, div, image} from './react_monad/html'
+import {button, selector, multi_selector, label, h1, h2, div, image} from './react_monad/html'
 import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
 import {button_sample} from './samples/button'
 import {course_form_with_autosave_sample, course_form_sample} from './samples/forms'
@@ -22,45 +22,48 @@ import {toggles_sample} from './samples/toggles'
 import {moments_sample} from './samples/moments'
 
 
+type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
-export let sample_minipage = (f_name:string, title:string, f:C<void>) =>
+export let sample_toggleable_minipage : (_:Sample) => C<void> = s =>
   repeat<boolean>(
     div<boolean, boolean>("monadic-title-preview")([])(
-    label<boolean, boolean>(title, false)(bool("edit", "plus/minus"))))(false).bind(`${f_name} toggle`, visible =>
+    label<boolean, boolean>(s.description, false)(bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible =>
     !visible ?
       unit<void>(null)
     :
-      f.bind(`visible ${f_name}`, _ => unit<void>(null)))
+      s.sample.bind(`visible ${s.description}`, _ => unit<void>(null)))
+
+export let sample_minipage : (_:Sample) => C<void> = s =>
+  h2<void, void>(s.description, "", s.description)(_ =>
+    s.sample)(null)
 
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
-  let all_samples : Array<{ sample:C<void>, description:string }> =
+  let all_samples : Array<Sample> =
     [
-      { sample: moments_sample, description:"Moment input." },
-      { sample: course_form_sample, description:"A form with save button." },
-      { sample: course_form_with_autosave_sample, description:"A form with autosave." },
-      { sample: workflow_sample, description:"A workflow." },
-      { sample: selector_sample, description:"A selector." },
-      { sample: multiselector_sample, description:"A multi-selector." },
-      { sample: toggles_sample, description:"A series of (coordinated) toggles." },
-      { sample: label_sample, description:"A labelled item." },
-      { sample: menu_sample, description:"A menu with content." },
-      { sample: tabbed_menu_sample, description:"A tabbed menu with content." },
-      { sample: button_sample, description:"A button." }
+      { sample: label_sample, description:"label" },
+      { sample: button_sample, description:"button" },
+      { sample: selector_sample, description:"selector" },
+      { sample: multiselector_sample, description:"multi-selector" },
+      { sample: moments_sample, description:"dates and times" },
+      { sample: course_form_sample, description:"form with save button" },
+      { sample: course_form_with_autosave_sample, description:"form with autosave" },
+      { sample: workflow_sample, description:"workflow" },
+      { sample: toggles_sample, description:"coordinated toggles" },
+      { sample: menu_sample, description:"nested menu" },
+      { sample: tabbed_menu_sample, description:"tabbed menu" }
     ]
 
   return <div>
       {
-        all_samples.map((s,i) =>
-          <div className="component">
-            {
-              sample_minipage(`Sample ${i+1} - ${s.description}`, `Sample ${i+1} - ${s.description}`, s.sample).comp(
-                  { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
-                })(continuation => value => console.log("done"))
+        <div className="component">
+          {
+            menu<Sample, void>("side menu", s => s.description)(List(all_samples), sample_minipage).comp(
+                { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
+              })(continuation => value => console.log("done"))
 
-            }
-          </div>
-        )
+          }
+        </div>
       }
   </div>
 }
