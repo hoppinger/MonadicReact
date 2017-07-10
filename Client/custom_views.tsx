@@ -11,6 +11,7 @@ import {string, number, bool} from './react_monad/primitives'
 import {button, selector, multi_selector, label, h1, h2, div, image} from './react_monad/html'
 import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
 import {rich_text} from './react_monad/rich_text'
+import {paginate, Page} from './react_monad/list'
 import {button_sample} from './samples/button'
 import {course_form_with_autosave_sample, course_form_sample} from './samples/forms'
 import {workflow_sample} from './samples/workflow'
@@ -22,7 +23,6 @@ import {tabbed_menu_sample} from './samples/tabbed menu'
 import {toggles_sample} from './samples/toggles'
 import {moments_sample} from './samples/moments'
 import {rich_text_sample} from './samples/rich text'
-
 
 type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
@@ -36,12 +36,18 @@ export let sample_toggleable_minipage : (_:Sample) => C<void> = s =>
       s.sample.bind(`visible ${s.description}`, _ => unit<void>(null)))
 
 export let sample_minipage : (_:Sample) => C<void> = s =>
-  h2<void, void>(s.description, "", s.description)(_ =>
-    s.sample)(null)
+  h2<void, void>(s.description, "", s.description)(_ => s.sample)(null)
+
+let pagination_sample : C<void> =
+  paginate<number, void>(10, (cp:number, ipp:number) =>
+    unit<Page<number>>(({ num_pages:10, page_index:cp, items:cp })))(
+    n => string("view")(`The current page is ${n}`).ignore()
+  )
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<Sample> =
     [
+      { sample: pagination_sample, description:"pagination" },
       { sample: label_sample, description:"label" },
       { sample: button_sample, description:"button" },
       { sample: rich_text_sample, description:"rich text" },
