@@ -10,6 +10,7 @@ import {C, unit, bind} from './react_monad/core'
 import {string, number, bool} from './react_monad/primitives'
 import {button, selector, multi_selector, label, h1, h2, div, image} from './react_monad/html'
 import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
+import {rich_text} from './react_monad/rich_text'
 import {button_sample} from './samples/button'
 import {course_form_with_autosave_sample, course_form_sample} from './samples/forms'
 import {workflow_sample} from './samples/workflow'
@@ -38,11 +39,16 @@ export let sample_minipage : (_:Sample) => C<void> = s =>
     s.sample)(null)
 
 
+let rich_text_sample: C<void> =
+  rich_text(null, "edit").bind(`rich text sample`, s =>
+  label<string,string>(`Raw content:`, true)(string("view"))(s).ignore())
+
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<Sample> =
     [
       { sample: label_sample, description:"label" },
       { sample: button_sample, description:"button" },
+      { sample: rich_text_sample, description:"rich text" },
       { sample: selector_sample, description:"selector" },
       { sample: multiselector_sample, description:"multi-selector" },
       { sample: moments_sample, description:"dates and times" },

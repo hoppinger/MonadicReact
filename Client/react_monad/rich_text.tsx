@@ -1,303 +1,299 @@
-// import * as React from "react";
-// import * as ReactDOM from "react-dom";
-// import * as Immutable from 'immutable';
-// import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils} from 'draft-js';
-// import * as Draft from 'draft-js';
-// import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as Immutable from 'immutable';
+import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils} from 'draft-js';
+import * as Draft from 'draft-js';
+import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 
-// type DraftEditorCommand =
-//     "undo" |
-//     "redo" |
-//     "delete" |
-//     "delete-word" |
-//     "backspace" |
-//     "backspace-word" |
-//     "backspace-to-start-of-line" |
-//     "bold" |
-//     "italic" |
-//     "underline" |
-//     "code" |
-//     "split-block" |
-//     "transpose-characters" |
-//     "move-selection-to-start-of-block" |
-//     "move-selection-to-end-of-block" |
-//     "secondary-cut" |
-//     "secondary-paste"
+type DraftEditorCommand =
+    "undo" |
+    "redo" |
+    "delete" |
+    "delete-word" |
+    "backspace" |
+    "backspace-word" |
+    "backspace-to-start-of-line" |
+    "bold" |
+    "italic" |
+    "underline" |
+    "code" |
+    "split-block" |
+    "transpose-characters" |
+    "move-selection-to-start-of-block" |
+    "move-selection-to-end-of-block" |
+    "secondary-cut" |
+    "secondary-paste"
 
-// type DraftBlockType =
-//     "unstyled" |
-//     "paragraph" |
-//     "header-one" |
-//     "header-two" |
-//     "header-three" |
-//     "header-four" |
-//     "header-five" |
-//     "header-six" |
-//     "unordered-list-item" |
-//     "ordered-list-item" |
-//     "blockquote" |
-//     "code-block" |
-//     "atomic"
-
-
-// type DraftState = {
-//   editor_state: EditorState
-// }
-
-// type DraftProps = {
-//     initial_state: EditorState,
-//     set_state: (s:EditorState, on_success?: () => void) => void,
-//     editable: boolean }
-
-// class DraftEditor extends React.Component<DraftProps, DraftState> {
-//   constructor(props:DraftProps, context) {
-//     super(props, context)
-
-//     this.state = { editor_state: this.props.initial_state }
-//   }
-
-//   static serialize_state(editor_state:EditorState) : string {
-//     return JSON.stringify(Draft.convertToRaw(editor_state.getCurrentContent()))
-//   }
-
-//   static deserialize_state(raw_content:any) : EditorState {
-//     try {
-//       return EditorState.createWithContent(Draft.convertFromRaw(JSON.parse(raw_content)))
-//     } catch (e) {
-//       return DraftEditor.empty_state()
-//     }
-//   }
-
-//   static empty_state() : EditorState {
-//     return EditorState.createEmpty()
-//   }
-
-//   onChange(new_editor_state:EditorState, on_success?: () => void) {
-//     this.setState({...this.state, editor_state: new_editor_state}, () => {
-//       if (on_success) on_success()
-//       this.props.set_state(new_editor_state)
-//     })
-//   }
-
-//   toggle_block_type(block_type:DraftBlockType) {
-//     this.onChange(
-//       RichUtils.toggleBlockType(
-//         this.state.editor_state,
-//         block_type
-//       ), () => this.editor.focus()
-//     )
-//   }
-
-//   toggle_style(command:DraftEditorCommand) {
-//     this.handleKeyCommand(command)
-//   }
-
-//   handleKeyCommand(command:DraftEditorCommand) {
-//     let new_state = RichUtils.handleKeyCommand(this.state.editor_state, command);
-//     if (new_state) {
-//       this.onChange(new_state, () => {
-//         this.editor.focus()
-//       })
-//       return "handled"
-//     }
-//     return "not-handled"
-//   }
-
-//   insert_media(url:string, url_type:MediaType) {
-//     let entity_key = Entity.create(url_type, 'IMMUTABLE', {src: url})
-
-//     let new_editor_state =
-//       AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
-//     this.setState({...this.state, editor_state: new_editor_state}, () => {
-//       this.props.set_state(new_editor_state)
-//     })
-//   }
-
-//   editor: Editor = null
-//   render() {
-//     return (
-//       <div className="editor__inner">
-//         {this.props.editable ?
-//           <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
-//                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
-//                                  insert_media={(url:string, url_type:MediaType) => this.insert_media(url, url_type)}
-//                                   />
-//            :
-//           null}
-//         <div className="slide__text__editor">
-//           <Editor editorState={this.state.editor_state}
-//                   onBlur={() => {}}
-//                   onChange={es => this.onChange(es)}
-//                   handleKeyCommand={(c:DraftEditorCommand) => this.handleKeyCommand(c)}
-//                   readOnly={!this.props.editable}
-//                   blockRendererFn={mediaBlockRenderer}
-//                   ref={(editor) => this.editor = editor }
-//                   spellCheck={true} />
-//         </div>
-//       </div>
-//     )
-//   }
-// }
-
-// function mediaBlockRenderer(block:any) {
-//   if (block.getType() === 'atomic') {
-//     return {
-//       component: Media,
-//       editable: false,
-//     };
-//   }
-
-//   return null;
-// }
-
-// const Image = (props:{src:string}) => {
-//   return <img src={props.src} />;
-// };
-
-// const Video = (props:{src:string}) => {
-//   return <video controls src={props.src} />;
-// };
-
-// const YouTube = (props:{src:string}) => {
-//   return (<iframe width="420" height="315"
-//             src={props.src}>
-//           </iframe>)
-// };
-
-// export type MediaType = 'image' | 'video' | 'youtube'
-
-// let Media = (props) => {
-//   let entity = Entity.get(props.block.getEntityAt(0))
-//   const {src} = entity.getData()
-//   const type = entity.getType()
-
-//   if (type === 'image') {
-//     return <Image src={src} />
-//   } else if (type === 'video') {
-//     return <Video src={src} />;
-//   } else if (type === 'youtube') {
-//     return <YouTube src={src} />
-//   }
-
-//   return null
-// }
-
-// type SlideEditorButtonsBarProps = {
-//   toggle_style: (c:DraftEditorCommand) => void,
-//   toggle_block_type: (c:DraftBlockType) => void,
-//   insert_media: (url:string, media_type:MediaType) => void }
-// class SlideEditorButtonsBar extends React.Component<
-//   SlideEditorButtonsBarProps,
-//   void > {
-//   constructor(props:SlideEditorButtonsBarProps, context) {
-//     super(props, context)
-//   }
-
-//   render() {
-//     return (
-//         <div style={{display:"inline-block"}} className="text-editor__menu-bar">
-//           <div className="text-editor__menu-group">
-//             <button className="text-editor__menu-button text-editor__menu-button--bold"
-//                     onClick={() => this.props.toggle_style('bold')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--italic`}
-//                     onClick={() => this.props.toggle_style('italic')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--underline`}
-//                     onClick={() => this.props.toggle_style('underline')}>
-//             </button>
-//           </div>
-
-//           <div className="text-editor__menu-group">
-//             <button className={`text-editor__menu-button text-editor__menu-button--h1`}
-//                     onClick={() => this.props.toggle_block_type('header-one')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--h2`}
-//                     onClick={() => this.props.toggle_block_type('header-two')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--h3`}
-//                     onClick={() => this.props.toggle_block_type('header-three')}>
-//             </button>
-//           </div>
-
-//           <div className="text-editor__menu-group">
-//             <button className={`text-editor__menu-button text-editor__menu-button--ul`}
-//                     onClick={() => this.props.toggle_block_type('unordered-list-item')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--ol`}
-//                     onClick={() => this.props.toggle_block_type('ordered-list-item')}>
-//             </button>
-//           </div>
-
-//           <div className="text-editor__menu-group">
-//             <button className={`text-editor__menu-button text-editor__menu-button--code`}
-//                     onClick={() => this.props.toggle_block_type('code-block')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
-//                     onClick={() => this.props.toggle_block_type('blockquote')}>
-//             </button>
-//             <button className={`text-editor__menu-button text-editor__menu-button--image`}
-//                     onClick={() => this.file_input.click()}>
-//             </button>
-//           </div>
-//           <input type="file" onChange={(e:React.FormEvent<HTMLInputElement>) => {
-//               let file = (e.target as any).files[0]
-//               if (!file) return
-//               let reader = new FileReader()
-//               reader.onload = (e:Event) => {
-//                 let contents = (e.target as any).result
-//                 this.props.insert_media(contents, "image")
-//               }
-//               reader.readAsDataURL(file)
-//           } } ref={(file_input) => this.file_input = file_input} style={{display: "none"}}/>
-//         </div>
-//     )
-//   }
-//   file_input:HTMLInputElement
-// }
+type DraftBlockType =
+    "unstyled" |
+    "paragraph" |
+    "header-one" |
+    "header-two" |
+    "header-three" |
+    "header-four" |
+    "header-five" |
+    "header-six" |
+    "unordered-list-item" |
+    "ordered-list-item" |
+    "blockquote" |
+    "code-block" |
+    "atomic"
 
 
-// // export function RichText(
-// //     can_edit:boolean,
-// //     mode:ViewUtils.EntityMode,
-// //     get_item:()=>string|null,
-// //     set_item:(src:string)=>void) {
-// //   let item = get_item()
-// //   return <RichTextEditor.RichTextEditor
-// //         initial_state={item ?
-// //                   RichTextEditor.RichTextEditor.deserialize_state(item) :
-// //                   RichTextEditor.RichTextEditor.empty_state() }
-// //         set_state={(s:Draft.EditorState, on_success?: () => void) => {
-// //           let new_value = RichTextEditor.RichTextEditor.serialize_state(s) as string
-// //           set_item(new_value)
-// //         }}
-// //         editable={can_edit && mode == "edit"} />
-// // }
+type DraftState = {
+  editor_state: EditorState
+}
 
-// export type RichTextProps = { kind:"rich text", json_state:string } & CmdCommon<string>
+type DraftProps = {
+    initial_state: EditorState,
+    set_state: (s:EditorState, on_success?: () => void) => void,
+    editable: boolean }
 
-// // check if changed before updating!!!
-// // check if changed before propagating!!!
-// // propagate on new props and will mount
-// type RichTextState = {}
-// class RichText extends React.Component<RichTextProps,RichTextState> {
-//   constructor(props:RichTextProps,context:any) {
-//     super()
-//     this.state = {}
-//   }
-//   render() {
-//     let content = this.props.p(this.props.value).comp(this.props.context)(callback => x =>
-//                              this.props.cont(callback)(x))
-//     let span = <span>{this.props.text}</span>
-//     return <label className={this.props.className}>
-//              {this.props.span_before_content ? [span,content] : [content,span]}
-//            </label>
-//   }
-// }
+class DraftEditor extends React.Component<DraftProps, DraftState> {
+  constructor(props:DraftProps, context) {
+    super(props, context)
 
-// export function rich_text(json_state:string, key?:string, dbg?:() => string) : C<string> {
-//   return make_C<string>(ctxt => cont =>
-//     (React.createElement<LabelProps>(Label,
-//     { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
-// }
+    this.state = { editor_state: this.props.initial_state }
+  }
 
+  static serialize_state(editor_state:EditorState) : string {
+    return JSON.stringify(Draft.convertToRaw(editor_state.getCurrentContent()))
+  }
+
+  static deserialize_state(raw_content:any) : EditorState {
+    try {
+      return EditorState.createWithContent(Draft.convertFromRaw(JSON.parse(raw_content)))
+    } catch (e) {
+      return DraftEditor.empty_state()
+    }
+  }
+
+  static empty_state() : EditorState {
+    return EditorState.createEmpty()
+  }
+
+  onChange(new_editor_state:EditorState, on_success?: () => void) {
+    this.setState({...this.state, editor_state: new_editor_state}, () => {
+      if (on_success) on_success()
+      this.props.set_state(new_editor_state)
+    })
+  }
+
+  toggle_block_type(block_type:DraftBlockType) {
+    this.onChange(
+      RichUtils.toggleBlockType(
+        this.state.editor_state,
+        block_type
+      ), () => this.editor.focus()
+    )
+  }
+
+  toggle_style(command:DraftEditorCommand) {
+    this.handleKeyCommand(command)
+  }
+
+  handleKeyCommand(command:DraftEditorCommand) {
+    let new_state = RichUtils.handleKeyCommand(this.state.editor_state, command);
+    if (new_state) {
+      this.onChange(new_state, () => {
+        this.editor.focus()
+      })
+      return "handled"
+    }
+    return "not-handled"
+  }
+
+  insert_media(url:string, url_type:MediaType) {
+    let entity_key = Entity.create(url_type, 'IMMUTABLE', {src: url})
+
+    let new_editor_state =
+      AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
+    this.setState({...this.state, editor_state: new_editor_state}, () => {
+      this.props.set_state(new_editor_state)
+    })
+  }
+
+  editor: Editor = null
+  render() {
+    return (
+      <div className="editor__inner">
+        {this.props.editable ?
+          <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
+                                 toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
+                                 insert_media={(url:string, url_type:MediaType) => this.insert_media(url, url_type)}
+                                  />
+           :
+          null}
+        <div className="slide__text__editor">
+          <Editor editorState={this.state.editor_state}
+                  onBlur={() => {}}
+                  onChange={es => this.onChange(es)}
+                  handleKeyCommand={(c:DraftEditorCommand) => this.handleKeyCommand(c)}
+                  readOnly={!this.props.editable}
+                  blockRendererFn={mediaBlockRenderer}
+                  ref={(editor) => this.editor = editor }
+                  spellCheck={true} />
+        </div>
+      </div>
+    )
+  }
+}
+
+function mediaBlockRenderer(block:any) {
+  if (block.getType() === 'atomic') {
+    return {
+      component: Media,
+      editable: false,
+    };
+  }
+
+  return null;
+}
+
+const Image = (props:{src:string}) => {
+  return <img src={props.src} />;
+};
+
+const Video = (props:{src:string}) => {
+  return <video controls src={props.src} />;
+};
+
+const YouTube = (props:{src:string}) => {
+  return (<iframe width="420" height="315"
+            src={props.src}>
+          </iframe>)
+};
+
+export type MediaType = 'image' | 'video' | 'youtube'
+
+let Media = (props) => {
+  let entity = Entity.get(props.block.getEntityAt(0))
+  const {src} = entity.getData()
+  const type = entity.getType()
+
+  if (type === 'image') {
+    return <Image src={src} />
+  } else if (type === 'video') {
+    return <Video src={src} />;
+  } else if (type === 'youtube') {
+    return <YouTube src={src} />
+  }
+
+  return null
+}
+
+type SlideEditorButtonsBarProps = {
+  toggle_style: (c:DraftEditorCommand) => void,
+  toggle_block_type: (c:DraftBlockType) => void,
+  insert_media: (url:string, media_type:MediaType) => void }
+class SlideEditorButtonsBar extends React.Component<
+  SlideEditorButtonsBarProps,
+  void > {
+  constructor(props:SlideEditorButtonsBarProps, context) {
+    super(props, context)
+  }
+
+  render() {
+    return (
+        <div style={{display:"inline-block"}} className="text-editor__menu-bar">
+          <div className="text-editor__menu-group">
+            <button className="text-editor__menu-button text-editor__menu-button--bold"
+                    onClick={() => this.props.toggle_style('bold')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--italic`}
+                    onClick={() => this.props.toggle_style('italic')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--underline`}
+                    onClick={() => this.props.toggle_style('underline')}>
+            </button>
+          </div>
+
+          <div className="text-editor__menu-group">
+            <button className={`text-editor__menu-button text-editor__menu-button--h1`}
+                    onClick={() => this.props.toggle_block_type('header-one')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--h2`}
+                    onClick={() => this.props.toggle_block_type('header-two')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--h3`}
+                    onClick={() => this.props.toggle_block_type('header-three')}>
+            </button>
+          </div>
+
+          <div className="text-editor__menu-group">
+            <button className={`text-editor__menu-button text-editor__menu-button--ul`}
+                    onClick={() => this.props.toggle_block_type('unordered-list-item')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--ol`}
+                    onClick={() => this.props.toggle_block_type('ordered-list-item')}>
+            </button>
+          </div>
+
+          <div className="text-editor__menu-group">
+            <button className={`text-editor__menu-button text-editor__menu-button--code`}
+                    onClick={() => this.props.toggle_block_type('code-block')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
+                    onClick={() => this.props.toggle_block_type('blockquote')}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--image`}
+                    onClick={() => this.file_input.click()}>
+            </button>
+          </div>
+          <input type="file" onChange={(e:React.FormEvent<HTMLInputElement>) => {
+              let file = (e.target as any).files[0]
+              if (!file) return
+              let reader = new FileReader()
+              reader.onload = (e:Event) => {
+                let contents = (e.target as any).result
+                this.props.insert_media(contents, "image")
+              }
+              reader.readAsDataURL(file)
+          } } ref={(file_input) => this.file_input = file_input} style={{display: "none"}}/>
+        </div>
+    )
+  }
+  file_input:HTMLInputElement
+}
+
+
+type RichTextProps = { kind:"rich text", mode:Mode, json_state:string } & CmdCommon<string>
+type RichTextState = { current_state:string }
+class RichText extends React.Component<RichTextProps,RichTextState> {
+  constructor(props:RichTextProps,context:any) {
+    super()
+    this.state = { current_state:props.json_state }
+  }
+  componentWillReceiveProps(new_props:RichTextProps) {
+    let new_state = new_props.json_state
+    if (this.state.current_state != new_state) {
+      this.setState({...this.state, current_state:new_state}, () =>
+        this.props.cont(() => {})(this.state.current_state)
+      )
+    }
+  }
+  componentWillMount() {
+    this.props.cont(() => {})(this.state.current_state)
+  }
+  render() {
+    return <DraftEditor
+              initial_state={this.state.current_state ?
+                        DraftEditor.deserialize_state(this.state.current_state) :
+                        DraftEditor.empty_state() }
+              set_state={(s:Draft.EditorState, on_success?: () => void) => {
+                let new_state = DraftEditor.serialize_state(s) as string
+                if (this.state.current_state != new_state) {
+                  this.setState({...this.state, current_state:new_state}, () =>
+                    this.props.cont(() => {})(this.state.current_state)
+                  )
+                }
+              }}
+              editable={this.props.mode == "edit"} />
+  }
+}
+
+export function rich_text(json_state:string, mode:Mode, key?:string, dbg?:() => string) : C<string> {
+  return make_C<string>(ctxt => cont =>
+    (React.createElement<RichTextProps>(RichText,
+    { kind:"rich text", debug_info:dbg, json_state:json_state, mode:mode, context:ctxt, cont:cont, key:key })))
+}

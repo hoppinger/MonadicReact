@@ -14,7 +14,6 @@
 ## core/combinators (3 days)
 - [ ] fold
 - [x] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
-- [ ] p.retract, p.with\_div, p.with\_label, ...
 - [ ] more than N tabs render ... and "paginate"
 
 ## overlays (1 days)
