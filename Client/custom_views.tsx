@@ -21,6 +21,7 @@ import {menu_sample} from './samples/menu'
 import {tabbed_menu_sample} from './samples/tabbed menu'
 import {toggles_sample} from './samples/toggles'
 import {moments_sample} from './samples/moments'
+import {rich_text_sample} from './samples/rich text'
 
 
 type Sample = { sample:C<void>, description:string }
@@ -37,11 +38,6 @@ export let sample_toggleable_minipage : (_:Sample) => C<void> = s =>
 export let sample_minipage : (_:Sample) => C<void> = s =>
   h2<void, void>(s.description, "", s.description)(_ =>
     s.sample)(null)
-
-
-let rich_text_sample: C<void> =
-  rich_text(null, "edit").bind(`rich text sample`, s =>
-  label<string,string>(`Raw content:`, true)(string("view"))(s).ignore())
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<Sample> =

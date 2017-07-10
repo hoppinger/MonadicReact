@@ -1,9 +1,8 @@
 ## doing
-- rich text
 - list
 
 ## primitives (1 day)
-- [ ] rich text
+- [x] rich text
 - [ ] files
 
 ## root container (1 week)
@@ -14,7 +13,7 @@
 ## core/combinators (3 days)
 - [ ] fold
 - [x] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
-- [ ] more than N tabs render ... and "paginate"
+- [ ] more than N tabs render "..."
 
 ## overlays (1 days)
 - [ ] overlay as a div with a special class, overlay : bool -> C<bool>
