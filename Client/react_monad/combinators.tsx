@@ -7,7 +7,7 @@ import {bool} from './primitives'
 export type Mode = "edit"|"view"
 export type RepeatProps<A> = { kind:"repeat", value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type AllProps<A> = { kind:"all", ps:Array<C<A>> } & CmdCommon<Array<A>>
-export type AnyProps<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>> } & CmdCommon<A>
+export type AnyProps<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>>, className:string } & CmdCommon<A>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type RetryStrategy = "never" | "semi exponential"
@@ -54,14 +54,14 @@ class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
             this.props.cont(callback)(new_value)))})
   }
   render() {
-    return <div> { this.state.ps != "creating" ? this.state.ps : null } </div>
+    return <div className={this.props.className}> { this.state.ps != "creating" ? this.state.ps : null } </div>
   }
 }
 
-export let any = function<A>(ps:Array<(_:A)=>C<A>>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
+export let any = function<A>(ps:Array<(_:A)=>C<A>>, key?:string, className?:string, dbg?:() => string) : ((_:A) => C<A>) {
   return initial_value => make_C<A>(ctxt => cont =>
     React.createElement<AnyProps<A>>(Any,
-      { kind:"any", debug_info:dbg, ps:ps as Array<(_:A)=>C<A>>, value:initial_value, context:ctxt, cont:cont, key:key }))
+      { kind:"any", debug_info:dbg, ps:ps, value:initial_value, context:ctxt, cont:cont, key:key, className:className }))
 }
 
 type AllState<A> = { results:Immutable.Map<number,A>, ps:"creating"|Array<JSX.Element> }

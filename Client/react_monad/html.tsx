@@ -7,6 +7,7 @@ export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string,
 export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, ps:Array<(_:A)=>C<void>>, p:(_:A)=>C<B> } & CmdCommon<B>
+export type FormProps<A,B> = { kind:"form", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
 export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorType, to_string:(_:A)=>string, items:Immutable.List<A>,
           selected_items:undefined|Immutable.List<A> } & CmdCommon<Immutable.List<A>>
@@ -139,6 +140,34 @@ export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p
   return ps => p => value => make_C<B>(ctxt => cont =>
     (React.createElement<DivProps<A,B>>(Div,
     { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, context:ctxt, cont:cont, key:key })))
+}
+
+type FormState<A,B> = { p:"creating"|JSX.Element }
+class Form<A,B> extends React.Component<FormProps<A,B>,FormState<A,B>> {
+  constructor(props:FormProps<A,B>,context:any) {
+    super()
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:FormProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x))})
+  }
+  render() {
+    return <form className={this.props.className}>
+        { this.state.p  != "creating" ? this.state.p  : null }
+      </form>
+  }
+}
+
+export function form<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<FormProps<A,B>>(Form,
+    { kind:"form", className:className, debug_info:dbg, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
 type SelectorState<A> = { selected:undefined|number }
@@ -340,7 +369,7 @@ class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
     this.setState({...this.state, x:new_props.x})
   }
   render() {
-    return <button className="button" disabled={this.props.disabled}
+    return <button type="button" className="button" disabled={this.props.disabled}
                    onClick={() => this.props.cont(() => {})(this.state.x)} >{this.props.label}</button>
   }
 }

@@ -4,7 +4,7 @@ import * as Immutable from "immutable"
 
 export type CmdCommon<A> = { cont:Cont<A>, context:Context, key:string, debug_info:() => string }
 export type UnitProps<A> = { kind:"unit", value:A } & CmdCommon<A>
-export type BindProps<B,A> = { kind:"bind", once:boolean, p:C<B>, k:(_:B) => C<A> } & CmdCommon<A>
+export type BindProps<B,A> = { kind:"bind", once:boolean, p:C<B>, k:(_:B) => C<A>, className:string } & CmdCommon<A>
 export type MapProps<A,B> = { kind:"map", p:C<A>, f:(_:A)=>B } & CmdCommon<B>
 export type FilterProps<A> = { kind:"filter", p:C<A>, f:(_:A)=>boolean } & CmdCommon<A>
 export type Mode = "edit"|"view"
@@ -19,7 +19,7 @@ export type Context = {
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = {
   comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element
-  bind:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
+  bind:<B>(key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   ignore:(key?:string)=>C<void>
   ignore_with:<B>(x:B)=>C<B>
@@ -30,8 +30,8 @@ export type C<A> = {
 export function make_C<A>(comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element) : C<A> {
   return {
     comp:comp,
-    bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
-            return bind<A,B>(key, this, k, dbg)
+    bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string) : C<B> {
+            return bind<A,B>(key, this, k, className, dbg)
           },
     map:function<B>(this:C<A>, f:(_:A)=>B, key?:string, dbg?:()=>string) : C<B> {
             return map<A,B>(key, dbg)(f)(this)
@@ -100,7 +100,7 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return <div className="bind">
+    return <div className={`bind ${this.props.className || ""}`}>
       {
         (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating" ?
           this.state.p
@@ -117,10 +117,10 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
   }
 }
 
-export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {
+export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> {
   return make_C<B>(ctxt => cont =>
     (React.createElement<BindProps<A,B>>(Bind,
-      { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key })))
+      { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key, className:className })))
 }
 
 // export let bind_once = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), dbg?:() => string) : C<B> {

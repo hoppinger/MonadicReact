@@ -1,12 +1,6 @@
 ## doing
-- list
-
-## improvements (3 days)
-- [ ] checkbox as container
-- [ ] radio button as container
-- [ ] simple selector only manipulates strings
-- [ ] simple selector is based on list and radio button
-- [ ] simple selector is based on list and option
+- any<A> -> any<A,B>
+- never<A,B>:C<A> -> C<B>
 
 ## primitives (1 day)
 - [x] rich text
@@ -19,26 +13,23 @@
 - [ ] routing
 
 ## core/combinators (3 days)
-- [x] cache combinator p's: retract, any, all, but not repeat and all others depending on the state and not only props
 - [ ] more than N tabs render "..."
-- [ ] mode should always also check context.mode
+- [?] mode should always also check context.mode
+- [x] paginate in own file
+- [x] form transformer like div
+- [ ] any<A> -> any<A,B>
+- [ ] never<A,B>:C<A> -> C<B>
 
 ## overlays (1 days)
-- [ ] overlay as a div with a special class, overlay : bool -> C<bool>
-
-## lists (3 days)
-- [x] pagination
-- [ ] list
-  - [ ] add
+- [ ] overlay as a div with a special class, overlay : (A -> C<A>) -> (A -> C<A>)
 
 ## samples
 - [ ] all
-- [x] non-lazy pictures in form
 - [ ] workflow/form with selection from list of other entities
 - [ ] form with list of related entities
 - [ ] form with date, time, date-time, rich-text, tel, url, email
-- [x] rich text
-- [ ] list as selector
+- [x] list and paginator samples in own files
+- [x] edit list
 
 
 ## styling
@@ -46,10 +37,13 @@
 - [x] tabs
 - [/] form errors
 - [x] disabled plus/minus toggle
-- [ ] lists
+- [ ] radio buttons
+- [ ] edit lists and monadic-list-item
 - [ ] links
 - [ ] overlays
 - [ ] pagination
+- [ ] rich text (all text styles and images)
+- [ ] toggle without label (for example within an edit list)
 
 ## external (1 week)
 - [ ] publish online for designers
@@ -69,3 +63,4 @@
 - [ ] fold
 - [ ] mapM
 - [ ] mapL
+- [ ] className by default in all CmdCommon

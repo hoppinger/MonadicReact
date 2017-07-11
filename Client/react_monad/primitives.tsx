@@ -12,7 +12,7 @@ export type Mode = "edit"|"view"
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
 export type StringType = "email"|"tel"|"text"|"url"
 export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
-export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"
+export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"|"radio"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
 export type DateProps = { kind:"date", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
 export type DateTimeProps = { kind:"date time", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
@@ -136,7 +136,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
                     value:e.currentTarget.checked },
                     () => this.props.cont(()=>null)(this.state.value))} />
             :
-              <input type="checkbox"
+              <input type={this.props.style}
                 className="monadic-input-choices monadic-input-choices--checkbox"
                 disabled={this.props.mode == "view" || this.props.context.mode == "view"}
                 checked={this.state.value}
