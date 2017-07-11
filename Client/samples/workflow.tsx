@@ -36,7 +36,7 @@ let create_course_recap : ((_:WorkflowData<CreateCourseStep, Models.Course>) => 
     ], c => false, c => c.errors.has("Points"), c => true, c => true, c => ({...c, step:"points"}), c => ({...c, step:"sent"}))({model: c, errors: Immutable.Map<string,Array<string>>()}).map(c => c.model)
 
 let sent_page : ((_:WorkflowData<CreateCourseStep, Models.Course>) => C<WorkflowData<CreateCourseStep, Models.Course>>) = cd =>
-  any<WorkflowData<CreateCourseStep, Models.Course>>([
+  any<WorkflowData<CreateCourseStep, Models.Course>, WorkflowData<CreateCourseStep, Models.Course>>([
     cd => string("view")(`Sent ${cd.model.Name}, ${cd.model.Points}`).bind(`sent`, _ => unit<WorkflowData<CreateCourseStep, Models.Course>>(cd).filter(_ => false)),
     cd => button<WorkflowData<CreateCourseStep, Models.Course>>("close")(cd).map(cd => ({...cd, step:"closed"}))
   ])(cd)

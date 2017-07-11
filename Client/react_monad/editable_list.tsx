@@ -25,9 +25,9 @@ export let editable_list = function<A>(list_name:string, initial_items:C<List<A>
   return initial_items.bind(list_name, items =>
   repeat<EditableListState<A>>(
     form<EditableListState<A>, EditableListState<A>>(`monadic-list-form`)(
-      any<EditableListState<A>>([
+      any<EditableListState<A>, EditableListState<A>>([
         s => list<A, ListOperation<A>>(s.items, undefined, `monadic-list-items`)(i => n =>
-          any<ListOperation<A>>([
+          any<ListOperation<A>, ListOperation<A>>([
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell`)([])(_ =>
               label<boolean, boolean>("")(bool("edit", "radio"))(s.selected_index == i).bind(undefined, selected =>
                 unit<ListOperation<A>>({ kind:"toggle", value:n, index:i, selected:selected }).filter(_ =>

@@ -18,7 +18,7 @@ export type FormEntry<M> =
 
 export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[]) : (_:FormData<M>) => C<FormData<M>> {
   return c => repeat<FormData<M>>(c =>
-    any<FormData<M>>(
+    any<FormData<M>, FormData<M>>(
       entries.map(e =>
         e.kind == "string" ?
           retract<FormData<M>, string>(
@@ -88,7 +88,7 @@ export let simple_form_with_autosave = function<M>(mode:Mode, model_name:(_:M)=>
   return download_M.bind(undefined, c =>
   simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() })
   .bind(`${model_name(c)}_error_recap`,
-  any<FormData<M>>([
+  any<FormData<M>, FormData<M>>([
     c => form_errors<M>(model_name, entries)(c).ignore_with(c).filter(_ => false),
     c => unit<FormData<M>>(c)
   ]))
@@ -102,7 +102,7 @@ export let simple_form_with_save_button = function<M>(mode:Mode, model_name:(_:M
     download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void> {
   return download_M.bind(undefined, c =>
     simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() }).bind(`${model_name(c)}_form`, c =>
-      any<FormData<M>>([
+      any<FormData<M>, FormData<M>>([
         form_errors<M>(model_name, entries),
         c => button<FormData<M>>(`save`, !c.errors.isEmpty())(c)
       ])(c)
@@ -116,7 +116,7 @@ export let simple_form_with_prev_and_next_buttons = function<M>(mode:Mode, model
     on_prev:(_:M)=>M, on_next:(_:M)=>M) : (_:FormData<M>) => C<FormData<M>> {
   return c =>
     simple_inner_form<M>(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c =>
-      any<FormData<M>>([
+      any<FormData<M>, FormData<M>>([
         form_errors<M>(model_name, entries),
         c => prev_visible(c) ? button<FormData<M>>(`prev`, prev_enabled(c))(c).map<FormData<M>>(c => ({...c, model:on_prev(c.model)})) : unit<FormData<M>>(c).filter(_ => false),
         c => next_visible(c) ? button<FormData<M>>(`next`, next_enabled(c))(c).map<FormData<M>>(c => ({...c, model:on_next(c.model)})) : unit<FormData<M>>(c).filter(_ => false)

@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-import {List, Map, Set} from "immutable"
+import {List, Map, Set, Range} from "immutable"
 import * as Immutable from "immutable"
 import * as Models from '../generated_models'
 import * as Api from '../generated_api'
@@ -13,9 +13,8 @@ import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_
 type FictionalPage = { title:string, content:string }
 
 export let tabbed_menu_sample : C<void> =
-  menu<FictionalPage, string>("tabs", p => p.title, `tabbed menu`)(
-    List<FictionalPage>([
-      { title:"First tab", content:"This is the content of the first tab."},
-      { title:"Second tab", content:"This is the content of the second tab."}
-    ]), p => string("view")(p.content)
+  menu<FictionalPage, string>({kind:"tabs",max_tabs:5}, p => p.title, `tabbed menu`)(
+    List<FictionalPage>(Range(1, 10).map(i =>
+      ({ title:`Tab ${i}`, content:`This is the content of the tab ${i}.`})
+    ).toArray()), p => string("view")(p.content)
   ).ignore()

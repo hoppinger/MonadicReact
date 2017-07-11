@@ -12,7 +12,7 @@ import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_
 
 export let toggles_sample : C<void> =
   repeat<boolean>(b =>
-    any<boolean>([
+    any<boolean, boolean>([
       label<boolean, boolean>("my toggle.")(b =>
         bool("edit", "checkbox", `basic toggle`)(b)),
       label<boolean, boolean>("my fancy toggle.")(b =>

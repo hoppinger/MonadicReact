@@ -1,6 +1,10 @@
 ## doing
-- any<A> -> any<A,B>
-- never<A,B>:C<A> -> C<B>
+- files
+- link
+- overlay as a div with a special class, overlay : (A -> C<A>) -> (A -> C<A>)
+
+## ongoing concerns
+- mode should always also check context.mode
 
 ## primitives (1 day)
 - [x] rich text
@@ -11,14 +15,6 @@
 - [ ] root container
 - [ ] get context, set context
 - [ ] routing
-
-## core/combinators (3 days)
-- [ ] more than N tabs render "..."
-- [?] mode should always also check context.mode
-- [x] paginate in own file
-- [x] form transformer like div
-- [ ] any<A> -> any<A,B>
-- [ ] never<A,B>:C<A> -> C<B>
 
 ## overlays (1 days)
 - [ ] overlay as a div with a special class, overlay : (A -> C<A>) -> (A -> C<A>)

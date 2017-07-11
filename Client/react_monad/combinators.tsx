@@ -7,12 +7,13 @@ import {bool} from './primitives'
 export type Mode = "edit"|"view"
 export type RepeatProps<A> = { kind:"repeat", value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type AllProps<A> = { kind:"all", ps:Array<C<A>> } & CmdCommon<Array<A>>
-export type AnyProps<A> = { kind:"any", value:A, ps:Array<(_:A)=>C<A>>, className:string } & CmdCommon<A>
+export type AnyProps<A,B> = { kind:"any", value:A, ps:Array<(_:A)=>C<B>>, className:string } & CmdCommon<B>
+export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type RetryStrategy = "never" | "semi exponential"
 export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B, is_value_changed:(old_value:B,new_value:B)=>boolean } & CmdCommon<A>
-export type MenuType = "side menu"|"tabs"
+export type MenuType = "side menu"|{kind:"tabs",max_tabs:number}
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
 type RepeatState<A> = { current_value:A, frame_index:number }
@@ -35,13 +36,13 @@ export let repeat = function<A>(p:(_:A)=>C<A>, key?:string, dbg?:() => string) :
     ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key })))
 }
 
-type AnyState<A> = { ps:"creating"|Array<JSX.Element> }
-class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
-  constructor(props:AnyProps<A>,context:any) {
+type AnyState<A,B> = { ps:"creating"|Array<JSX.Element> }
+class Any<A,B> extends React.Component<AnyProps<A,B>,AnyState<A,B>> {
+  constructor(props:AnyProps<A,B>,context:any) {
     super()
     this.state = { ps:"creating" }
   }
-  componentWillReceiveProps(new_props:AnyProps<A>) {
+  componentWillReceiveProps(new_props:AnyProps<A,B>) {
     this.setState({...this.state,
       ps:new_props.ps.map(p =>
           p(new_props.value).comp(new_props.context)(callback => new_value =>
@@ -58,10 +59,35 @@ class Any<A> extends React.Component<AnyProps<A>,AnyState<A>> {
   }
 }
 
-export let any = function<A>(ps:Array<(_:A)=>C<A>>, key?:string, className?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return initial_value => make_C<A>(ctxt => cont =>
-    React.createElement<AnyProps<A>>(Any,
+export let any = function<A,B>(ps:Array<(_:A)=>C<B>>, key?:string, className?:string, dbg?:() => string) : ((_:A) => C<B>) {
+  return initial_value => make_C<B>(ctxt => cont =>
+    React.createElement<AnyProps<A,B>>(Any,
       { kind:"any", debug_info:dbg, ps:ps, value:initial_value, context:ctxt, cont:cont, key:key, className:className }))
+}
+
+type NeverState<A,B> = { p:"loading"|JSX.Element }
+class Never<A,B> extends React.Component<NeverProps<A,B>,NeverState<A,B>> {
+  constructor(props:NeverProps<A,B>,context:any) {
+    super()
+    this.state = { p:"loading" }
+  }
+  componentWillReceiveProps(new_props:NeverProps<A,B>) {
+    this.setState({...this.state,
+      p:new_props.p.comp(new_props.context)(callback => new_value => {})})
+  }
+  componentWillMount() {
+    this.setState({...this.state,
+      p:this.props.p.comp(this.props.context)(callback => new_value => {})})
+  }
+  render() {
+    return null
+  }
+}
+
+export let never = function<A,B>(p:C<A>, key?:string) : C<B> {
+  return make_C<B>(ctxt => cont =>
+    React.createElement<NeverProps<A,B>>(Never,
+      { kind:"never", p:p, context:ctxt, cont:cont, key:key, debug_info:undefined }))
 }
 
 type AllState<A> = { results:Immutable.Map<number,A>, ps:"creating"|Array<JSX.Element> }
@@ -239,12 +265,12 @@ export let delay = function<A>(dt:number, key?:string, dbg?:() => string) : (p:(
       { kind:"delay", debug_info:dbg, dt:dt, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
-type MenuState<A,B> = { selected:undefined|number, content:undefined|JSX.Element }
+type MenuState<A,B> = { selected:undefined|number, content:undefined|JSX.Element, start_showing_from:number }
 class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
   constructor(props:MenuProps<A,B>,context:any) {
     super()
     this.state = { selected:props.selected_item != undefined ? props.items.findIndex(i => props.to_string(i) == props.to_string(props.selected_item)) : undefined,
-                   content:undefined }
+                   content:undefined, start_showing_from:0 }
   }
   componentWillMount() {
     if (this.state.selected != undefined)
@@ -253,44 +279,76 @@ class Menu<A,B> extends React.Component<MenuProps<A,B>,MenuState<A,B>> {
   }
   render() {
     let content_menu_class:string, content_class:string, menu_class:string, entries_class:string, entry_class:string
+    let shown_range:{first:number, amount:number}
     if (this.props.type == "side menu") {
       content_menu_class = "monadic-content-with-menu"
       content_class = "monadic-content"
       menu_class = "monadic-content-menu"
       entries_class = "monadic-content-menu__entries"
       entry_class = "monadic-content-menu__entry"
-    } else if (this.props.type == "tabs"){
+      shown_range = { first:0, amount:this.props.items.count() }
+      return <div className={content_menu_class}>
+        <div className={menu_class}>
+          <div className={entries_class}>
+
+            {this.props.items.map((i, i_i) =>
+                  <div className={`${entry_class} ${i_i == this.state.selected ? ` ${entry_class}--active` : ""}`}>
+                    <a onClick={() =>
+                        {
+                          this.setState({...this.state, selected:i_i,
+                              content:this.props.p(this.props.items.get(i_i)).comp(this.props.context)(this.props.cont)})
+                        }
+                      }>
+                      { this.props.to_string(i) }
+                    </a>
+                  </div>)
+                }
+                {/*<div className="menu_entry menu_entry--with-sub">
+
+                </div>*/}
+          </div>
+        </div>
+        <div className={content_class}>
+          { this.state.content }
+        </div>
+      </div>
+    } else if (this.props.type.kind == "tabs"){
       content_menu_class = "monadic-content-with-tabs"
       content_class = "monadic-content"
       menu_class = "monadic-tabs"
       entries_class = "monadic-tabs__entries"
       entry_class = "monadic-tabs__entry"
-    }
-    return <div className={content_menu_class}>
-      <div className={menu_class}>
-        <div className={entries_class}>
-
-          {this.props.items.map((i, i_i) =>
-                <div className={`${entry_class} ${i_i == this.state.selected ? ` ${entry_class}--active` : ""}`}>
-                  <a onClick={() =>
-                      {
-                        this.setState({...this.state, selected:i_i,
-                            content:this.props.p(this.props.items.get(i_i)).comp(this.props.context)(this.props.cont)})
-                      }
-                    }>
-                    { this.props.to_string(i) }
-                  </a>
-                </div>)
-              }
-              {/*<div className="menu_entry menu_entry--with-sub">
-
-              </div>*/}
+      shown_range = { first:this.state.start_showing_from, amount:this.props.type.max_tabs }
+      return <div className={content_menu_class}>
+        <div className={menu_class}>
+          <div className={entries_class}>
+            {shown_range.first > 0 ?
+              <a className={`monadic-prev-tab ${entry_class}`} onClick={() => this.setState({...this.state, start_showing_from:this.state.start_showing_from-1})}>{"<"}</a>
+              :
+              null}
+            {this.props.items.map((i, i_i) =>
+                  <div key={`${i_i}`} className={`${entry_class} ${i_i == this.state.selected ? ` ${entry_class}--active` : ""}`}>
+                    <a onClick={() =>
+                        {
+                          this.setState({...this.state, selected:i_i,
+                              content:this.props.p(this.props.items.get(i_i)).comp(this.props.context)(this.props.cont)})
+                        }
+                      }>
+                      { this.props.to_string(i) }
+                    </a>
+                  </div>).filter((i, i_i) => i_i >= shown_range.first && (i_i - shown_range.first) < shown_range.amount)
+            }
+            {shown_range.first + shown_range.amount < this.props.items.count() ?
+              <a className={`monadic-next-tab ${entry_class}`} onClick={() => this.setState({...this.state, start_showing_from:this.state.start_showing_from+1})}>{">"}</a>
+              :
+              null}
+          </div>
+        </div>
+        <div className={content_class}>
+          { this.state.content }
         </div>
       </div>
-      <div className={content_class}>
-        { this.state.content }
-      </div>
-    </div>
+    }
   }
 }
 

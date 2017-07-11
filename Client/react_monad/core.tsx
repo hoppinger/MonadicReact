@@ -1,6 +1,7 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
+import {never} from './combinators'
 
 export type CmdCommon<A> = { cont:Cont<A>, context:Context, key:string, debug_info:() => string }
 export type UnitProps<A> = { kind:"unit", value:A } & CmdCommon<A>
@@ -21,6 +22,7 @@ export type C<A> = {
   comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element
   bind:<B>(key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
+  never:<B>(key?:string)=>C<B>
   ignore:(key?:string)=>C<void>
   ignore_with:<B>(x:B)=>C<B>
   map:<B>(f:(_:A)=>B, key?:string, dbg?:()=>string)=>C<B>,
@@ -42,6 +44,9 @@ export function make_C<A>(comp:(ctxt:Context) => (cont:Cont<A>) => JSX.Element) 
     // bind_once:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, dbg?:()=>string) : C<B> {
     //         return bind_once<A,B>(key, this, k, dbg)
     //       },
+    never:function<B>(this:C<A>, key?:string) : C<B> {
+      return never<A, B>(this, key)
+    },
     ignore_with:function<B>(this:C<A>, x:B) : C<B> {
       return this.bind<B>(``, _ => unit<B>(x))
     },

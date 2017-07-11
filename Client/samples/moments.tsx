@@ -13,7 +13,7 @@ import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_
 
 export let moments_sample : C<void> =
   repeat<Moment.Moment>(
-    any<Moment.Moment>([
+    any<Moment.Moment, Moment.Moment>([
       c => repeat<Moment.Moment>(
         label<Moment.Moment, Moment.Moment>("Insert a time: ", true)(time("edit", "time"))
       )(c).bind(`time bind`, c =>
