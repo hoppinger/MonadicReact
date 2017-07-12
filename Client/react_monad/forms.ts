@@ -84,8 +84,9 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
         : e.kind == "lazy file" ?
           retract<FormData<M>, File>(
             c => null, c => f => ({...c, model:e.out(c.model)(f)}),
-            _ => file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
-                 e.upload(c.model)(f).ignore_with(f)))
+            _ => label<void, File>(e.field_name, true)(_ =>
+                  file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
+                  e.upload(c.model)(f).ignore_with(f)))(null))
         :
           null
       )

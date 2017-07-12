@@ -408,7 +408,7 @@ class FileComponent extends React.Component<FileProps, FileState> {
   }
   render() {
     return <div>
-      <span>Filename:
+      <span>
         <a href={this.props.url} >{this.props.label}</a></span>
         {this.props.mode == "view" ?
           null

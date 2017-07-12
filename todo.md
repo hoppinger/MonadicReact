@@ -10,17 +10,10 @@
 ## ongoing concerns
 - mode should always also check context.mode
 
-## quality improvements
-- [x] file uploader should also show status
-- [x] non-lazy vs lazy file uploader
-
 ## root container (3 days)
 - [ ] root container
 - [ ] get context, set context
 - [ ] routing
-
-## overlays (1 days)
-- [x] overlay as a div with a special class, overlay : (A -> C<A>) -> (A -> C<A>)
 
 ## samples (3 days)
 - [ ] all

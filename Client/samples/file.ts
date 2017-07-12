@@ -11,17 +11,10 @@ import {string, number, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image, link, file}from '../react_monad/html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from '../react_monad/combinators'
 
-export let link_sample : C<void> =
-  any<void, void>([
-    _ => link(`Google`, "https://www.google.com"),
-    _ => link(`Facebook`, "https://www.facebook.com"),
-    _ => link(`Hoppinger`, "https://www.hoppinger.com")
-  ], `link sample`)(null)
-
 let upload_attachment : (attachment:File) => C<void> = a =>
   lift_promise<File, void>(file => Api.get_Course(1).then(c => Api.upload_Course_Attachment(c.Item, file).then(_ => null)),
   "semi exponential", `course_attachment_uploader_lift_${1}`)(a)
 
 export let file_sample : C<void> =
-  file("edit", "Download course attachment", "/Course/1/AttachmentDownload").bind(`file uploader sample`, f =>
+  file("edit", "Download course attachment", "/api/v1/Course/1/AttachmentDownload").bind(`file uploader sample`, f =>
   upload_attachment(f))
