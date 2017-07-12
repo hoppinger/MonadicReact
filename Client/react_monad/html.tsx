@@ -15,6 +15,8 @@ export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<str
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type ButtonProps<A> = { kind:"button", label:string, x:A, disabled:boolean } & CmdCommon<A>
+export type LinkProps = { kind:"link", label:string, url:string, disabled:boolean } & CmdCommon<void>
+export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
 type LabelState<A,B> = { p:"creating"|JSX.Element }
 class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
@@ -378,4 +380,54 @@ export let button = function<A>(label:string, disabled?:boolean, key?:string, db
   return x => make_C<A>(ctxt => cont =>
     React.createElement<ButtonProps<A>>(Button,
       { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key }))
+}
+
+
+type LinkState = {  }
+class Link extends React.Component<LinkProps, LinkState> {
+  constructor(props:LinkProps, context:any) {
+    super()
+    this.state = {}
+  }
+  render() {
+    return <a href={this.props.url} className="button" disabled={this.props.disabled}>{this.props.label}</a>
+  }
+}
+
+export let link = function<A>(label:string, url:string, disabled?:boolean, key?:string, dbg?:() => string) : C<void> {
+  return make_C<void>(ctxt => cont =>
+    React.createElement<LinkProps>(Link,
+      { kind:"link", debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key }))
+}
+
+type FileState = {}
+class FileComponent extends React.Component<FileProps, FileState> {
+  constructor(props:FileProps, context:any) {
+    super()
+    this.state = {}
+  }
+  render() {
+    return <div>
+      <span>Filename:
+        <a href={this.props.url} >{this.props.label}</a></span>
+        {this.props.mode == "view" ?
+          null
+            :
+          <input disabled={this.props.disabled}
+              type="file"
+              onChange={(e:any) => {
+                  let files:FileList = (e.target as any).files
+                  let f = files[0]
+                  this.props.cont(() => {})(f)
+                }
+              } />
+        }
+    </div>
+  }
+}
+
+export let file = function<A>(mode:Mode, label:string, url:string, disabled?:boolean, key?:string, dbg?:() => string) : C<File> {
+  return make_C<File>(ctxt => cont =>
+    React.createElement<FileProps>(FileComponent,
+      { kind:"file", mode:mode, debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key }))
 }

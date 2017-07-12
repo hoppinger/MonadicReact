@@ -9,7 +9,7 @@ import * as ViewUtils from './generated_views/view_utils'
 
 import {C, unit, bind} from './react_monad/core'
 import {string, number, bool} from './react_monad/primitives'
-import {button, selector, multi_selector, label, h1, h2, div, form, image} from './react_monad/html'
+import {button, selector, multi_selector, label, h1, h2, div, form, image, link, file} from './react_monad/html'
 import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
 import {rich_text} from './react_monad/rich_text'
 import {paginate, Page} from './react_monad/paginator'
@@ -30,6 +30,8 @@ import {rich_text_sample} from './samples/rich text'
 import {pagination_sample} from './samples/pagination'
 import {list_sample} from './samples/list'
 import {editable_list_sample} from './samples/editable_list'
+import {link_sample} from './samples/link'
+import {file_sample} from './samples/file'
 
 type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
@@ -45,9 +47,39 @@ export let sample_toggleable_minipage : (_:Sample) => C<void> = s =>
 export let sample_minipage : (_:Sample) => C<void> = s =>
   h2<void, void>(s.description, "", s.description)(_ => s.sample)(null)
 
+
+export function overlay<A,B>(key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return ps => p => div<A,B>(`overlay`)([])(div<A,B>(`overlay__item`)(ps)(p))
+}
+
+let overlay_sample =
+  repeat<boolean>(
+    visible =>
+      any<void, boolean>(
+        [
+          any<void, boolean>([
+            _ => string("view")("The overlay is hidden").never<boolean>(),
+            _ => button("Show overlay")(true)
+          ]),
+          !visible ?
+            _ => unit<void>(null).never<boolean>()
+          :
+            overlay<void, boolean>()([])(
+              any<void, boolean>([
+                _ => string("view")("This is the overlay").never<boolean>(),
+                _ => button("X")(false)
+              ])
+            )
+        ]
+      )(null)
+  , `overlay sample`)(false).ignore()
+
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<Sample> =
     [
+      { sample: overlay_sample, description:"overlay" },
+      { sample: link_sample, description:"links" },
+      { sample: file_sample, description:"file" },
       { sample: editable_list_sample, description:"editable list" },
       { sample: pagination_sample, description:"pagination" },
       { sample: list_sample, description:"list" },

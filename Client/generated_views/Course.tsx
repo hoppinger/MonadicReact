@@ -186,6 +186,26 @@ export function render_Course_Logo_editable_minimised(self:CourseContext) : JSX.
 </div>
 }
 
+export function render_Course_Attachment_editable_minimised(self:CourseContext) : JSX.Element {
+  if (!Permissions.can_edit_Course()) return render_Course_Attachment_minimised(self)
+  else
+    return !Permissions.can_view_Course_Attachment() ? <div /> :
+          <div className="model__attribute attachment">
+  <label className="attribute-label attribute-label-attachment">{i18next.t(`Course:Attachment`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.File(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Attachment(),
+        self.props.mode,
+        `/api/v1/Course/${self.props.entity.Id}/AttachmentDownload`,
+        self.props.entity.Attachment,
+        (f:File) => Api.upload_Course_Attachment(self.props.entity, f).then(() => {
+            self.setState({ ...self.state() },
+              () => self.props.set_entity({ ...self.props.entity, Attachment: f.name }))
+          })) }
+  </div>
+</div>
+}
+
 
 export function render_Course_Name_editable_maximised(self:CourseContext) : JSX.Element {
   if (!Permissions.can_edit_Course()) return render_Course_Name_maximised(self)
@@ -235,12 +255,33 @@ export function render_Course_Logo_editable_maximised(self:CourseContext) : JSX.
 </div>
 }
 
+export function render_Course_Attachment_editable_maximised(self:CourseContext) : JSX.Element {
+  if (!Permissions.can_edit_Course()) return render_Course_Attachment_maximised(self)
+  else
+    return !Permissions.can_view_Course_Attachment() ? <div /> :
+          <div className="model__attribute attachment">
+  <label className="attribute-label attribute-label-attachment">{i18next.t(`Course:Attachment`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.File(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Attachment(),
+        self.props.mode,
+        `/api/v1/Course/${self.props.entity.Id}/AttachmentDownload`,
+        self.props.entity.Attachment,
+        (f:File) => Api.upload_Course_Attachment(self.props.entity, f).then(() => {
+            self.setState({ ...self.state() },
+              () => self.props.set_entity({ ...self.props.entity, Attachment: f.name }))
+          })) }
+  </div>
+</div>
+}
+
 
 export function render_editable_attributes_minimised_Course(self:CourseContext) {
   let attributes = (<div>
       {render_Course_Name_editable_minimised(self)}
         {render_Course_Points_editable_minimised(self)}
         {render_Course_Logo_editable_minimised(self)}
+        {render_Course_Attachment_editable_minimised(self)}
     </div>)
   return attributes
 }
@@ -251,6 +292,7 @@ export function render_editable_attributes_maximised_Course(self:CourseContext) 
         {render_Course_Name_editable_maximised(self)}
         {render_Course_Points_editable_maximised(self)}
         {render_Course_Logo_editable_maximised(self)}
+        {render_Course_Attachment_editable_maximised(self)}
         
         
         
@@ -431,6 +473,23 @@ export function render_Course_Name_minimised(self:CourseContext) : JSX.Element {
 </div>
       
 }
+        export function render_Course_Attachment_minimised(self:CourseContext) : JSX.Element {
+      return !Permissions.can_view_Course_Attachment() ? null : <div className="model__attribute attachment">
+  <label className="attribute-label attribute-label-attachment">{i18next.t(`Course:Attachment`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.File(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Attachment(),
+        self.props.mode,
+        `/api/v1/Course/${self.props.entity.Id}/AttachmentDownload`,
+        self.props.entity.Attachment,
+        (f:File) => Api.upload_Course_Attachment(self.props.entity, f).then(() => {
+            self.setState({ ...self.state() },
+              () => self.props.set_entity({ ...self.props.entity, Attachment: f.name }))
+          })) }
+  </div>
+</div>
+      
+}
 
 export function render_Course_Name_maximised(self:CourseContext) : JSX.Element {
         return !Permissions.can_view_Course_Name() ? null : <div className="model__attribute name">
@@ -468,6 +527,22 @@ export function render_Course_Name_maximised(self:CourseContext) : JSX.Element {
   </div>
 </div>
 }
+        export function render_Course_Attachment_maximised(self:CourseContext) : JSX.Element {
+        return !Permissions.can_view_Course_Attachment() ? null : <div className="model__attribute attachment">
+  <label className="attribute-label attribute-label-attachment">{i18next.t(`Course:Attachment`, {context: self.props.inline ? "inline" : ""})}</label>
+  <div className="model__attribute-content">
+    { Components.File(
+        self.props.is_editable && Permissions.can_edit_Course() && Permissions.can_edit_Course_Attachment(),
+        self.props.mode,
+        `/api/v1/Course/${self.props.entity.Id}/AttachmentDownload`,
+        self.props.entity.Attachment,
+        (f:File) => Api.upload_Course_Attachment(self.props.entity, f).then(() => {
+            self.setState({ ...self.state() },
+              () => self.props.set_entity({ ...self.props.entity, Attachment: f.name }))
+          })) }
+  </div>
+</div>
+}
 
 export function render_preview_Course(self:CourseContext) {
   let attributes:JSX.Element = null
@@ -476,6 +551,7 @@ export function render_preview_Course(self:CourseContext) {
       { render_Course_Name_minimised(self) }
         { render_Course_Points_minimised(self) }
         { render_Course_Logo_minimised(self) }
+        { render_Course_Attachment_minimised(self) }
     </div>)
   else
     attributes = render_editable_attributes_minimised_Course(self)
@@ -492,6 +568,7 @@ export function render_large_Course(self:CourseContext) {
       { render_Course_Name_maximised(self) }
         { render_Course_Points_maximised(self) }
         { render_Course_Logo_maximised(self) }
+        { render_Course_Attachment_maximised(self) }
         
     </div>)
   else

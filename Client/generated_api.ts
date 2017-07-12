@@ -256,7 +256,24 @@ export async function update_Course_Logo(item:Models.Course, new_src:string) : P
 }
 
 
+export async function download_Course_Attachment(id:number) : Promise<string> {
+  let res = await fetch(`/api/v1/Course/${id}/AttachmentDownload`, { method: 'get', credentials: 'include', headers:{} })
+  let json = await res.text()
+  if (!res.ok) throw Error(res.statusText)
+  return json as string
+}
 
+export async function upload_Course_Attachment(source:Models.Course,file:File) : Promise<void> {
+  let files_data = new FormData()
+  files_data.append(file.name, file)
+
+  let res = await fetch(`/api/v1/Course/${source.Id}/AttachmentUpload`,  {
+    method: "POST",
+    body: files_data, credentials: 'include', headers:{
+      'X-XSRF-TOKEN': (document.getElementsByName("__RequestVerificationToken")[0] as any).value } })
+  if (!res.ok) throw Error(res.statusText)
+  return
+}
 
 
   

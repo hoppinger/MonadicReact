@@ -8,9 +8,10 @@ using MonadicComponents.Models;
 namespace MonadicComponents.Migrations
 {
     [DbContext(typeof(MonadicComponentsContext))]
-    partial class MonadicComponentsContextModelSnapshot : ModelSnapshot
+    [Migration("20170711201949_SpecChange_20170711211930")]
+    partial class SpecChange_20170711211930
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1");

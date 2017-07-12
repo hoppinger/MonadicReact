@@ -48,6 +48,10 @@ static public bool can_view_Course() { return true; }
 
     static public bool can_edit_Course_Logo() { return true; }
     
+  static public bool can_view_Course_Attachment() { return true; }
+
+    static public bool can_edit_Course_Attachment() { return true; }
+    
 
     
 static public bool can_view_Lecture() { return true; }

@@ -14,6 +14,7 @@ export type Course = {
     Name : string
   Points : number
   Logo : string
+  Attachment : string
     
   }
   

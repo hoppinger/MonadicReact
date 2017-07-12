@@ -12,7 +12,7 @@ export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type RetryStrategy = "never" | "semi exponential"
-export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B, is_value_changed:(old_value:B,new_value:B)=>boolean } & CmdCommon<A>
+export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B } & CmdCommon<A>
 export type MenuType = "side menu"|{kind:"tabs",max_tabs:number}
 export type MenuProps<A,B> = { kind:"menu", type:MenuType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A, p:(_:A)=>C<B> } & CmdCommon<B>
 
@@ -80,7 +80,7 @@ class Never<A,B> extends React.Component<NeverProps<A,B>,NeverState<A,B>> {
       p:this.props.p.comp(this.props.context)(callback => new_value => {})})
   }
   render() {
-    return null
+    return this.state.p != "loading" ? this.state.p : null
   }
 }
 
@@ -173,11 +173,10 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
     this.state = { result:"busy", input:props.value }
   }
   componentWillReceiveProps(new_props:LiftPromiseProps<A,B>) {
-    if (this.state.result != "busy" && this.state.result != "error" &&
-        !this.props.is_value_changed(new_props.value, this.state.input)) {
-      this.props.debug_info && console.log("New props (ignored):", this.props.debug_info(), this.state.input, new_props.value)
-      return
-    }
+    // if (this.state.result != "busy" && this.state.result != "error") {
+    //   this.props.debug_info && console.log("New props (ignored):", this.props.debug_info(), this.state.input, new_props.value)
+    //   return
+    // }
     this.props.debug_info && console.log("New props:", this.props.debug_info(), this.state.input, new_props.value)
     this.setState({...this.state, input:new_props.value}, () =>
     this.load(new_props))
@@ -211,10 +210,10 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
 }
 
-export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, is_value_changed:(old_value:A,new_value:A)=>boolean, retry_strategy:RetryStrategy, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
+export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:RetryStrategy, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
   return x => make_C<B>(ctxt => cont =>
     React.createElement<LiftPromiseProps<B,A>>(LiftPromise,
-      { kind:"lift promise", debug_info:dbg, is_value_changed:is_value_changed, value:x, retry_strategy:retry_strategy, p:p, context:ctxt, cont:cont, key:key }))
+      { kind:"lift promise", debug_info:dbg, value:x, retry_strategy:retry_strategy, p:p, context:ctxt, cont:cont, key:key }))
 }
 
 

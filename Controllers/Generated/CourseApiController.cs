@@ -327,6 +327,7 @@ var session = HttpContext.Get<LoggableEntities>(_context);
       
       _context.Entry(item).Property(x => x.Name).IsModified = false;
       _context.Entry(item).Property(x => x.Points).IsModified = false;
+      _context.Entry(item).Property(x => x.Attachment).IsModified = false;
       _context.Entry(item).Property(x => x.CreatedDate).IsModified = false;
       _context.Entry(item).Property(x => x.Logo).IsModified = true;
       _context.SaveChanges();
@@ -441,6 +442,43 @@ var session = HttpContext.Get<LoggableEntities>(_context);
         .Paginate(can_create_by_token, can_delete_by_token, false, page_index, page_size, MonadicComponents.Models.Course.WithoutImages, item => item , null );
     }
 
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpGet("{id}/AttachmentDownload")]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Download_Attachment(int id)
+    {
+      var file = _context.Course_AttachmentData.FirstOrDefault(i => i.CourseId == id);
+      byte[] bytes = Convert.FromBase64String(file.Content);
+      MemoryStream ms = new MemoryStream(bytes);
+      return new FileStreamResult(ms, file.ContentType) { FileDownloadName = file.FileName };
+    }
+
+    [RestrictToUserType(new string[] {"*"})]
+    [HttpPost("{id}/AttachmentUpload")]
+    public IActionResult Upload_Attachment(int id)
+    {
+      var files = Request.Form.Files;
+      if (files.Count != 1) throw new Exception("Uploader should receive exactly one file.");
+      var file = files[0];
+      using(var stream = file.OpenReadStream())
+      {
+        var bytes = new byte[stream.Length];
+        stream.Read(bytes, 0, (int)stream.Length);
+        var data = Convert.ToBase64String(bytes);
+        var data_item = _context.Course_AttachmentData.FirstOrDefault(i => i.CourseId == id);
+        if (data_item == null) {
+          data_item = new Course_AttachmentData() { Content = data, FileName = file.FileName, ContentType = file.ContentType, CourseId = id, Id = _context.Course_AttachmentData.Max(i => i.Id) + 1 };
+          _context.Course_AttachmentData.Add(data_item);
+        } else {
+          data_item.FileName = file.FileName;
+          data_item.ContentType = file.ContentType;
+          data_item.Content = data;
+        }
+        _context.Course.FirstOrDefault(e => e.Id == id).Attachment = file.FileName;
+        _context.SaveChanges();
+      }
+      return Ok();
+    }
     
 
 

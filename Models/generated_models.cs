@@ -40,6 +40,8 @@ namespace MonadicComponents.Models
         public string Name {get;set;}
     public int Points {get;set;}
     public string Logo {get;set;}
+    [Newtonsoft.Json.JsonIgnore] public virtual Course_AttachmentData Course_AttachmentData {get;set;}
+    public string Attachment {get;set;}
     
     static public Expression<Func<Course,Course>> FilterViewableAttributes() {
       return self => self;
@@ -53,7 +55,14 @@ namespace MonadicComponents.Models
     }
   }
 
-  
+  public partial class Course_AttachmentData {
+      public int Id {get;set;}
+      public string Content {get;set;}
+      public string FileName {get;set;}
+      public string ContentType {get;set;}
+      [Newtonsoft.Json.JsonIgnore] public virtual Course Course {get;set;}
+      public int CourseId {get;set;}
+    }
   
   public partial class Lecture: IEntity {
     public Lecture() {

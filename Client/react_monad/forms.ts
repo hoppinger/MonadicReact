@@ -4,7 +4,7 @@ import {List, Map, Set} from "immutable"
 import * as Immutable from "immutable"
 import {C, unit, bind, Mode} from './core'
 import {string, number, bool} from './primitives'
-import {button, selector, multi_selector, label, image, div} from './html'
+import {button, selector, multi_selector, label, image, file, div} from './html'
 import {custom, repeat, any, lift_promise, retract, delay, menu} from './combinators'
 
 export type FormErrors = { errors:Immutable.Map<string,Array<string>> }
@@ -14,7 +14,9 @@ export type FormEntry<M> =
   | { kind:"string", field_name:string, in:(_:M)=>string, out:(_:M)=>(_:string)=>M, get_errors:(_:M)=>Array<string> }
   | { kind:"number", field_name:string, in:(_:M)=>number, out:(_:M)=>(_:number)=>M, get_errors:(_:M)=>Array<string> }
   | { kind:"image", field_name:string, in:(_:M)=>string, out:(_:M)=>(_:string)=>M, get_errors:(_:M)=>Array<string> }
+  | { kind:"file", field_name:string, filename:(_:M) => string, url:(_:M) => string, in:(_:M)=>File, out:(_:M)=>(_:File)=>M, get_errors:(_:M)=>Array<string> }
   | { kind:"lazy image",  field_name:string, download:(c:M) => C<string>, upload:(c:M) => (src:string) => C<string> }
+  | { kind:"lazy file", field_name:string, filename:(_:M) => string, out:(_:M)=>(_:File)=>M, url:(_:M) => string, upload:(_:M) => (_:File) => C<void> }
 
 export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[]) : (_:FormData<M>) => C<FormData<M>> {
   return c => repeat<FormData<M>>(c =>
@@ -59,13 +61,33 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
               // :
                 []
             )(image(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
-        :
+        : e.kind == "lazy image" ?
           retract<FormData<M>, void>(
             c => null, c => _ => c,
             _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src =>
             repeat<string>((src:string) =>
               label<string, string>(e.field_name, true)(image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src =>
               e.upload(c.model)(new_src)))(src)).ignore(), `${model_name(c.model)}_${e.field_name}_retract`)
+        : e.kind == "file" ?
+          retract<FormData<M>, File>(
+            c => e.in(c.model), c => s => {
+              let new_c = e.out(c.model)(s)
+              let errors = e.get_errors(new_c)
+              return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
+            label<File, File>(e.field_name, true)(div<File, File>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
+              // c.errors.has(e.field_name) ?
+              //   c.errors.get(e.field_name).map(error =>
+              //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
+              // :
+                []
+            )(_ => file(mode, e.filename(c.model), e.url(c.model)).ignore_with<File>(null))), `${model_name(c.model)}_${e.field_name}_retract`)
+        : e.kind == "lazy file" ?
+          retract<FormData<M>, File>(
+            c => null, c => f => ({...c, model:e.out(c.model)(f)}),
+            _ => file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
+                 e.upload(c.model)(f).ignore_with(f)))
+        :
+          null
       )
     , `${model_name(c.model)}_inner_form`)(c), `${model_name(c.model)}_repeater`)(c)
 }

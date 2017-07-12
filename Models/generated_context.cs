@@ -8,7 +8,7 @@ namespace MonadicComponents.Models{
     public DbSet<Course> Course { get; set; }
     public DbSet<Lecture> Lecture { get; set; }
     
-    
+    public DbSet<Course_AttachmentData> Course_AttachmentData {get;set;}
     
     public DbSet<Course_Lecture> Course_Lecture { get; set; }
     public DbSet<Session> Session { get; set; }
