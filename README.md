@@ -43,7 +43,7 @@ to compile the dotnet server, use
 
 to compile the frontend application, use
 
-```tsc```
+```webpack```
 
 and to compile the stylesheets, use
 
