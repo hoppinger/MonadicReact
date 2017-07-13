@@ -144,6 +144,10 @@ export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p
     { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, context:ctxt, cont:cont, key:key })))
 }
 
+export function overlay<A,B>(key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return ps => p => div<A,B>(`overlay`)([])(div<A,B>(`overlay__item`)(ps)(p))
+}
+
 type FormState<A,B> = { p:"creating"|JSX.Element }
 class Form<A,B> extends React.Component<FormProps<A,B>,FormState<A,B>> {
   constructor(props:FormProps<A,B>,context:any) {

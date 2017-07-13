@@ -15,6 +15,11 @@ export type Context = {
   set_mode:(new_mode:Mode, callback?:()=>void) => void
   logic_frame:number,
   force_reload:(callback?:()=>void) => void
+  current_page:C<void>
+  pages:Immutable.Stack<C<void>>
+  set_page:(new_page:C<void>, callback?:()=>void) => void
+  push_page:(new_page:C<void>, callback?:()=>void) => void
+  pop_page:(callback?:()=>void) => void
 }
 
 export type Cont<A> = (callback:() => void) => (_:A) => void

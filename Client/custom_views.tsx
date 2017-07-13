@@ -3,14 +3,16 @@ import * as ReactDOM from "react-dom"
 import {List, Map, Set, Range} from "immutable"
 import * as Immutable from "immutable"
 import * as Moment from 'moment'
+import * as i18next from 'i18next'
+
 import * as Models from './generated_models'
 import * as Api from './generated_api'
 import * as ViewUtils from './generated_views/view_utils'
 
-import {C, unit, bind} from './react_monad/core'
+import {C, Mode, Context, unit, bind} from './react_monad/core'
 import {string, number, bool} from './react_monad/primitives'
-import {button, selector, multi_selector, label, h1, h2, div, form, image, link, file} from './react_monad/html'
-import {custom, repeat, all, any, lift_promise, retract, delay, menu, hide} from './react_monad/combinators'
+import {button, selector, multi_selector, label, h1, h2, div, form, image, link, file, overlay} from './react_monad/html'
+import {custom, repeat, all, any, lift_promise, retract, delay, menu} from './react_monad/combinators'
 import {rich_text} from './react_monad/rich_text'
 import {paginate, Page} from './react_monad/paginator'
 import {list} from './react_monad/list'
@@ -32,6 +34,7 @@ import {list_sample} from './samples/list'
 import {editable_list_sample} from './samples/editable_list'
 import {link_sample} from './samples/link'
 import {file_sample} from './samples/file'
+import {overlay_sample} from './samples/overlay'
 
 type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
@@ -48,31 +51,47 @@ export let sample_minipage : (_:Sample) => C<void> = s =>
   h2<void, void>(s.description, "", s.description)(_ => s.sample)(null)
 
 
-export function overlay<A,B>(key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return ps => p => div<A,B>(`overlay`)([])(div<A,B>(`overlay__item`)(ps)(p))
+export type ApplicationProps = { mode:Mode, p:C<void> }
+export type ApplicationState = { context:Context }
+export class Application extends React.Component<ApplicationProps, ApplicationState> {
+  constructor(props:ApplicationProps, context:any) {
+    super(props, context)
+
+    this.state = { context:this.context_from_props(this.props) }
+  }
+
+  context_from_props = (props:ApplicationProps) : Context => ({
+    mode:props.mode,
+    current_page:props.p,
+    set_mode:(new_mode, callback) => this.setState({...this.state, context:{...this.state.context, mode:new_mode}}, callback),
+    logic_frame:0,
+    force_reload:(callback) => this.setState({...this.state, context:{...this.state.context, logic_frame:this.state.context.logic_frame}}, callback),
+    pages:Immutable.Stack<C<void>>(),
+    set_page:(new_page:C<void>, callback?:()=>void) => this.setState({...this.state, context:{...this.state.context, current_page:new_page}}, callback),
+    push_page:(new_page:C<void>, callback?:()=>void) =>
+      this.setState({...this.state, context:{...this.state.context, current_page:new_page, pages:this.state.context.pages.push(this.state.context.current_page)}}, callback),
+    pop_page:(callback?:()=>void) =>
+      this.state.context.pages.isEmpty() ? null
+      :
+      this.setState({...this.state, context:{...this.state.context, current_page:this.state.context.pages.peek(), pages:this.state.context.pages.pop()}}, callback),
+  })
+
+  componentWillReceiveProps(new_props:ApplicationProps) {
+    this.setState({...this.state, context:this.context_from_props(new_props)})
+  }
+
+  render() {
+    return <div className="monadic-application" key={`application@${this.state.context.logic_frame}`}>
+      {
+        this.state.context.current_page.comp(this.state.context)(callback => _ => callback && callback())
+      }
+    </div>
+  }
 }
 
-let overlay_sample =
-  repeat<boolean>(
-    visible =>
-      any<void, boolean>(
-        [
-          any<void, boolean>([
-            _ => string("view")("The overlay is hidden").never<boolean>(),
-            _ => button("Show overlay")(true)
-          ]),
-          !visible ?
-            _ => unit<void>(null).never<boolean>()
-          :
-            overlay<void, boolean>()([])(
-              any<void, boolean>([
-                _ => string("view")("This is the overlay").never<boolean>(),
-                _ => button("X")(false)
-              ])
-            )
-        ]
-      )(null)
-  , `overlay sample`)(false).ignore()
+export let application = (mode:Mode, p:C<void>) : JSX.Element =>
+  React.createElement<ApplicationProps>(Application, { mode:mode, p:p })
+
 
 export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) : JSX.Element {
   let all_samples : Array<Sample> =
@@ -97,23 +116,16 @@ export function HomePage(props:ViewUtils.EntityComponentProps<Models.HomePage>) 
       { sample: tabbed_menu_sample, description:"tabbed menu" }
     ]
 
-            // all_samples.map((s,i) =>
-            //   <div className="component">
-            //     {
-            //       sample_toggleable_minipage(s).comp(
-            //           { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
-            //         })(continuation => value => console.log("done"))
-
-            //     }
-            //   </div>
-            // )
+  let show:"menu"|"toggles" = "menu"
   return <div>
       {
         <div className="component">
           {
-            menu<Sample, void>("side menu", s => s.description)(List(all_samples), sample_minipage).comp(
-                { mode:"edit", set_mode:((nm, c) => {}), logic_frame:0, force_reload:(c) => {}
-              })(continuation => value => console.log("done"))
+            application("edit",
+              show == "menu" ?
+                menu<Sample, void>("side menu", s => s.description)(List(all_samples), sample_minipage)
+              :
+                div<void, void>()(all_samples.map((s,i) => _ => sample_toggleable_minipage(s)))(_ => unit<void>(null).never<void>())(null))
           }
         </div>
       }

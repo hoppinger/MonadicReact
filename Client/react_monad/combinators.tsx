@@ -1,6 +1,8 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
+import * as i18next from 'i18next'
+
 import {C, Cont, CmdCommon, Context, make_C, unit, bind} from './core'
 import {bool} from './primitives'
 
@@ -204,9 +206,9 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.result == "busy" ? <div className="busy">busy</div>
-            : this.state.result == "error" ? <div className="error">error</div>
-            : null // <div className="done">done</div>
+    return this.state.result == "busy" ? <div className="busy">{i18next.t("busy")}</div>
+            : this.state.result == "error" ? <div className="error">{i18next.t("error")}</div>
+            : null // <div className="done">{i18next.t("done")}</div>
   }
 }
 
@@ -368,4 +370,3 @@ export let hide = (f_name:string, f:C<void>) =>
       unit<void>(null)
     :
       f.bind(`visible ${f_name}`, _ => unit<void>(null)))
-

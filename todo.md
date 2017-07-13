@@ -1,5 +1,6 @@
 ## doing
-- overlay in own file
+- documentation
+- publish online for designers
 - form with
   - date, time, date-time
   - rich-text
@@ -7,13 +8,17 @@
   - file
 - paginated list of entities
 
-## ongoing concerns
-- mode should always also check context.mode
+## various
+- [ ] cleanup dependencies in imports
+- [ ] mode should always also check context.mode
 
 ## root container (3 days)
-- [ ] root container
-- [ ] get context, set context
+- [x] root container
+- [ ] get context, set context and utilities (get_mode, set_mode, force_reload, set_page, push_page, pop_page)
 - [ ] routing
+  - [ ] set_page with url
+  - [ ] url parser and dispatcher: [url -> C<void>]
+  - [ ] register_page
 
 ## samples (3 days)
 - [ ] all
@@ -31,7 +36,7 @@
 - [x] files
 
 ## external (3 days)
-- [ ] i18n
+- [x] i18n
 - [ ] documentation
 - [ ] publish online for designers
 - [ ] npm package
@@ -52,6 +57,7 @@
 - [ ] rich text (all text styles and images)
 - [ ] toggle without label (for example within an edit list)
 - [ ] tabs "pagination"
+- [ ] busy/error in lift promise
 
 ##  scaffolder (4 days)
 - [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
@@ -64,3 +70,4 @@
 - [ ] mapM
 - [ ] mapL
 - [ ] className by default in all CmdCommon
+- [ ] add math plugin https://github.com/efloti/draft-js-mathjax-plugin
