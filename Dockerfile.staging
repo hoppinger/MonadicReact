@@ -7,7 +7,7 @@ RUN npm install -g yarn
 WORKDIR /app
 ENV ASPNETCORE_URLS http://*:5000
 ENV ASPNETCORE_ENVIRONMENT Staging
-EXPOSE 5000
+EXPOSE 6050
 COPY . /app
 COPY ./appsettings.staging.json /app/appsettings.json
 

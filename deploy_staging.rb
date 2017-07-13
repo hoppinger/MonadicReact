@@ -13,11 +13,11 @@ require 'pry'
 SSHKit.config.output_verbosity = Logger::DEBUG
 
 project_path = '~'
-project_name = 'undefined'
+project_name = 'MonadicReact'
 
-git_url = 'undefined'
+git_url = 'git@github.com:giuseppemag/MonadicReact.git'
 
-expose_to_port = 'undefined'
+expose_to_port = '6050'
 
 cluster_nodes = [
   # 'ikamiut.greenland.hoppinger.com',

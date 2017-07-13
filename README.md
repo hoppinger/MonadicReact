@@ -58,3 +58,9 @@ To run the application, use the watchers. For the server
 for the client
 
 ```.\node_modules\.bin\webpack -w```.
+
+## Deployment
+This project can be deployed by simply running `ruby deploy_staging.rb`.
+This script will create a new docker container on the greenland cluster. Make sure you pushed all your changes to the master branch because that's the branch that will be pulled by the deploymentscript. 
+
+The application will be available on the following url: <http://monadic_react.acceptatie.hoppinger.com>
