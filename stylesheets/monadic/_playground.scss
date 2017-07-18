@@ -1,0 +1,24 @@
+// This file must be revised, fixed, and merged within the proper architecture.
+
+.monadic-list-items {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.monadic-list-item {
+  display: table-row;
+}
+
+.monadic-list-cell {
+  display: table-cell;
+  padding: 0 10px;
+}
+
+.monadic-list-firstcell {
+  text-align: left;
+}
+
+.monadic-list-lastcell {
+  text-align: right;
+}

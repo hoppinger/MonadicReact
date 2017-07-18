@@ -1,0 +1,45 @@
+// ==========================================================================
+// GLOBAL | Lists
+// ========================================================================== {
+
+ul,
+ol {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+
+}
+
+ol {
+
+}
+
+dl,
+dd,
+dt {
+  margin: 0;
+}
+
+dt {
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  clear: both;
+}
+
+dd {
+  border-bottom: solid 1px $grey-400;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  &:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}

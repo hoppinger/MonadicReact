@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "dockerfile.*": "dockerfile"
+  },
+  "git.ignoreLimitWarning": true
+}

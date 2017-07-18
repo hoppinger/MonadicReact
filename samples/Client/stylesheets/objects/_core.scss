@@ -1,0 +1,22 @@
+// ==========================================================================
+// OBJECTS | Main
+// ==========================================================================
+
+.main {
+  &__title {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  &__actions {
+    margin-top: 40px;
+  }
+}
+
+.main__content {
+  @include tablet-desktop {
+    margin-top: $topbar-height;
+  }
+}

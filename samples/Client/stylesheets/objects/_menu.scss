@@ -1,0 +1,118 @@
+.logo {
+  max-width: $logo-width;
+  display: block;
+  @include mobile {
+    margin: 10px auto 0 auto;
+  }
+  @include tablet-desktop {
+    margin: 20px auto;
+  }
+}
+
+// ==========================================================================
+// OBJECTS | Menu
+// ==========================================================================
+
+.menu {
+  background: $menu-bg;
+  font-weight: $menu-fw;
+  font-family: $menu-ff;
+  @include mobile {
+    padding-top: 1px;
+  }
+  @include tablet {
+    width: $width-sidebar-tablet;
+  }
+  @include desktop {
+    width: $width-sidebar-desktop;
+  }
+  @include tablet-desktop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow-y: auto;
+  }
+  a {
+    display: block;
+    border: none;
+    color: $menu-link-color;
+    @include mobile-tablet {
+      padding: 8px 20px;
+    }
+    @include desktop {
+      padding: 21px 50px;
+    }
+  }
+  a:hover,
+  .active a {
+    border-right: 5px solid currentColor;
+    color: $menu-link-color-active;
+  }
+  &__tabs {
+    margin: 0;
+    padding: 0 $base-spacing;
+  }
+
+  &__link {
+    &.active {
+      background-color: #fff;
+      padding-bottom: 15px;
+      margin-bottom: -1px; // Same as height of border in in header.scss
+
+      &:hover,
+      &:focus {
+        background-color: $white-800;
+        color: $black-400;
+      }
+    }
+  }
+  + .main__content {
+    @include tablet {
+      margin-left: $width-sidebar-tablet;
+    }
+    @include desktop {
+      margin-left: $width-sidebar-desktop;
+    }
+  }
+}
+
+.menu_entry {
+  border-bottom: 1px solid rgba(#333, .5);
+}
+
+.menu_entry--sub {
+  border: none;
+  a {
+    font-size: 14px;
+    @include desktop {
+      padding: 10px 50px;
+    }
+  }
+}
+
+.toggle-container {
+  div:last-child {
+    margin-bottom: 10px;
+  }
+}
+
+.toggle-button {
+  &:after {
+    content: $icon-chevron-down;
+    font-family: 'icomoon';
+    position: absolute;
+    right: 30px;
+  }
+  .toggle-container--toggled & {
+    &:after {
+      content: $icon-chevron-up;
+    }
+  }
+}
+
+.pages {
+  border-top: 1px solid rgba(#333, .5);
+}
+
+.active-page { font-weight: bold; }

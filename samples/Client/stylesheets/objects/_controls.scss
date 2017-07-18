@@ -1,0 +1,75 @@
+.control {
+  @include clearfix();
+  position: absolute;
+  right: 0;
+  display: flex;
+
+  .button--toggle {
+    order: 10;
+  }
+
+  &__button  {
+    border: 1px solid $grey-400;
+    margin-left: 5px;
+  }
+}
+
+.control__toggle {
+  float: right;
+  background: #464E54;
+  position: relative;
+  &:before,
+  &:after {
+    content: '';
+    width: 12px;
+    height: 2px;
+    border-radius: 1px;
+    background: #fff;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    line-height: 1;
+    margin-left: -6px;
+  }
+  &:before {
+    transform: rotate(-90deg);
+    transition: all .3s;
+  }
+  @include mobile-tablet {
+    width: 30px;
+    height: 45px;
+  }
+  @include desktop {
+    width: 50px;
+    height: 84px;
+  }
+}
+
+.control__toggle--open {
+  background: #08ABCE;
+  &:before {
+    transform: rotate(0);
+  }
+}
+
+[class^="control__button"],
+[class*=" control__button"] {
+  float: right;
+  position: relative;
+  padding: 0;
+  background-color: $white-900;
+  width: 40px;
+  height: 40px;
+  color: $main-color;
+  line-height: 40px;
+  text-align: center;
+  z-index: 99;
+
+  &:hover,
+  &:focus {
+    background-color: $main-color;
+    border-color: $main-color;
+    cursor: pointer;
+  }
+}

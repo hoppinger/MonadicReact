@@ -1,0 +1,30 @@
+{
+  "name": "monadic_react",
+  "version": "1.0.4",
+  "description": "A monadic library for easily composing React-based libraries.",
+  "main": "dist/monadic_react.js",
+  "scripts": {
+  },
+  "dependencies": {
+    "@types/draft-js": "^0.9.1",
+    "@types/i18next": "^2.3.35",
+    "@types/react": "^15.0.30",
+    "@types/react-dom": "^15.5.0",
+    "babel-polyfill": "^6.22.0",
+    "babel-runtime": "^6.22.0",
+    "draft-js": "^0.10.0",
+    "i18next": "^7.1.3",
+    "immutable": "^3.8.1",
+    "jquery": "^2.2.2",
+    "jquery-ujs": "^1.2.1",
+    "moment": "^2.18.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "whatwg-fetch": "^2.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^2.4.1"
+  },
+  "author": "Giuseppe Maggiore",
+  "license": "MIT"
+}

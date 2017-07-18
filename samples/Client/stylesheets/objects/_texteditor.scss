@@ -1,0 +1,102 @@
+.public-DraftEditor-content[contenteditable="true"] {
+  border: 1px solid $grey-400;
+  min-height: 250px;
+  padding: 10px 15px;
+  background: #fff;
+}
+
+// TODO: fix this weird classes
+.text__editor__menu__bar {
+  img {
+    width: 25px;
+    height: 30px;
+  }
+}
+
+.text-editor__menu-group {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.text-editor__menu-button {
+  padding: 0 8px;
+  font-size: 20px;
+  font-weight: normal;
+  border: none;
+  margin-left: 5px;
+  &:before {
+    font-family: 'icomoon';
+  }
+}
+
+.text-editor__menu-button--bold {
+  &:before {
+    content: $icon-bold;
+  }
+}
+
+.text-editor__menu-button--italic {
+  &:before {
+    content: $icon-italic;
+  }
+}
+
+.text-editor__menu-button--underline {
+  &:before {
+    content: $icon-underline;
+  }
+}
+
+.text-editor__menu-button--underline {
+  &:before {
+    content: $icon-underline;
+  }
+}
+
+.text-editor__menu-button--ul {
+  &:before {
+    content: $icon-list;
+  }
+}
+
+.text-editor__menu-button--ol {
+  &:before {
+    content: $icon-ol;
+  }
+}
+
+.text-editor__menu-button--h1 {
+  &:before {
+    content: $icon-h1;
+  }
+}
+
+.text-editor__menu-button--h2 {
+  &:before {
+    content: $icon-h2;
+  }
+}
+
+.text-editor__menu-button--h3 {
+  &:before {
+    content: $icon-h3;
+  }
+}
+
+.text-editor__menu-button--code {
+  &:before {
+    content: $icon-code;
+  }
+}
+
+.text-editor__menu-button--blockquote {
+  &:before {
+    content: $icon-quote;
+  }
+}
+
+.text-editor__menu-button--image {
+  &:before {
+    content: $icon-picture;
+  }
+}

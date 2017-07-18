@@ -1,0 +1,28 @@
+// ==========================================================================
+// Main Stylesheet
+// ==========================================================================
+
+// ==========================================================================
+// The SCSS folder is structured using the ITCSS principle (Hoppinger Style):
+// - SETTINGS: for variables
+// - TOOLS: for mixins/functions
+// - VENDOR: for third-party styling
+// - GLOBAL: for element styling - no classes or IDs
+// - OBJECTS: for shared styling - OOCSS!
+// - PAGES: for specific page styling - as less as possible
+// - OVERWRITES: for overwriting styles - this is the only place where the `!important` tag is acceptable.
+//
+// READ MORE: http://csswizardry.net/talks/2014/11/itcss-dafed.pdf
+// ==========================================================================
+
+@charset 'UTF-8';
+
+// ==========================================================================
+// Monadic
+// ==========================================================================
+
+@import 'monadic/input-choices';
+@import 'monadic/content-menu';
+@import 'monadic/tabs';
+@import 'monadic/title-preview';
+@import 'monadic/playground';

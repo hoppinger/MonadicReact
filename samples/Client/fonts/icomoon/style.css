@@ -1,0 +1,220 @@
+@font-face {
+  font-family: 'icomoon';
+  src:
+    url('fonts/icomoon.woff2?xe9c87') format('woff2'),
+    url('fonts/icomoon.ttf?xe9c87') format('truetype'),
+    url('fonts/icomoon.woff?xe9c87') format('woff'),
+    url('fonts/icomoon.svg?xe9c87#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  
+  /* Enable Ligatures ================ */
+  letter-spacing: 0;
+  -webkit-font-feature-settings: "liga";
+  -moz-font-feature-settings: "liga=1";
+  -moz-font-feature-settings: "liga";
+  -ms-font-feature-settings: "liga" 1;
+  font-feature-settings: "liga";
+  -webkit-font-variant-ligatures: discretionary-ligatures;
+  font-variant-ligatures: discretionary-ligatures;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-h1:before {
+  content: "\e93a";
+}
+.icon-h2:before {
+  content: "\e93b";
+}
+.icon-h3:before {
+  content: "\e93d";
+}
+.icon-quote:before {
+  content: "\e939";
+}
+.icon-code:before {
+  content: "\e937";
+}
+.icon-eye:before {
+  content: "\e936";
+}
+.icon-minus:before {
+  content: "\e935";
+}
+.icon-warning:before {
+  content: "\e904";
+}
+.icon-users:before {
+  content: "\e906";
+}
+.icon-user:before {
+  content: "\e907";
+}
+.icon-upload:before {
+  content: "\e908";
+}
+.icon-underline:before {
+  content: "\e90a";
+}
+.icon-text-size:before {
+  content: "\e90b";
+}
+.icon-sync:before {
+  content: "\e90c";
+}
+.icon-text-align-center:before {
+  content: "\e90d";
+}
+.icon-text-align-justify:before {
+  content: "\e90e";
+}
+.icon-text-align-left:before {
+  content: "\e90f";
+}
+.icon-text-align-right:before {
+  content: "\e910";
+}
+.icon-text-format-remove:before {
+  content: "\e911";
+}
+.icon-sort-alpha-asc:before {
+  content: "\e912";
+}
+.icon-printer:before {
+  content: "\e913";
+}
+.icon-bold:before {
+  content: "\e92d";
+}
+.icon-italic:before {
+  content: "\e91c";
+}
+.icon-undo:before {
+  content: "\e909";
+}
+.icon-redo:before {
+  content: "\e914";
+}
+.icon-pencil:before {
+  content: "\e916";
+}
+.icon-map-marker:before {
+  content: "\e917";
+}
+.icon-magnifier:before {
+  content: "\e918";
+}
+.icon-line-spacing:before {
+  content: "\e919";
+}
+.icon-ol:before {
+  content: "\e938";
+}
+.icon-list:before {
+  content: "\e91a";
+}
+.icon-lock:before {
+  content: "\e91b";
+}
+.icon-indent-decrease:before {
+  content: "\e91d";
+}
+.icon-indent-increase:before {
+  content: "\e91e";
+}
+.icon-heart:before {
+  content: "\e91f";
+}
+.icon-home:before {
+  content: "\e920";
+}
+.icon-calendar-full:before {
+  content: "\e929";
+}
+.icon-alarm:before {
+  content: "\e932";
+}
+.icon-camera-video:before {
+  content: "\e92a";
+}
+.icon-picture:before {
+  content: "\e915";
+}
+.icon-camera:before {
+  content: "\e92b";
+}
+.icon-cart:before {
+  content: "\e92c";
+}
+.icon-funnel:before {
+  content: "\e921";
+}
+.icon-download:before {
+  content: "\e922";
+}
+.icon-cross:before {
+  content: "\e923";
+}
+.icon-plus:before {
+  content: "\e934";
+}
+.icon-crop:before {
+  content: "\e924";
+}
+.icon-chevron-down:before {
+  content: "\e925";
+}
+.icon-chevron-left:before {
+  content: "\e926";
+}
+.icon-chevron-right:before {
+  content: "\e927";
+}
+.icon-chevron-up:before {
+  content: "\e928";
+}
+.icon-arrow-down:before {
+  content: "\e92e";
+}
+.icon-arrow-left:before {
+  content: "\e92f";
+}
+.icon-arrow-right:before {
+  content: "\e930";
+}
+.icon-arrow-up:before {
+  content: "\e931";
+}
+.icon-move:before {
+  content: "\e933";
+}
+.icon-fullscreen:before {
+  content: "\e905";
+}
+.icon-link:before {
+  content: "\e902";
+}
+.icon-unlink:before {
+  content: "\e903";
+}
+.icon-trash:before {
+  content: "\e901";
+  color: #464e54;
+}
+.icon-settings:before {
+  content: "\e900";
+}

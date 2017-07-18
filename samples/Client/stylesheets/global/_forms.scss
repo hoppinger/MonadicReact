@@ -1,0 +1,97 @@
+// ==========================================================================
+// GLOBAL | Forms
+// ==========================================================================
+
+// ==========================================================================
+// Base - Forms
+// ==========================================================================
+
+form {
+  margin: 0 auto;
+}
+
+// -----
+
+label {
+  @include desktop {
+    margin-bottom: 7px;
+  }
+}
+
+// -----
+
+input,
+select,
+textarea {
+  display: block;
+}
+
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+input:not([type]),
+textarea {
+  border: solid 1px #D2D2D2;
+  padding: 6px 20px;
+  appearance: none;
+  width: 100%;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+
+  &:hover,
+  &:focus {
+    border-color: #08ABCE;
+    box-shadow: 0 2px 5px 0 rgba(#000000, .09);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+
+    &:hover {
+
+    }
+  }
+
+  &::placeholder {
+
+  }
+}
+
+input[type="file"] {
+  margin: 10px 0 6px 0;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 190px;
+}
+
+select {
+  width: 100%;
+
+  &:hover,
+  &:focus {
+
+  }
+}
+
+[type="checkbox"],
+[type="radio"] {
+  display: inline;
+}
+

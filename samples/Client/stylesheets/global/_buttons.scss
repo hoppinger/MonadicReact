@@ -1,0 +1,43 @@
+// ==========================================================================
+// GLOBAL | Buttons
+// ==========================================================================
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  border: 1px solid currentColor;
+  color: $main-color;
+  letter-spacing: 1px;
+  padding: 0 20px;
+  line-height: 40px;
+  font-weight: 700;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  transition: all 0.35s ease;
+
+  &:hover,
+  &:focus {
+    color: $main-color-dark;
+    border-bottom-color: currentColor;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+
+    &:hover {
+
+    }
+  }
+}

@@ -1,0 +1,26 @@
+// ==========================================================================
+// GLOBAL | Tables
+// ==========================================================================
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+// -----
+
+tr,
+td,
+th {
+  vertical-align: middle;
+}
+
+td,
+th {
+
+}
+
+th {
+  text-align: left;
+}

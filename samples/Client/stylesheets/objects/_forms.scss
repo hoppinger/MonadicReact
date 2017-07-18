@@ -1,0 +1,23 @@
+.form {
+  &__actions {
+    border-top: solid 1px $grey-400;
+    padding-top: $base-spacing;
+    max-width: 320px;
+    margin: $base-spacing auto 0;
+    text-align: center;
+  }
+
+  &__action {
+    margin-bottom: 5px;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.attribute-label {
+  display: block;
+  font-weight: 700;
+  color: #8D8D8D;
+}

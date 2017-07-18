@@ -1,0 +1,53 @@
+.monadic-content-menu {
+  @include tablet-desktop {
+    width: 250px;
+  }
+}
+
+.monadic-content-with-menu {
+  @include tablet-desktop {
+    display: flex;
+    .monadic-content {
+      width: calc(100% - 250px);
+    }
+  }
+}
+
+.monadic-content-menu__entries  {
+  @include tablet-desktop {
+    padding-right: 25px;
+  }
+}
+
+.monadic-content-menu__entry  {
+  background: #efefef;
+  padding: 5px 25px;
+  margin-bottom: 1px;
+  a {
+    display: block;
+  }
+}
+
+.monadic-content-menu__entry--active  {
+  background: $main-color;
+  a {
+    color: #efefef;
+  }
+}
+
+.monadic-content-menu__sub-entry  {
+  background: #efefef;
+  padding: 5px 25px 0px 40px;
+  font-size: 14px;
+  margin-bottom: 1px;
+  a {
+    display: block;
+  }
+}
+
+.monadic-content-menu__sub-entry--active  {
+  background: $main-color;
+  a {
+    color: #efefef;
+  }
+}
