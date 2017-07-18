@@ -1,8 +1,7 @@
 ## doing
 - documentation
-- new repository structure
+- test published npm package locally
 - cleanup dependencies in imports (samples and monad definition)
-- improve file names in small sample
 
 ## GO (7 days)
 - [ ] info pages
@@ -16,15 +15,14 @@
 - [ ] dashboard
 
 
-## various improvements (1 day)
+## various improvements
+- [ ] test published npm package locally
 - [x] always input arrays, not lists (multi selector/selector)
 - [x] div takes no useless array of arguments
 - [x] any/repeat/retract take as first parameters the optional ones
-- [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A
-- [ ] new repository structure with large sample inside library, but referencing library files directly
 - [ ] cleanup dependencies in imports (samples and monad definition)
 - [x] improve scaffolder-related names in small sample
-- [/] mode should always also check context.mode
+- [x] mode should always also check context.mode
 
 ## samples (3 days)
 - [ ] all primitives, one per sample (use menu nesting)
@@ -74,7 +72,6 @@
 ##  scaffolder (4 days)
 - [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
 - [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
-- [?] per-attribute comparison functions should be scaffolded, with and without pictures
 - [ ] default scaffolder views should use the monadic library
 
 ## fridge
@@ -84,3 +81,4 @@
 - [ ] className by default in all CmdCommon
 - [ ] add math plugin https://github.com/efloti/draft-js-mathjax-plugin
 - [ ] also parse url query
+- [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A

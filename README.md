@@ -83,8 +83,8 @@ It is useful for some to first learn monads in terms of simple, concrete contain
 The core of the library, found in file `core.tsx`, contains the definition of the monad itself, `C<A>`. An instance of the monad is a function which takes as input a callback to signify completion, a continuation which will accept a value of type `A` (the data produced by the component, from now on called **output** of the component); finally, the monad returns a `JSX.Element`, which is the actually renderable component:
 
 ```
-export type Cont<A> = (callback:() => void) => (_:A) => void
-export type C<A> = {
+type Cont<A> = (callback:() => void) => (_:A) => void
+type C<A> = {
   comp:(ctxt:() => Context) => (cont:Cont<A>) => JSX.Element
   ...
 }
@@ -93,9 +93,9 @@ export type C<A> = {
 Using the library does not require interacting with this data type directly: that is done by invoking functions `unit` and `bind`:
 
 ```
-export let unit = function<A>(x:A, key?:string, dbg?:() => string) : C<A> = ...
+unit = function<A>(x:A, key?:string, dbg?:() => string) : C<A> = ...
 
-export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> = ...
+bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> = ...
 ```
 
 Notice that, in contrast with the definitions of `unit` and `bind` given above, we have some more parameters: since react expects a `key` in order to accelerate the reconciliation process, all generated components may specify an (optional) key. `bind` will still work if the key is passed as `undefined`, even though it is not always ideal.
@@ -103,13 +103,13 @@ Notice that, in contrast with the definitions of `unit` and `bind` given above, 
 Of course, we can also perform basic transformations on components' data, for example by applying a given transformation function to each output of an existing component. This effectively turns a component of type `C<A>` in a (related) component of type `C<B>`, as long as we provide a function `f:A=>B`:
 
 ```
-export declare let map: <A, B>(key?: string, dbg?: () => string) => (f: (_: A) => B) => (_: C<A>) => C<B>;
+let map: <A, B>(key?: string, dbg?: () => string) => (f: (_: A) => B) => (_: C<A>) => C<B>;
 ```
 
 Similarly, we can restrict the output of an existing component. This effectively turns a component of type `C<A>` in a (related) component of type `C<A>` which outputs slightly less values of type `A`, as long as we provide a predicate `p:A=>boolean`:
 
 ```
-export declare let filter: <A>(key?: string, dbg?: () => string) => (p: (_: A) => boolean) => (_: C<A>) => C<A>;
+filter: <A>(key?: string, dbg?: () => string) => (p: (_: A) => boolean) => (_: C<A>) => C<A>;
 ```
 
 ### Primitives
@@ -120,38 +120,97 @@ The primitive then returns a function with, as input, the initial value of the t
 For example, the `number` primitive, after we have given the `mode` (and optionally the `key`), results in a function `number => C<number>`:
 
 ```
-export declare let number: (mode: Mode, key?: string, dbg?: () => string) => (value: number) => C<number>;
+number: (mode: Mode, key?: string, dbg?: () => string) => (value: number) => C<number>;
 ```
 
 The `string` primitive, after we have given the `mode` (and optionally the `key`), results in a function `string => C<string>`:
 
 ```
-export declare let string: (mode: Mode, type?: StringType, key?: string, dbg?: () => string) => (value: string) => C<string>;
+string: (mode: Mode, type?: StringType, key?: string, dbg?: () => string) => (value: string) => C<string>;
 ```
 
 And so on. There are further primitives for `bool` (`bool => C<bool>`), `date`, `time`, and `date_time` (all three `Moment.Moment) => C<Moment.Moment>`).
 
 ### Html
-The subsequent layer contains some slightly more articulated html constructs such as labels, divs, buttons, etc.
+The subsequent layer contains some slightly more articulated html constructs such as labels, divs, buttons, selectors, and more. The basic components just add some tags to the page around, before, or after the html produced by another component. These constructs, which can be seen as **decorators** (or natural transformations if you are categorically inclined) take as input some basic configuration that describe the sort of decoration operation to perform, followed by the function to decorate. The function to decorate always has signature `A => C<B>`. The decorator then returns a result with the same signature, that is `A => C<B>`:
 
+```
+label<A, B>(text: string, span_before_content?: boolean, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>)
+h1<A, B>(text: string, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>)
+h2<A, B>(text: string, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>)
+div<A, B>(className?: string, key?: string, dbg?: () => string): (ps: Array<(_: A) => C<void>>) => (p: (_: A) => C<B>) => ((_: A) => C<B>)
+overlay<A, B>(key?: string, dbg?: () => string): (ps: Array<(_: A) => C<void>>) => (p: (_: A) => C<B>) => ((_: A) => C<B>)
+form<A, B>(className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>)
+```
 
+Buttons (and anchors) are slightly simpler in signature. The button, after receiving the configuration parameters, returns a function `A => C<A>`. This function is "interrupted" by the button: before the returned component `C<A>` will return the value of `A` that came in as input, the button must be clicked:
 
+```
+button: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>
+a: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>
+```
+
+Other html components perform an own function. The selectors take as input the candidate items for selection, a `to_string` function which tells how to draw a selectable item, and return the selected item(s):
+
+```
+selector: <A>(type: SelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: Array<A>, selected_item?: A) => C<A>
+multi_selector: <A>(type: MultiSelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: Array<A>, selected_items?: Array<A>) => C<Array<A>>
+```
+
+Finally, some html components allow the manipulation of links, files, and images (in base64).
+
+```
+image: (mode: Mode, key?: string, dbg?: () => string) => (src: string) => C<string>
+link: <A>(label: string, url: string, disabled?: boolean, key?: string, dbg?: () => string) => C<void>
+file: <A>(mode: Mode, label: string, url: string, disabled?: boolean, key?: string, dbg?: () => string) => C<File>
+```
+
+A special mention goes to the *rich text* component, which takes as input a string containing the (serialized) json input needed by a DraftJs rich text editor:
+
+```
+rich_text(json_state: string, mode: Mode, key?: string, dbg?: () => string): C<string>
+```
 
 ### Combinators
+Todo
+
+```
+export declare let repeat: <A>(p: (_: A) => C<A>, key?: string, dbg?: () => string) => (_: A) => C<A>;
+export declare let any: <A, B>(ps: ((_: A) => C<B>)[], key?: string, className?: string, dbg?: () => string) => (_: A) => C<B>;
+export declare let never: <A, B>(p: C<A>, key?: string) => C<B>;
+export declare let all: <A>(ps: C<A>[], key?: string, dbg?: () => string) => C<A[]>;
+export declare let retract: <A, B>(inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>, key?: string, dbg?: () => string) => (_: A) => C<A>;
+export declare let lift_promise: <A, B>(p: (_: A) => Promise<B>, retry_strategy: RetryStrategy, key?: string, dbg?: () => string) => (_: A) => C<B>;
+export declare let delay: <A>(dt: number, key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
+```
+
 
 ### Routing
+Todo
 
-### Templates
+### Menu template
+Todo
+
+### Form templates
+Todo
+
+### Workflow template
+Todo
 
 ### Injecting custom react components
+Todo
 
 ### Advanced
+Todo
 
 #### Building your own templates
+Todo
 
 #### Building your own combinators
+Todo
 
 # Samples
-
+Todo
 
 # About the authors
+Todo
