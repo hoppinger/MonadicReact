@@ -65,7 +65,7 @@ export declare type FormEntry<M> = {
     upload: (_: M) => (_: File) => C<void>;
 };
 export declare let simple_inner_form: <M>(mode: Mode, model_name: (_: M) => string, entries: FormEntry<M>[]) => (_: FormData<M>) => C<FormData<M>>;
-export declare let form_errors: <M>(model_name: (_: M) => string, entries: FormEntry<M>[]) => (fd: any) => C<FormData<M>>;
+export declare let form_errors: <M>(model_name: (_: M) => string, entries: FormEntry<M>[]) => (fd: FormData<M>) => C<FormData<M>>;
 export declare let simple_form_with_autosave: <M>(mode: Mode, model_name: (_: M) => string, entries: FormEntry<M>[], download_M: C<M>, upload_M: (_: M) => C<M>) => C<void>;
 export declare let simple_form_with_save_button: <M>(mode: Mode, model_name: (_: M) => string, entries: FormEntry<M>[], download_M: C<M>, upload_M: (_: M) => C<M>) => C<void>;
 export declare let simple_form_with_prev_and_next_buttons: <M>(mode: Mode, model_name: (_: M) => string, entries: FormEntry<M>[], prev_enabled: (_: FormData<M>) => boolean, next_enabled: (_: FormData<M>) => boolean, prev_visible: (_: FormData<M>) => boolean, next_visible: (_: FormData<M>) => boolean, on_prev: (_: M) => M, on_next: (_: M) => M) => (_: FormData<M>) => C<FormData<M>>;

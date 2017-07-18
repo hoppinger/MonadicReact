@@ -44,11 +44,11 @@ export declare type SimpleMenuType = "side menu" | {
     kind: "tabs";
     max_tabs: number;
 };
-export declare let repeat: <A>(p: (_: A) => C<A>, key?: string, dbg?: () => string) => (_: A) => C<A>;
-export declare let any: <A, B>(ps: ((_: A) => C<B>)[], key?: string, className?: string, dbg?: () => string) => (_: A) => C<B>;
+export declare let repeat: <A>(key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
+export declare let any: <A, B>(key?: string, className?: string, dbg?: () => string) => (ps: ((_: A) => C<B>)[]) => (_: A) => C<B>;
 export declare let never: <A, B>(p: C<A>, key?: string) => C<B>;
 export declare let all: <A>(ps: C<A>[], key?: string, dbg?: () => string) => C<A[]>;
-export declare let retract: <A, B>(inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>, key?: string, dbg?: () => string) => (_: A) => C<A>;
+export declare let retract: <A, B>(key?: string, dbg?: () => string) => (inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>) => (_: A) => C<A>;
 export declare let lift_promise: <A, B>(p: (_: A) => Promise<B>, retry_strategy: RetryStrategy, key?: string, dbg?: () => string) => (_: A) => C<B>;
 export declare let delay: <A>(dt: number, key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
 export declare let mk_submenu_entry: <A>(label: string, children: MenuEntryValue<A>[]) => MenuEntrySubMenu<A>;

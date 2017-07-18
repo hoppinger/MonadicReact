@@ -26,7 +26,6 @@ export declare type DivProps<A, B> = {
     kind: "div";
     className: string | undefined;
     value: A;
-    ps: Array<(_: A) => C<void>>;
     p: (_: A) => C<B>;
 } & CmdCommon<B>;
 export declare type FormProps<A, B> = {
@@ -42,7 +41,7 @@ export declare type MultiSelectorProps<A> = {
     to_string: (_: A) => string;
     items: Immutable.List<A>;
     selected_items: undefined | Immutable.List<A>;
-} & CmdCommon<Immutable.List<A>>;
+} & CmdCommon<Array<A>>;
 export declare type ImageProps = {
     kind: "image";
     src: string;
@@ -80,11 +79,11 @@ export declare type FileProps = {
 export declare function label<A, B>(text: string, span_before_content?: boolean, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
 export declare function h1<A, B>(text: string, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
 export declare function h2<A, B>(text: string, className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
-export declare function div<A, B>(className?: string, key?: string, dbg?: () => string): (ps: Array<(_: A) => C<void>>) => (p: (_: A) => C<B>) => ((_: A) => C<B>);
-export declare function overlay<A, B>(key?: string, dbg?: () => string): (ps: Array<(_: A) => C<void>>) => (p: (_: A) => C<B>) => ((_: A) => C<B>);
+export declare function div<A, B>(className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
+export declare function overlay<A, B>(key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
 export declare function form<A, B>(className?: string, key?: string, dbg?: () => string): (p: (_: A) => C<B>) => ((_: A) => C<B>);
-export declare let selector: <A>(type: SelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: Immutable.List<A>, selected_item?: A) => C<A>;
-export declare let multi_selector: <A>(type: MultiSelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: Immutable.List<A>, selected_items?: Immutable.List<A>) => C<Immutable.List<A>>;
+export declare let selector: <A>(type: SelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: A[], selected_item?: A) => C<A>;
+export declare let multi_selector: <A>(type: MultiSelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: A[], selected_items?: A[]) => C<A[]>;
 export declare let image: (mode: Mode, key?: string, dbg?: () => string) => (src: string) => C<string>;
 export declare let a: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
 export declare let button: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
