@@ -112,6 +112,8 @@ Similarly, we can restrict the output of an existing component. This effectively
 filter: <A>(key?: string, dbg?: () => string) => (p: (_: A) => boolean) => (_: C<A>) => C<A>;
 ```
 
+Note that, given an instance `p:C<A>`, we can directly call some methods on it such as: `p.bind(...)`, `p.ignore()`, `p.never<B>()` instead of having to invoke `bind(p, ...)`.
+
 ### Primitives
 Having defined the core operators is just the first step. To be able to do anything actually useful on a webpage, we have defined a series of primitives which encapsulate common HTML constructs as instances of our monad. Each primitive accepts as input the `mode` (`"view" | "edit"`) in order to instantiate the component as editable or just to show its contents.
 
@@ -172,29 +174,127 @@ rich_text(json_state: string, mode: Mode, key?: string, dbg?: () => string): C<s
 ```
 
 ### Combinators
-Todo
+Combinators are the next step in the abstraction chain (the next layer in the onion). Combinators are abstract transformers which take as input one or more (functions of) components and yield new (functions of) components.
+
+The simplest combinator is `repeat`. `repeat` takes as input a function `p:A => C<A>`, and returns as output a function `A => C<A>`. The returned function, whenever it receives and input of type `A`, passes it through to `p`. The output of `p` is then given as output of the returned function. The output of `p` is also fed back into `p` itself (which should be smart enough to see that the input is the same, and therefore not yield another output right away):
 
 ```
-export declare let repeat: <A>(p: (_: A) => C<A>, key?: string, dbg?: () => string) => (_: A) => C<A>;
-export declare let any: <A, B>(ps: ((_: A) => C<B>)[], key?: string, className?: string, dbg?: () => string) => (_: A) => C<B>;
-export declare let never: <A, B>(p: C<A>, key?: string) => C<B>;
-export declare let all: <A>(ps: C<A>[], key?: string, dbg?: () => string) => C<A[]>;
-export declare let retract: <A, B>(inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>, key?: string, dbg?: () => string) => (_: A) => C<A>;
-export declare let lift_promise: <A, B>(p: (_: A) => Promise<B>, retry_strategy: RetryStrategy, key?: string, dbg?: () => string) => (_: A) => C<B>;
-export declare let delay: <A>(dt: number, key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
+repeat: <A>(key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
 ```
 
+`repeat` by itself is not very useful. When it really shines is in combination with `any`. `any` accepts as input an array of functions `ps:(A => C<B>)`, and returns as output a single function `A => C<B>`. The returned function passes its own input (`A`) to each function in `ps`. The first of the resulting components that yields a `B` as output gets its output forwarded as the output of `any`:
+
+```
+any: <A, B>(key?: string, className?: string, dbg?: () => string) => (ps: ((_: A) => C<B>)[]) => (_: A) => C<B>;
+```
+
+Sometimes we need to perform a conversion from a complex datatype (say `A`) into a simpler (say `B`). Suppose we have a series of conversion functions:
+- `inb:A => B` to convert an `A` to a `B`;
+- `out:A => B => A` to convert the original `A` and a new value of `B` back into `B`.
+
+Then we can convert a function `p:B =>  C<B>` into `A => C<A>`:
+
+```
+retract: <A, B>(key?: string, dbg?: () => string) => (inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>) => (_: A) => C<A>;
+```
+
+As an example of a retraction, consider:
+
+```
+type Person = { Name:string, Surname:string }
+
+let person_name : (_:Person) => C<Person> = p =>
+  retract<Person>()(p => p.Name, p => n => ({...p, Name:n}), string("view"))
+```
+
+When combined with `repeat` and `any`, then we get a form:
+
+```
+let person_form =
+  repeat<Person>("state_repeater")(
+    any<Person>("field_selector")([
+      person_name,
+      person_surname
+    ])
+  ).bind("person_form", p =>
+  ...do something with p...)
+```
+
+`all`, similarly to `any`, gets as input an array of components and, when all components have yielded an output, all the outputs are passed through:
+
+```
+all: <A>(ps: C<A>[], key?: string, dbg?: () => string) => C<A[]>;
+```
+
+We can turn a `Promise` into a component by "lifting" it:
+
+```
+lift_promise: <A, B>(p: (_: A) => Promise<B>, retry_strategy: RetryStrategy, key?: string, dbg?: () => string) => (_: A) => C<B>;
+```
+
+Finally, given a component `p:C<A>`, we can turn into a silent component of type `C<B>` (that is, a component which will never output a value of type `B`) by applying `never` to it:
+
+```
+never: <A, B>(p: C<A>, key?: string) => C<B>;
+```
 
 ### Routing
+The library comes with routing included. The function `application`, which instantiates a component, accepts as input a list of routes.
+
+Routes are composed of an `url` and a `page`. The `url` is created by invoking `make_url` on an array of url elements:
+
+```
+make_url: <T, K extends keyof T>(template: UrlElement<K>[]) => PartialRetraction<string, T>
+```
+
+For example, we could invoke `make_url` as:
+- `make_url<{}, never>(["about"])`, which parses url `/about`;
+- `make_url<{}, never>(["info"])`, which parses url `/info`;
+- `make_url<{}, never>(["info", "team"])`, which parses url `/info/team`.
+
+Parsing an url might also yield some data which has been extracted from the url itself, such as an id. In this case, we must define a data structure to be extracted from the url, and then construct the template so that the proper fields are identified:
+
+```
+type Id = { id:number }
+make_url<Id, "id">(["customer", { kind:"int", name:"id" }])
+```
+
+Note that the above is typesafe. Invalid variations will give a compiler error, for example:
+- `make_url<Id, "xxx">(["customer", { kind:"int", name:"id" }])` will complain that `xxx` is not a field of `Id`;
+- `make_url<Id, "id">(["customer", { kind:"int", name:"zzz" }])` will complain that `zzz` is not a field of `Id`.
+
+
+As we have assembled an url which yields a value of type `T`, we can define the page as a function `T => C<void>`. Of course, if parsing has failed and we could not extract a value of type `T` from the url, then we cannot invoke the function and instantiate the page:
+
+```
+let about : Route<{}> = {
+  url: make_url<{}, never>(["about"]),
+  page: _ => ... definition of about page ...
+}
+```
+
+`about` as defined above can be used as an entry in the list of routes that are given to the `application` function. Notice that `application` also accepts a `base_url`, which will be kept intact, and the current `slug`, which is used as input for the router.
+
+A component can also set its own url. This is simply achieved by getting the context and then invoking its method `set_url` with a url payload (in the sample below assume variable `t:T` and `K` keys of `T`):
+
+```
+get_context().bind(s.description, c =>
+c.set_url(t, make_url<T, K>([...url elements...])).bind(
+...)
+```
+
+Note that a special url is `fallback_url`, which matches any url. It is usually used for handling errors or making sure that the homepage is accessible even if the address has been wrongly typed.
+
+### Templates
+Based on the functionality that we have set up so far, it becomes possible to define templates. Templates can
+
+#### Menu template
 Todo
 
-### Menu template
+#### Form templates
 Todo
 
-### Form templates
-Todo
-
-### Workflow template
+#### Workflow template
 Todo
 
 ### Injecting custom react components
@@ -213,4 +313,6 @@ Todo
 Todo
 
 # About the authors
-Todo
+This library has mostly been set up by Dr. Giuseppe Maggiore, and is to some extent inspired from his PhD thesis on monadic coroutines for game development.
+
+Giuseppe works as CTO for Hoppinger BV, a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its innovation efforts.
