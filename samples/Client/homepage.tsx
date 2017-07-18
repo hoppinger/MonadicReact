@@ -31,8 +31,8 @@ import {context_sample} from './samples/context'
 type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
 export let sample_toggleable_minipage : (_:Sample) => C<void> = s =>
-  repeat<boolean>(
-    div<boolean, boolean>("monadic-title-preview")([])(
+  repeat<boolean>()(
+    div<boolean, boolean>("monadic-title-preview")(
     label<boolean, boolean>(s.description, false)(bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible =>
     !visible ?
       unit<void>(null)
@@ -77,10 +77,10 @@ export function HomePage(slug:string) : JSX.Element {
   let xxx = () : Route<{}> => ({
     url: make_url<{}, never>(["xxx"]),
     page:_ =>
-      any<void, void>([
+      any<void, void>(`xxx`)([
       _ => string("view")("xxx").never<void>(),
       _ => link_to_route<{}>("YYY", {}, yyy())
-    ], `xxx`)(null) })
+    ])(null) })
 
   let yyy = () : Route<{}> => ({
     url: make_url<{}, never>(["yyy"]),

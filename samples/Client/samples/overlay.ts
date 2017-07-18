@@ -10,23 +10,23 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
 
 export let overlay_sample =
-  repeat<boolean>(
+  repeat<boolean>(`overlay sample`)(
     visible =>
-      any<void, boolean>(
+      any<void, boolean>()(
         [
-          any<void, boolean>([
+          any<void, boolean>()([
             _ => string("view")("The overlay is hidden").never<boolean>(),
             _ => button<boolean>("Show overlay")(true)
           ]),
           !visible ?
             _ => unit<void>(null).never<boolean>()
           :
-            overlay<void, boolean>()([])(
-              any<void, boolean>([
+            overlay<void, boolean>()(
+              any<void, boolean>()([
                 _ => string("view")("This is the overlay").never<boolean>(),
                 _ => button<boolean>("X")(false)
               ])
             )
         ]
       )(null)
-  , `overlay sample`)(false).ignore()
+  )(false).ignore()

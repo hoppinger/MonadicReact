@@ -31,8 +31,8 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   }
 }
 
-export let repeat = function<A>(p:(_:A)=>C<A>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return initial_value => make_C<A>(ctxt => cont =>
+export let repeat = function<A>(key?:string, dbg?:() => string) : ((p:(_:A)=>C<A>) => (_:A) => C<A>) {
+  return p => initial_value => make_C<A>(ctxt => cont =>
     React.createElement<RepeatProps<A>>(Repeat,
     ({ kind:"repeat", debug_info:dbg, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key })))
 }
@@ -60,8 +60,8 @@ class Any<A,B> extends React.Component<AnyProps<A,B>,AnyState<A,B>> {
   }
 }
 
-export let any = function<A,B>(ps:Array<(_:A)=>C<B>>, key?:string, className?:string, dbg?:() => string) : ((_:A) => C<B>) {
-  return initial_value => make_C<B>(ctxt => cont =>
+export let any = function<A,B>(key?:string, className?:string, dbg?:() => string) : ((ps:Array<(_:A)=>C<B>>) => (_:A) => C<B>) {
+  return ps => initial_value => make_C<B>(ctxt => cont =>
     React.createElement<AnyProps<A,B>>(Any,
       { kind:"any", debug_info:dbg, ps:ps, value:initial_value, context:ctxt, cont:cont, key:key, className:className }))
 }
@@ -160,8 +160,8 @@ class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> 
   }
 }
 
-export let retract = function<A,B>(inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, key?:string, dbg?:() => string) : ((_:A) => C<A>) {
-  return (initial_value:A) => make_C<A>(ctxt => (cont:Cont<A>) =>
+export let retract = function<A,B>(key?:string, dbg?:() => string) : ((inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>) => (_:A) => C<A>) {
+  return (inb, out, p) => (initial_value:A) => make_C<A>(ctxt => (cont:Cont<A>) =>
     React.createElement<RetractProps<A,B>>(Retract,
       { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
@@ -297,33 +297,29 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
   }
 
   return (items, p, selected_item:undefined|A, selected_sub_menu:undefined|string) => {
-    return repeat<MenuState>(
-      div<MenuState, MenuState>()([])(
-      any<MenuState, MenuState>(
-        [
-          div<MenuState, MenuState>(menu_class)([])(
-            s => any<MenuState, MenuState>(
-              (type != "side menu" && s.shown_range.first > 0 ?
-                [s => div<MenuState,MenuState>(`${entry_class} monadic-prev-tab`)([])(a<MenuState>("<"))({...s, shown_range:{...s.shown_range, first:s.shown_range.first-1}})]
+
+    let entries : (s:MenuState) => Array<(_:MenuState) => C<MenuState>> = (s:MenuState) =>
+            (type != "side menu" && s.shown_range.first > 0 ?
+                [s => div<MenuState,MenuState>(`${entry_class} monadic-prev-tab`)(a<MenuState>("<"))({...s, shown_range:{...s.shown_range, first:s.shown_range.first-1}})]
               :
                 []).concat(
               items.map((item, i) => {
                 return (s:MenuState) =>
 
                   item.kind == "item" ?
-                    div<MenuState, MenuState>(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)([])(
+                    div<MenuState, MenuState>(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(
                       a<MenuState>(to_string(item.value), false, undefined)
                     )({...s, sub_selected:{ kind:"nothing" }, selected:item, last_action:{kind:"selection"} })
                   :
-                    any<MenuState, MenuState>([
-                      (s:MenuState) => div<MenuState, MenuState>(`${entry_class} `)([])(
+                    any<MenuState, MenuState>()([
+                      (s:MenuState) => div<MenuState, MenuState>(`${entry_class} `)(
                         a<MenuState>(item.label, false, undefined)
                       )({...s, sub_selected:item, last_action:{kind:"selection"} })
                     ].concat(
                       (s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
                       (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
                         item.children.map(c =>
-                          (s:MenuState) => div<MenuState, MenuState>(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)([])(
+                          (s:MenuState) => div<MenuState, MenuState>(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(
                             a<MenuState>(to_string(c.value), false, undefined)
                           )({...s, sub_selected:item, selected:c, last_action:{kind:"selection"} })
                         )
@@ -333,17 +329,24 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
               }).filter((i, i_i) => type == "side menu" || i_i >= s.shown_range.first && (i_i - s.shown_range.first) < s.shown_range.amount)
               .concat(
                 type != "side menu" && s.shown_range.first + s.shown_range.amount < items.count() ?
-                  [s => div<MenuState,MenuState>(`${entry_class} monadic-next-tab`)([])(a<MenuState>(">"))({...s, shown_range:{...s.shown_range, first:s.shown_range.first+1}})]
+                  [s => div<MenuState,MenuState>(`${entry_class} monadic-next-tab`)(a<MenuState>(">"))({...s, shown_range:{...s.shown_range, first:s.shown_range.first+1}})]
                 :
                   [])
-              .toArray()), undefined, entries_class
-          )(s)),
-          div<MenuState, MenuState>(content_class)([])(
+              .toArray())
+
+
+    return repeat<MenuState>()(
+      div<MenuState, MenuState>()(
+      any<MenuState, MenuState>(undefined, content_menu_class)(
+        [
+          div<MenuState, MenuState>(menu_class)(
+            s => any<MenuState, MenuState>(undefined, entries_class)(entries(s))(s)),
+          div<MenuState, MenuState>(content_class)(
           (s:MenuState) => s.selected.kind == "item" ?
             p(s.selected.value).bind<MenuState>(undefined, (p_res:B) => unit<MenuState>({...s, last_action:{ kind:"p", p_res:p_res }}))
           :
             unit<MenuState>(s).never<MenuState>())
-        ], undefined, content_menu_class
+        ]
       )
     ))({ selected:selected_item == undefined ? { kind:"nothing" } : { kind:"item", value:selected_item },
          sub_selected:selected_sub_menu == undefined ? { kind:"nothing" } : { kind:"sub menu", label:selected_sub_menu },
@@ -359,7 +362,7 @@ export let custom = function<A>(key?:string, dbg?:() => string) : (render:(ctxt:
 }
 
 export let hide = (f_name:string, f:C<void>) =>
-  repeat<boolean>(visible =>
+  repeat<boolean>()(visible =>
     bool("edit", "plus/minus")(visible))(false).bind(`${f_name} toggle`, visible =>
     !visible ?
       unit<void>(null)

@@ -10,20 +10,20 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
 
 export let moments_sample : C<void> =
-  repeat<Moment.Moment>(
-    any<Moment.Moment, Moment.Moment>([
-      c => repeat<Moment.Moment>(
+  repeat<Moment.Moment>()(
+    any<Moment.Moment, Moment.Moment>(`input number`)([
+      c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a time: ", true)(time("edit", "time"))
       )(c).bind(`time bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
 
-      c => repeat<Moment.Moment>(
+      c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date: ", true)(date("edit", "date"))
       )(c).bind(`date bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
 
-      c => repeat<Moment.Moment>(
+      c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date with time: ", true)(date_time("edit", "date-time"))
       )(c).bind(`date-time bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
-    ]), `input number`)(Moment(Moment.now())).ignore()
+    ]))(Moment(Moment.now())).ignore()

@@ -39,7 +39,7 @@ chain two components together:
 
 ```
 let my_component : C<void> =
-multi_selector<number>("checkbox",x => x.toString())(List<number>([1, 3, 5]), List<number>([1, 5])).bind(`multi_selector`, n =>
+multi_selector<number>("checkbox",x => x.toString())([1, 3, 5]).bind(`multi_selector`, n =>
   string("view")(JSON.stringify(n.toArray())).ignore())
 ```
 
@@ -113,22 +113,29 @@ export declare let filter: <A>(key?: string, dbg?: () => string) => (p: (_: A) =
 ```
 
 ### Primitives
-Having defined the core operators is just the first step. To be able to do anything actually useful on a webpage, we have defined a series of primitives which encapsulate common HTML constructs as instances of our monad. Each primitive requires as input of the type it manipulates (let's call it `P`) and gives as output a component of that type (that would be `C<P>`).
+Having defined the core operators is just the first step. To be able to do anything actually useful on a webpage, we have defined a series of primitives which encapsulate common HTML constructs as instances of our monad. Each primitive accepts as input the `mode` (`"view" | "edit"`) in order to instantiate the component as editable or just to show its contents.
+
+The primitive then returns a function with, as input, the initial value of the type it manipulates (let's call it `P`) and gives as output a component of that type (that would be `C<P>`).
+
+For example, the `number` primitive, after we have given the `mode` (and optionally the `key`), results in a function `number => C<number>`:
 
 ```
 export declare let number: (mode: Mode, key?: string, dbg?: () => string) => (value: number) => C<number>;
+```
+
+The `string` primitive, after we have given the `mode` (and optionally the `key`), results in a function `string => C<string>`:
+
+```
 export declare let string: (mode: Mode, type?: StringType, key?: string, dbg?: () => string) => (value: string) => C<string>;
-export declare let bool: (mode: Mode, style: BooleanStyle, key?: string, dbg?: () => string) => (value: boolean) => C<boolean>;
 ```
 
-
-```
-export declare let date_time: (mode: Mode, key?: string, dbg?: () => string) => (value: any) => C<any>;
-export declare let date: (mode: Mode, key?: string, dbg?: () => string) => (value: any) => C<any>;
-export declare let time: (mode: Mode, key?: string, dbg?: () => string) => (value: any) => C<any>;
-```
+And so on. There are further primitives for `bool` (`bool => C<bool>`), `date`, `time`, and `date_time` (all three `Moment.Moment) => C<Moment.Moment>`).
 
 ### Html
+The subsequent layer contains some slightly more articulated html constructs such as labels, divs, buttons, etc.
+
+
+
 
 ### Combinators
 

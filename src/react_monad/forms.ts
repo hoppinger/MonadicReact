@@ -23,76 +23,64 @@ export type FormEntry<M> =
   | { kind:"lazy file", field_name:string, filename:(_:M) => string, out:(_:M)=>(_:File)=>M, url:(_:M) => string, upload:(_:M) => (_:File) => C<void> }
 
 export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[]) : (_:FormData<M>) => C<FormData<M>> {
-  return c => repeat<FormData<M>>(c =>
-    any<FormData<M>, FormData<M>>(
+  return c => repeat<FormData<M>>(`${model_name(c.model)}_repeater`)(c =>
+    any<FormData<M>, FormData<M>>(`${model_name(c.model)}_inner_form`)(
       entries.map(e =>
         e.kind == "string" ?
-          retract<FormData<M>, string>(
+          retract<FormData<M>, string>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => e.in(c.model), c => s => {
               let new_c = e.out(c.model)(s)
               let errors = e.get_errors(new_c)
               return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
-            label<string, string>(e.field_name, true)(div<string, string>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
+            label<string, string>(e.field_name, true)(div<string, string>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)
               // c.errors.has(e.field_name) ?
               //   c.errors.get(e.field_name).map(error =>
               //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
               // :
-                []
-            )(string(mode, "text", `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            (string(mode, "text", `${model_name(c.model)}_${e.field_name}`))))
         : e.kind == "number" ?
-          retract<FormData<M>, number>(
+          retract<FormData<M>, number>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => e.in(c.model), c => s => {
               let new_c = e.out(c.model)(s)
               let errors = e.get_errors(new_c)
               return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
-            label<number, number>(e.field_name, true)(div<number, number>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-              // c.errors.has(e.field_name) ?
-              //   c.errors.get(e.field_name).map(error =>
-              //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-              // :
-                []
-            )(number(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            label<number, number>(e.field_name, true)(div<number, number>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)
+            (number(mode, `${model_name(c.model)}_${e.field_name}`))))
         : e.kind == "image" ?
-          retract<FormData<M>, string>(
+          retract<FormData<M>, string>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => e.in(c.model), c => s => {
               let new_c = e.out(c.model)(s)
               let errors = e.get_errors(new_c)
               return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
-            label<string, string>(e.field_name, true)(div<string, string>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
+            label<string, string>(e.field_name, true)(div<string, string>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)
               // c.errors.has(e.field_name) ?
               //   c.errors.get(e.field_name).map(error =>
               //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
               // :
-                []
-            )(image(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            (image(mode, `${model_name(c.model)}_${e.field_name}`))))
         : e.kind == "lazy image" ?
-          retract<FormData<M>, void>(
+          retract<FormData<M>, void>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => null, c => _ => c,
             _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src =>
-            repeat<string>((src:string) =>
+            repeat<string>()((src:string) =>
               label<string, string>(e.field_name, true)(image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src =>
-              e.upload(c.model)(new_src)))(src)).ignore(), `${model_name(c.model)}_${e.field_name}_retract`)
+              e.upload(c.model)(new_src)))(src)).ignore())
         : e.kind == "file" ?
-          retract<FormData<M>, File>(
+          retract<FormData<M>, File>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => e.in(c.model), c => s => {
               let new_c = e.out(c.model)(s)
               let errors = e.get_errors(new_c)
               return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
-            label<File, File>(e.field_name, true)(div<File, File>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-              // c.errors.has(e.field_name) ?
-              //   c.errors.get(e.field_name).map(error =>
-              //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-              // :
-                []
-            )(_ => file(mode, e.filename(c.model), e.url(c.model)).ignore_with<File>(null))), `${model_name(c.model)}_${e.field_name}_retract`)
+            label<File, File>(e.field_name, true)(div<File, File>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)
+            (_ => file(mode, e.filename(c.model), e.url(c.model)).ignore_with<File>(null))))
         : e.kind == "lazy file" ?
-          retract<FormData<M>, File>(
+          retract<FormData<M>, File>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => null, c => f => ({...c, model:e.out(c.model)(f)}),
             _ => label<void, File>(e.field_name, true)(_ =>
                   file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
                   e.upload(c.model)(f).ignore_with(f)))(null))
         : e.kind == "datetime" ?
-          retract<FormData<M>, Moment.Moment>(
+          retract<FormData<M>, Moment.Moment>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => e.in(c.model), c => s => {
               let new_c = e.out(c.model)(s)
               let errors = e.get_errors(new_c)
@@ -101,21 +89,21 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
           )
         :
           null
-      )
-    , `${model_name(c.model)}_inner_form`)(c), `${model_name(c.model)}_repeater`)(c)
+      ))(c))(c)
 }
 
-export let form_errors = function<M>(model_name:(_:M)=>string, entries:FormEntry<M>[]) {
-  return fd => div<FormData<M>, FormData<M>>(`form-errors`)(
+export let form_errors = function<M>(model_name:(_:M)=>string, entries:FormEntry<M>[]) : ((fd:FormData<M>) => C<FormData<M>>) {
+  return fd => any<FormData<M>, FormData<M>>(`form-errors`)(
         entries.map(e =>
           e.kind != "lazy image" && e.kind != "image" ?
-            c => (c.errors.has(e.field_name) ?
-              string("view", "text", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`)
-            : unit<void>(null)).filter(_ => false)
+            c => c.errors.has(e.field_name) ?
+              string("view", "text", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`).never<FormData<M>>()
+            :
+              unit<void>(null).never<FormData<M>>()
           :
-            c => unit<void>(null).filter(_ => false)
+            c => unit<void>(null).never<FormData<M>>()
           )
-      )(c => unit<FormData<M>>(c).filter(_ => false))(fd).filter(_ => false)
+      )(fd).filter(_ => false)
 }
 
 export let simple_form_with_autosave = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[],
@@ -123,7 +111,7 @@ export let simple_form_with_autosave = function<M>(mode:Mode, model_name:(_:M)=>
   return download_M.bind(undefined, c =>
   simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() })
   .bind(`${model_name(c)}_error_recap`,
-  any<FormData<M>, FormData<M>>([
+  any<FormData<M>, FormData<M>>()([
     c => form_errors<M>(model_name, entries)(c).ignore_with(c).filter(_ => false),
     c => unit<FormData<M>>(c)
   ]))
@@ -137,7 +125,7 @@ export let simple_form_with_save_button = function<M>(mode:Mode, model_name:(_:M
     download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void> {
   return download_M.bind(undefined, c =>
     simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() }).bind(`${model_name(c)}_form`, c =>
-      any<FormData<M>, FormData<M>>([
+      any<FormData<M>, FormData<M>>()([
         form_errors<M>(model_name, entries),
         c => button<FormData<M>>(`save`, !c.errors.isEmpty())(c)
       ])(c)
@@ -151,7 +139,7 @@ export let simple_form_with_prev_and_next_buttons = function<M>(mode:Mode, model
     on_prev:(_:M)=>M, on_next:(_:M)=>M) : (_:FormData<M>) => C<FormData<M>> {
   return c =>
     simple_inner_form<M>(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c =>
-      any<FormData<M>, FormData<M>>([
+      any<FormData<M>, FormData<M>>()([
         form_errors<M>(model_name, entries),
         c => prev_visible(c) ? button<FormData<M>>(`prev`, prev_enabled(c))(c).map<FormData<M>>(c => ({...c, model:on_prev(c.model)})) : unit<FormData<M>>(c).filter(_ => false),
         c => next_visible(c) ? button<FormData<M>>(`next`, next_enabled(c))(c).map<FormData<M>>(c => ({...c, model:on_next(c.model)})) : unit<FormData<M>>(c).filter(_ => false)

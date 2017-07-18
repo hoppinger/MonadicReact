@@ -9,8 +9,7 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
 
 export let label_sample : C<void> =
-  repeat<number>(n =>
+  repeat<number>(`input number`)(n =>
       label<number, number>("Insert a number: ", true)(n =>
-        number("edit", "number")(n))(n),
-      `input number`)(0).bind(`input number bind`, c =>
+        number("edit", "number")(n))(n))(0).bind(`input number bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())

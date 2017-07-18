@@ -30,6 +30,6 @@ class Counter extends React.Component<CounterProps, CounterState> {
 }
 
 export let selector_sample : C<void> =
-  selector<number>("dropdown", x => x.toString())(List<number>([1, 3, 5])).bind(`target_selector`, n =>
+  selector<number>("dropdown", x => x.toString())([1, 3, 5]).bind(`target_selector`, n =>
   custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).bind<void>(`counter`, s =>
   string("view")(`The component has ticked ${s} times.`).ignore()))

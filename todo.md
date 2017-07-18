@@ -17,9 +17,9 @@
 
 
 ## various improvements (1 day)
-- [ ] always input arrays, not lists (multi selector/selector)
-- [ ] div takes no useless array of arguments
-- [ ] any/repeat take as first parameters the optional ones
+- [x] always input arrays, not lists (multi selector/selector)
+- [x] div takes no useless array of arguments
+- [x] any/repeat/retract take as first parameters the optional ones
 - [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A
 - [ ] new repository structure with large sample inside library, but referencing library files directly
 - [ ] cleanup dependencies in imports (samples and monad definition)

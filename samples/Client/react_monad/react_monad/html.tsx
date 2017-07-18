@@ -6,11 +6,11 @@ import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, ps:Array<(_:A)=>C<void>>, p:(_:A)=>C<B> } & CmdCommon<B>
+export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type FormProps<A,B> = { kind:"form", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
 export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorType, to_string:(_:A)=>string, items:Immutable.List<A>,
-          selected_items:undefined|Immutable.List<A> } & CmdCommon<Immutable.List<A>>
+          selected_items:undefined|Immutable.List<A> } & CmdCommon<Array<A>>
 export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
@@ -113,39 +113,36 @@ export function h2<A,B>(text:string, className?:string, key?:string, dbg?:() => 
     { kind:"h2", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
-type DivState<A,B> = { p:"creating"|JSX.Element,ps:"creating"|Array<JSX.Element> }
+type DivState<A,B> = { p:"creating"|JSX.Element }
 class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   constructor(props:DivProps<A,B>,context:any) {
     super()
-    this.state = { p:"creating", ps:"creating" }
+    this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:DivProps<A,B>) {
     this.props.debug_info && console.log("New props:", this.props.debug_info())
     this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
-                             new_props.cont(callback)(x)),
-                      ps:new_props.ps.map(p => p(new_props.value).comp(new_props.context)(callback => x => {}))})
+                             new_props.cont(callback)(x))})
   }
   componentWillMount() {
     this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
-                             this.props.cont(callback)(x)),
-                      ps:this.props.ps.map(p => p(this.props.value).comp(this.props.context)(callback => x => {}))})
+                             this.props.cont(callback)(x))})
   }
   render() {
     return <div className={this.props.className}>
-        { this.state.ps != "creating" ? this.state.ps : null }
         { this.state.p  != "creating" ? this.state.p  : null }
       </div>
   }
 }
 
-export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return ps => p => value => make_C<B>(ctxt => cont =>
+export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<DivProps<A,B>>(Div,
-    { kind:"div", className:className, debug_info:dbg, value:value, ps:ps, p:p, context:ctxt, cont:cont, key:key })))
+    { kind:"div", className:className, debug_info:dbg, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 
-export function overlay<A,B>(key?:string, dbg?:() => string) : (ps:Array<(_:A)=>C<void>>) => (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
-  return ps => p => div<A,B>(`overlay`)([])(div<A,B>(`overlay__item`)(ps)(p))
+export function overlay<A,B>(key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => div<A,B>(`overlay`)(div<A,B>(`overlay__item`)(p))
 }
 
 type FormState<A,B> = { p:"creating"|JSX.Element }
@@ -230,10 +227,10 @@ class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
   }
 }
 
-export let selector = function<A>(type:SelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, selected_item?:A) => C<A>) {
+export let selector = function<A>(type:SelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Array<A>, selected_item?:A) => C<A>) {
   return (items, selected_item) => make_C<A>(ctxt => cont =>
     React.createElement<SelectorProps<A>>(Selector,
-      { kind:"selector", debug_info:dbg, items:items, selected_item:selected_item, type:type, to_string:to_string, context:ctxt, cont:cont, key:key }))
+      { kind:"selector", debug_info:dbg, items:Immutable.List<A>(items), selected_item:selected_item, type:type, to_string:to_string, context:ctxt, cont:cont, key:key }))
 }
 
 type MultiSelectorState<A> = { selected:Immutable.Set<number> }
@@ -251,7 +248,7 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
   }
   componentWillMount() {
     if (this.props.selected_items != undefined)
-      this.props.cont(() => null)(this.state.selected.map(index => this.props.items.get(index)).toList())
+      this.props.cont(() => null)(this.state.selected.map(index => this.props.items.get(index)).toArray())
   }
   render() {
     if (this.props.type == "list") {
@@ -265,7 +262,7 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
               }
             }
           this.setState({...this.state, selected: selection}, () =>
-          this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
+          this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toArray()))
         } }>
         {
           this.props.items.map((i,i_index) => {
@@ -286,7 +283,7 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
                         onChange={e => {
                           let selected = this.props.items.get(i_index)
                           let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index)
-                          this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toList()))
+                          this.setState({...this.state, selected: selection}, () => this.props.cont(() => {})(selection.map(index => this.props.items.get(index)).toArray()))
                         } } />
                   <span>{i_s}</span>
                 </label>
@@ -300,14 +297,14 @@ class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelect
   }
 }
 
-export let multi_selector = function<A>(type:MultiSelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Immutable.List<A>, selected_items?:Immutable.List<A>) => C<Immutable.List<A>>) {
-  return (items, selected_items) => make_C<Immutable.List<A>>(ctxt => (cont:Cont<Immutable.List<A>>) =>
+export let multi_selector = function<A>(type:MultiSelectorType, to_string:(_:A)=>string, key?:string, dbg?:() => string) : ((items:Array<A>, selected_items?:Array<A>) => C<Array<A>>) {
+  return (items, selected_items) => make_C<Array<A>>(ctxt => (cont:Cont<Array<A>>) =>
     React.createElement<MultiSelectorProps<A>>(
       MultiSelector,
       { kind:"multi selector",
         debug_info:dbg,
-        items:items,
-        selected_items:selected_items,
+        items:Immutable.List<A>(items),
+        selected_items:selected_items ? Immutable.List<A>(selected_items) : Immutable.List<A>(),
         type:type,
         to_string:to_string,
         cont:cont,

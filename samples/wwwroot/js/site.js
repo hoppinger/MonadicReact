@@ -20517,8 +20517,8 @@ class Repeat extends React.Component {
         return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value => this.setState(Object.assign({}, this.state, { frame_index: this.state.frame_index + 1, current_value: new_value }), () => this.props.cont(callback)(new_value)));
     }
 }
-exports.repeat = function (p, key, dbg) {
-    return initial_value => core_1.make_C(ctxt => cont => React.createElement(Repeat, ({ kind: "repeat", debug_info: dbg, p: p, value: initial_value, context: ctxt, cont: cont, key: key })));
+exports.repeat = function (key, dbg) {
+    return p => initial_value => core_1.make_C(ctxt => cont => React.createElement(Repeat, ({ kind: "repeat", debug_info: dbg, p: p, value: initial_value, context: ctxt, cont: cont, key: key })));
 };
 class Any extends React.Component {
     constructor(props, context) {
@@ -20538,8 +20538,8 @@ class Any extends React.Component {
             " ");
     }
 }
-exports.any = function (ps, key, className, dbg) {
-    return initial_value => core_1.make_C(ctxt => cont => React.createElement(Any, { kind: "any", debug_info: dbg, ps: ps, value: initial_value, context: ctxt, cont: cont, key: key, className: className }));
+exports.any = function (key, className, dbg) {
+    return ps => initial_value => core_1.make_C(ctxt => cont => React.createElement(Any, { kind: "any", debug_info: dbg, ps: ps, value: initial_value, context: ctxt, cont: cont, key: key, className: className }));
 };
 class Never extends React.Component {
     constructor(props, context) {
@@ -20605,8 +20605,8 @@ class Retract extends React.Component {
         return this.state.p != "creating" ? this.state.p : null;
     }
 }
-exports.retract = function (inb, out, p, key, dbg) {
-    return (initial_value) => core_1.make_C(ctxt => (cont) => React.createElement(Retract, { kind: "retract", debug_info: dbg, inb: inb, out: out, p: p, value: initial_value, context: ctxt, cont: cont, key: key }));
+exports.retract = function (key, dbg) {
+    return (inb, out, p) => (initial_value) => core_1.make_C(ctxt => (cont) => React.createElement(Retract, { kind: "retract", debug_info: dbg, inb: inb, out: out, p: p, value: initial_value, context: ctxt, cont: cont, key: key }));
 };
 class LiftPromise extends React.Component {
     constructor(props, context) {
@@ -20717,32 +20717,33 @@ exports.simple_menu = function (type, to_string, key, dbg) {
         sub_entry_class = "monadic-tabs__sub-entry";
     }
     return (items, p, selected_item, selected_sub_menu) => {
-        return exports.repeat(html_1.div()([])(exports.any([
-            html_1.div(menu_class)([])(s => exports.any((type != "side menu" && s.shown_range.first > 0 ?
-                [s => html_1.div(`${entry_class} monadic-prev-tab`)([])(html_1.a("<"))(Object.assign({}, s, { shown_range: Object.assign({}, s.shown_range, { first: s.shown_range.first - 1 }) }))]
+        let entries = (s) => (type != "side menu" && s.shown_range.first > 0 ?
+            [s => html_1.div(`${entry_class} monadic-prev-tab`)(html_1.a("<"))(Object.assign({}, s, { shown_range: Object.assign({}, s.shown_range, { first: s.shown_range.first - 1 }) }))]
+            :
+                []).concat(items.map((item, i) => {
+            return (s) => item.kind == "item" ?
+                html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(html_1.a(to_string(item.value), false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
                 :
-                    []).concat(items.map((item, i) => {
-                return (s) => item.kind == "item" ?
-                    html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)([])(html_1.a(to_string(item.value), false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
-                    :
-                        exports.any([
-                            (s) => html_1.div(`${entry_class} `)([])(html_1.a(item.label, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
-                        ].concat((s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
-                            (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
-                            item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)([])(html_1.a(to_string(c.value), false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
-                            :
-                                []))(s);
-            }).filter((i, i_i) => type == "side menu" || i_i >= s.shown_range.first && (i_i - s.shown_range.first) < s.shown_range.amount)
-                .concat(type != "side menu" && s.shown_range.first + s.shown_range.amount < items.count() ?
-                [s => html_1.div(`${entry_class} monadic-next-tab`)([])(html_1.a(">"))(Object.assign({}, s, { shown_range: Object.assign({}, s.shown_range, { first: s.shown_range.first + 1 }) }))]
-                :
-                    [])
-                .toArray()), undefined, entries_class)(s)),
-            html_1.div(content_class)([])((s) => s.selected.kind == "item" ?
+                    exports.any()([
+                        (s) => html_1.div(`${entry_class} `)(html_1.a(item.label, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
+                    ].concat((s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
+                        (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
+                        item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(html_1.a(to_string(c.value), false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
+                        :
+                            []))(s);
+        }).filter((i, i_i) => type == "side menu" || i_i >= s.shown_range.first && (i_i - s.shown_range.first) < s.shown_range.amount)
+            .concat(type != "side menu" && s.shown_range.first + s.shown_range.amount < items.count() ?
+            [s => html_1.div(`${entry_class} monadic-next-tab`)(html_1.a(">"))(Object.assign({}, s, { shown_range: Object.assign({}, s.shown_range, { first: s.shown_range.first + 1 }) }))]
+            :
+                [])
+            .toArray());
+        return exports.repeat()(html_1.div()(exports.any(undefined, content_menu_class)([
+            html_1.div(menu_class)(s => exports.any(undefined, entries_class)(entries(s))(s)),
+            html_1.div(content_class)((s) => s.selected.kind == "item" ?
                 p(s.selected.value).bind(undefined, (p_res) => core_1.unit(Object.assign({}, s, { last_action: { kind: "p", p_res: p_res } })))
                 :
                     core_1.unit(s).never())
-        ], undefined, content_menu_class)))({ selected: selected_item == undefined ? { kind: "nothing" } : { kind: "item", value: selected_item },
+        ])))({ selected: selected_item == undefined ? { kind: "nothing" } : { kind: "item", value: selected_item },
             sub_selected: selected_sub_menu == undefined ? { kind: "nothing" } : { kind: "sub menu", label: selected_sub_menu },
             last_action: { kind: "init" },
             shown_range: type == "side menu" ? undefined : { first: 0, amount: type.max_tabs } })
@@ -20753,7 +20754,7 @@ exports.simple_menu = function (type, to_string, key, dbg) {
 exports.custom = function (key, dbg) {
     return (render) => core_1.make_C(ctxt => cont => render(ctxt)(cont));
 };
-exports.hide = (f_name, f) => exports.repeat(visible => primitives_1.bool("edit", "plus/minus")(visible))(false).bind(`${f_name} toggle`, visible => !visible ?
+exports.hide = (f_name, f) => exports.repeat()(visible => primitives_1.bool("edit", "plus/minus")(visible))(false).bind(`${f_name} toggle`, visible => !visible ?
     core_1.unit(null)
     :
         f.bind(`visible ${f_name}`, _ => core_1.unit(null)));
@@ -20842,27 +20843,25 @@ exports.h2 = h2;
 class Div extends React.Component {
     constructor(props, context) {
         super();
-        this.state = { p: "creating", ps: "creating" };
+        this.state = { p: "creating" };
     }
     componentWillReceiveProps(new_props) {
         this.props.debug_info && console.log("New props:", this.props.debug_info());
-        this.setState(Object.assign({}, this.state, { p: new_props.p(new_props.value).comp(new_props.context)(callback => x => new_props.cont(callback)(x)), ps: new_props.ps.map(p => p(new_props.value).comp(new_props.context)(callback => x => { })) }));
+        this.setState(Object.assign({}, this.state, { p: new_props.p(new_props.value).comp(new_props.context)(callback => x => new_props.cont(callback)(x)) }));
     }
     componentWillMount() {
-        this.setState(Object.assign({}, this.state, { p: this.props.p(this.props.value).comp(this.props.context)(callback => x => this.props.cont(callback)(x)), ps: this.props.ps.map(p => p(this.props.value).comp(this.props.context)(callback => x => { })) }));
+        this.setState(Object.assign({}, this.state, { p: this.props.p(this.props.value).comp(this.props.context)(callback => x => this.props.cont(callback)(x)) }));
     }
     render() {
-        return React.createElement("div", { className: this.props.className },
-            this.state.ps != "creating" ? this.state.ps : null,
-            this.state.p != "creating" ? this.state.p : null);
+        return React.createElement("div", { className: this.props.className }, this.state.p != "creating" ? this.state.p : null);
     }
 }
 function div(className, key, dbg) {
-    return ps => p => value => core_1.make_C(ctxt => cont => (React.createElement(Div, { kind: "div", className: className, debug_info: dbg, value: value, ps: ps, p: p, context: ctxt, cont: cont, key: key })));
+    return p => value => core_1.make_C(ctxt => cont => (React.createElement(Div, { kind: "div", className: className, debug_info: dbg, value: value, p: p, context: ctxt, cont: cont, key: key })));
 }
 exports.div = div;
 function overlay(key, dbg) {
-    return ps => p => div(`overlay`)([])(div(`overlay__item`)(ps)(p));
+    return p => div(`overlay`)(div(`overlay__item`)(p));
 }
 exports.overlay = overlay;
 class Form extends React.Component {
@@ -20930,7 +20929,7 @@ class Selector extends React.Component {
     }
 }
 exports.selector = function (type, to_string, key, dbg) {
-    return (items, selected_item) => core_1.make_C(ctxt => cont => React.createElement(Selector, { kind: "selector", debug_info: dbg, items: items, selected_item: selected_item, type: type, to_string: to_string, context: ctxt, cont: cont, key: key }));
+    return (items, selected_item) => core_1.make_C(ctxt => cont => React.createElement(Selector, { kind: "selector", debug_info: dbg, items: Immutable.List(items), selected_item: selected_item, type: type, to_string: to_string, context: ctxt, cont: cont, key: key }));
 };
 class MultiSelector extends React.Component {
     constructor(props, context) {
@@ -20945,7 +20944,7 @@ class MultiSelector extends React.Component {
     }
     componentWillMount() {
         if (this.props.selected_items != undefined)
-            this.props.cont(() => null)(this.state.selected.map(index => this.props.items.get(index)).toList());
+            this.props.cont(() => null)(this.state.selected.map(index => this.props.items.get(index)).toArray());
     }
     render() {
         if (this.props.type == "list") {
@@ -20958,7 +20957,7 @@ class MultiSelector extends React.Component {
                             selection = selection.add(index);
                         }
                     }
-                    this.setState(Object.assign({}, this.state, { selected: selection }), () => this.props.cont(() => { })(selection.map(index => this.props.items.get(index)).toList()));
+                    this.setState(Object.assign({}, this.state, { selected: selection }), () => this.props.cont(() => { })(selection.map(index => this.props.items.get(index)).toArray()));
                 } }, this.props.items.map((i, i_index) => {
                 let i_s = this.props.to_string(i);
                 return React.createElement("option", { key: i_s, value: i_index }, i_s);
@@ -20972,7 +20971,7 @@ class MultiSelector extends React.Component {
                         React.createElement("input", { key: i_s, type: "checkbox", checked: this.state.selected.has(i_index), className: "monadic-input-choices monadic-input-choices--checkbox", onChange: e => {
                                 let selected = this.props.items.get(i_index);
                                 let selection = e.currentTarget.checked ? this.state.selected.add(i_index) : this.state.selected.remove(i_index);
-                                this.setState(Object.assign({}, this.state, { selected: selection }), () => this.props.cont(() => { })(selection.map(index => this.props.items.get(index)).toList()));
+                                this.setState(Object.assign({}, this.state, { selected: selection }), () => this.props.cont(() => { })(selection.map(index => this.props.items.get(index)).toArray()));
                             } }),
                         React.createElement("span", null, i_s)));
             }));
@@ -20985,8 +20984,8 @@ class MultiSelector extends React.Component {
 exports.multi_selector = function (type, to_string, key, dbg) {
     return (items, selected_items) => core_1.make_C(ctxt => (cont) => React.createElement(MultiSelector, { kind: "multi selector",
         debug_info: dbg,
-        items: items,
-        selected_items: selected_items,
+        items: Immutable.List(items),
+        selected_items: selected_items ? Immutable.List(selected_items) : Immutable.List(),
         type: type,
         to_string: to_string,
         cont: cont,
@@ -45909,7 +45908,7 @@ const editable_list_1 = __webpack_require__(397);
 const link_1 = __webpack_require__(399);
 const overlay_1 = __webpack_require__(404);
 const context_1 = __webpack_require__(396);
-exports.sample_toggleable_minipage = s => monadic_react_1.repeat(monadic_react_1.div("monadic-title-preview")([])(monadic_react_1.label(s.description, false)(monadic_react_1.bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible => !visible ?
+exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react_1.div("monadic-title-preview")(monadic_react_1.label(s.description, false)(monadic_react_1.bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible => !visible ?
     monadic_react_1.unit(null)
     :
         s.sample.bind(`visible ${s.description}`, _ => monadic_react_1.unit(null)));
@@ -45944,10 +45943,10 @@ function HomePage(slug) {
     ];
     let xxx = () => ({
         url: monadic_react_1.make_url(["xxx"]),
-        page: _ => monadic_react_1.any([
+        page: _ => monadic_react_1.any(`xxx`)([
             _ => monadic_react_1.string("view")("xxx").never(),
             _ => monadic_react_1.link_to_route("YYY", {}, yyy())
-        ], `xxx`)(null)
+        ])(null)
     });
     let yyy = () => ({
         url: monadic_react_1.make_url(["yyy"]),
@@ -46063,14 +46062,14 @@ let perform = function (s, op) {
     return op.kind == "add" ? Object.assign({}, s, { items: s.items.push(op.value) }) : op.kind == "remove" ? Object.assign({}, s, { items: s.items.remove(op.index), selected_index: s.selected_index == op.index ? undefined : op.index > s.selected_index ? s.selected_index : s.selected_index - 1 }) : Object.assign({}, s, { selected_index: op.selected ? op.index : s.selected_index == op.index ? undefined : s.selected_index });
 };
 exports.editable_list = function (list_name, initial_items, create_new_form) {
-    return initial_items.bind(list_name, items => combinators_1.repeat(html_1.form(`monadic-list-form`)(combinators_1.any([
-        s => list_1.list(s.items, undefined, `monadic-list-items`)(i => n => combinators_1.any([
-            html_1.div(`monadic-list-cell`)([])(_ => html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).bind(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
-            html_1.div(`monadic-list-cell`)([])(op => primitives_1.string("view")(`This is item ${n}, with index ${i}`).filter(_ => false).ignore_with(op)),
-            html_1.div(`monadic-list-cell monadic-list-lastcell`)([])(_ => html_1.button(`X`)({ kind: "remove", value: n, index: i }))
-        ], `item_${n}`, `monadic-list-item`)(undefined)).bind(`inner list`, op => core_1.unit(perform(s, op))),
+    return initial_items.bind(list_name, items => combinators_1.repeat(`monadic-list ${list_name}`)(html_1.form(`monadic-list-form`)(combinators_1.any()([
+        s => list_1.list(s.items, undefined, `monadic-list-items`)(i => n => combinators_1.any(`item_${n}`, `monadic-list-item`)([
+            html_1.div(`monadic-list-cell`)(_ => html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).bind(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
+            html_1.div(`monadic-list-cell`)(op => primitives_1.string("view")(`This is item ${n}, with index ${i}`).filter(_ => false).ignore_with(op)),
+            html_1.div(`monadic-list-cell monadic-list-lastcell`)(_ => html_1.button(`X`)({ kind: "remove", value: n, index: i }))
+        ])(undefined)).bind(`inner list`, op => core_1.unit(perform(s, op))),
         s => create_new_form(s).bind(`monadic-new-list-item`, new_value => core_1.unit(perform(s, { kind: "add", value: new_value })))
-    ])))({ items: items, selected_index: undefined }), `monadic-list ${list_name}`);
+    ])))({ items: items, selected_index: undefined }));
 };
 
 
@@ -46087,74 +46086,55 @@ const primitives_1 = __webpack_require__(97);
 const html_1 = __webpack_require__(83);
 const combinators_1 = __webpack_require__(82);
 exports.simple_inner_form = function (mode, model_name, entries) {
-    return c => combinators_1.repeat(c => combinators_1.any(entries.map(e => e.kind == "string" ?
-        combinators_1.retract(c => e.in(c.model), c => s => {
+    return c => combinators_1.repeat(`${model_name(c.model)}_repeater`)(c => combinators_1.any(`${model_name(c.model)}_inner_form`)(entries.map(e => e.kind == "string" ?
+        combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
             let new_c = e.out(c.model)(s);
             let errors = e.get_errors(new_c);
             return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
-        }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-        // c.errors.has(e.field_name) ?
-        //   c.errors.get(e.field_name).map(error =>
-        //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-        // :
-        [])(primitives_1.string(mode, "text", `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+        }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(primitives_1.string(mode, "text", `${model_name(c.model)}_${e.field_name}`))))
         : e.kind == "number" ?
-            combinators_1.retract(c => e.in(c.model), c => s => {
+            combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                 let new_c = e.out(c.model)(s);
                 let errors = e.get_errors(new_c);
                 return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
-            }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-            // c.errors.has(e.field_name) ?
-            //   c.errors.get(e.field_name).map(error =>
-            //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-            // :
-            [])(primitives_1.number(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+            }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(primitives_1.number(mode, `${model_name(c.model)}_${e.field_name}`))))
             : e.kind == "image" ?
-                combinators_1.retract(c => e.in(c.model), c => s => {
+                combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                     let new_c = e.out(c.model)(s);
                     let errors = e.get_errors(new_c);
                     return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
-                }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-                // c.errors.has(e.field_name) ?
-                //   c.errors.get(e.field_name).map(error =>
-                //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-                // :
-                [])(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))), `${model_name(c.model)}_${e.field_name}_retract`)
+                }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))))
                 : e.kind == "lazy image" ?
-                    combinators_1.retract(c => null, c => _ => c, _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src => combinators_1.repeat((src) => html_1.label(e.field_name, true)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src => e.upload(c.model)(new_src)))(src)).ignore(), `${model_name(c.model)}_${e.field_name}_retract`)
+                    combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => _ => c, _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src => combinators_1.repeat()((src) => html_1.label(e.field_name, true)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src => e.upload(c.model)(new_src)))(src)).ignore())
                     : e.kind == "file" ?
-                        combinators_1.retract(c => e.in(c.model), c => s => {
+                        combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                             let new_c = e.out(c.model)(s);
                             let errors = e.get_errors(new_c);
                             return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
-                        }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(
-                        // c.errors.has(e.field_name) ?
-                        //   c.errors.get(e.field_name).map(error =>
-                        //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-                        // :
-                        [])(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).ignore_with(null))), `${model_name(c.model)}_${e.field_name}_retract`)
+                        }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).ignore_with(null))))
                         : e.kind == "lazy file" ?
-                            combinators_1.retract(c => null, c => f => (Object.assign({}, c, { model: e.out(c.model)(f) })), _ => html_1.label(e.field_name, true)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f => e.upload(c.model)(f).ignore_with(f)))(null))
+                            combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => f => (Object.assign({}, c, { model: e.out(c.model)(f) })), _ => html_1.label(e.field_name, true)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f => e.upload(c.model)(f).ignore_with(f)))(null))
                             : e.kind == "datetime" ?
-                                combinators_1.retract(c => e.in(c.model), c => s => {
+                                combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                                     let new_c = e.out(c.model)(s);
                                     let errors = e.get_errors(new_c);
                                     return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
                                 }, primitives_1.date_time(mode, e.field_name, () => "Creating date_time formfield"))
                                 :
-                                    null), `${model_name(c.model)}_inner_form`)(c), `${model_name(c.model)}_repeater`)(c);
+                                    null))(c))(c);
 };
 exports.form_errors = function (model_name, entries) {
-    return fd => html_1.div(`form-errors`)(entries.map(e => e.kind != "lazy image" && e.kind != "image" ?
-        c => (c.errors.has(e.field_name) ?
-            primitives_1.string("view", "text", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`)
-            : core_1.unit(null)).filter(_ => false)
+    return fd => combinators_1.any(`form-errors`)(entries.map(e => e.kind != "lazy image" && e.kind != "image" ?
+        c => c.errors.has(e.field_name) ?
+            primitives_1.string("view", "text", `${model_name(c.model)}_${e.field_name}`)(`${c.errors.get(e.field_name)}`).ignore(`${model_name(c.model)}_${e.field_name}_error_ignore`).never()
+            :
+                core_1.unit(null).never()
         :
-            c => core_1.unit(null).filter(_ => false)))(c => core_1.unit(c).filter(_ => false))(fd).filter(_ => false);
+            c => core_1.unit(null).never()))(fd).filter(_ => false);
 };
 exports.simple_form_with_autosave = function (mode, model_name, entries, download_M, upload_M) {
     return download_M.bind(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() })
-        .bind(`${model_name(c)}_error_recap`, combinators_1.any([
+        .bind(`${model_name(c)}_error_recap`, combinators_1.any()([
         c => exports.form_errors(model_name, entries)(c).ignore_with(c).filter(_ => false),
         c => core_1.unit(c)
     ]))
@@ -46162,13 +46142,13 @@ exports.simple_form_with_autosave = function (mode, model_name, entries, downloa
         .map(c => c.model).bind(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delay`)(upload_M)).ignore());
 };
 exports.simple_form_with_save_button = function (mode, model_name, entries, download_M, upload_M) {
-    return download_M.bind(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).bind(`${model_name(c)}_form`, c => combinators_1.any([
+    return download_M.bind(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).bind(`${model_name(c)}_form`, c => combinators_1.any()([
         exports.form_errors(model_name, entries),
         c => html_1.button(`save`, !c.errors.isEmpty())(c)
     ])(c)).map(c => c.model).bind(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delayer`)(upload_M)).ignore());
 };
 exports.simple_form_with_prev_and_next_buttons = function (mode, model_name, entries, prev_enabled, next_enabled, prev_visible, next_visible, on_prev, on_next) {
-    return c => exports.simple_inner_form(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c => combinators_1.any([
+    return c => exports.simple_inner_form(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c => combinators_1.any()([
         exports.form_errors(model_name, entries),
         c => prev_visible(c) ? html_1.button(`prev`, prev_enabled(c))(c).map(c => (Object.assign({}, c, { model: on_prev(c.model) }))) : core_1.unit(c).filter(_ => false),
         c => next_visible(c) ? html_1.button(`next`, next_enabled(c))(c).map(c => (Object.assign({}, c, { model: on_next(c.model) }))) : core_1.unit(c).filter(_ => false)
@@ -46514,10 +46494,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(35);
 const combinators_1 = __webpack_require__(82);
 exports.simple_workflow = function (workflow_name, steps, initial_model, initial_step) {
-    return initial_model.bind(`${workflow_name}_initial_binder`, m => combinators_1.repeat(cd => steps.has(cd.step) ?
+    return initial_model.bind(`${workflow_name}_initial_binder`, m => combinators_1.repeat(`${workflow_name}_repeater`)(cd => steps.has(cd.step) ?
         steps.get(cd.step)(cd)
         :
-            core_1.unit(cd).filter(_ => false), `${workflow_name}_repeater`, () => `${workflow_name}_repeater`)({ model: m, step: initial_step }).map(c => c.model));
+            core_1.unit(cd).filter(_ => false))({ model: m, step: initial_step }).map(c => c.model));
 };
 
 
@@ -46529,7 +46509,7 @@ exports.simple_workflow = function (workflow_name, steps, initial_model, initial
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.button_sample = monadic_react_1.repeat(n => monadic_react_1.label("Insert an even number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n), `input number`)(0).bind(`input number bind`, n => monadic_react_1.button(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map(n => `Your selection is ${n.toString()}`).bind(`button to string`, s => monadic_react_1.string("view")(s).ignore()));
+exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert an even number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).bind(`input number bind`, n => monadic_react_1.button(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map(n => `Your selection is ${n.toString()}`).bind(`button to string`, s => monadic_react_1.string("view")(s).ignore()));
 
 
 /***/ }),
@@ -46540,7 +46520,7 @@ exports.button_sample = monadic_react_1.repeat(n => monadic_react_1.label("Inser
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.context_sample = monadic_react_1.any([
+exports.context_sample = monadic_react_1.any()([
     _ => monadic_react_1.button(`Force reload`)(null).bind(undefined, _ => monadic_react_1.get_context().bind(undefined, ctxt => ctxt.force_reload())),
     _ => monadic_react_1.button(`Toggle mode`)(null).bind(undefined, _ => monadic_react_1.get_context().bind(undefined, ctxt => ctxt.set_mode(ctxt.mode == "view" ? "edit" : "view")))
 ])(null).bind(`context sample`, _ => monadic_react_1.get_context().bind(undefined, ctxt => monadic_react_1.string("view")(`Context: ${JSON.stringify(ctxt)}`).ignore()));
@@ -46566,7 +46546,7 @@ exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-li
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.label_sample = monadic_react_1.repeat(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n), `input number`)(0).bind(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
+exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).bind(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
 
 
 /***/ }),
@@ -46577,11 +46557,11 @@ exports.label_sample = monadic_react_1.repeat(n => monadic_react_1.label("Insert
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.link_sample = monadic_react_1.any([
+exports.link_sample = monadic_react_1.any(`link sample`)([
     _ => monadic_react_1.link(`Google`, "https://www.google.com"),
     _ => monadic_react_1.link(`Facebook`, "https://www.facebook.com"),
     _ => monadic_react_1.link(`Hoppinger`, "https://www.hoppinger.com")
-], `link sample`)(null);
+])(null);
 
 
 /***/ }),
@@ -46620,11 +46600,11 @@ exports.menu_sample = monadic_react_1.simple_menu("side menu", p => p.title, `fi
 Object.defineProperty(exports, "__esModule", { value: true });
 const Moment = __webpack_require__(0);
 const monadic_react_1 = __webpack_require__(20);
-exports.moments_sample = monadic_react_1.repeat(monadic_react_1.any([
-    c => monadic_react_1.repeat(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).bind(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).bind(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).bind(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
-]), `input number`)(Moment(Moment.now())).ignore();
+exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input number`)([
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).bind(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).bind(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).bind(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
+]))(Moment(Moment.now())).ignore();
 
 
 /***/ }),
@@ -46634,9 +46614,8 @@ exports.moments_sample = monadic_react_1.repeat(monadic_react_1.any([
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const immutable_1 = __webpack_require__(40);
 const monadic_react_1 = __webpack_require__(20);
-exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x.toString())(immutable_1.List([1, 3, 5]), immutable_1.List([1, 5])).bind(`multi_selector`, n => monadic_react_1.string("view")(JSON.stringify(n.toArray())).ignore());
+exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x.toString())([1, 3, 5], [1, 5]).bind(`multi_selector`, n => monadic_react_1.string("view")(JSON.stringify(n)).ignore());
 
 
 /***/ }),
@@ -46647,19 +46626,19 @@ exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.overlay_sample = monadic_react_1.repeat(visible => monadic_react_1.any([
-    monadic_react_1.any([
+exports.overlay_sample = monadic_react_1.repeat(`overlay sample`)(visible => monadic_react_1.any()([
+    monadic_react_1.any()([
         _ => monadic_react_1.string("view")("The overlay is hidden").never(),
         _ => monadic_react_1.button("Show overlay")(true)
     ]),
     !visible ?
         _ => monadic_react_1.unit(null).never()
         :
-            monadic_react_1.overlay()([])(monadic_react_1.any([
+            monadic_react_1.overlay()(monadic_react_1.any()([
                 _ => monadic_react_1.string("view")("This is the overlay").never(),
                 _ => monadic_react_1.button("X")(false)
             ]))
-])(null), `overlay sample`)(false).ignore();
+])(null))(false).ignore();
 
 
 /***/ }),
@@ -46692,7 +46671,6 @@ exports.rich_text_sample = monadic_react_1.rich_text(null, "edit").bind(`rich te
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(19);
-const immutable_1 = __webpack_require__(40);
 const monadic_react_1 = __webpack_require__(20);
 class Counter extends React.Component {
     constructor(props, context) {
@@ -46709,7 +46687,7 @@ class Counter extends React.Component {
             React.createElement("button", { onClick: () => this.setState(Object.assign({}, this.state, { current: this.state.current + 1 }), () => this.state.current >= this.props.target + 1 && this.setState(Object.assign({}, this.state, { current: 0 }), () => this.props.cont(() => this.setState(Object.assign({}, this.state, { signals_sent: this.state.signals_sent + 1 })))(this.state.signals_sent + 1))) }, "+1"));
     }
 }
-exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString())(immutable_1.List([1, 3, 5])).bind(`target_selector`, n => monadic_react_1.custom()(ctxt => cont => React.createElement(Counter, { target: n, context: ctxt, cont: cont })).bind(`counter`, s => monadic_react_1.string("view")(`The component has ticked ${s} times.`).ignore()));
+exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString())([1, 3, 5]).bind(`target_selector`, n => monadic_react_1.custom()(ctxt => cont => React.createElement(Counter, { target: n, context: ctxt, cont: cont })).bind(`counter`, s => monadic_react_1.string("view")(`The component has ticked ${s} times.`).ignore()));
 
 
 /***/ }),
@@ -46732,11 +46710,11 @@ exports.tabbed_menu_sample = monadic_react_1.simple_menu({ kind: "tabs", max_tab
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.toggles_sample = monadic_react_1.repeat(b => monadic_react_1.any([
+exports.toggles_sample = monadic_react_1.repeat()(b => monadic_react_1.any(`toggles`)([
     monadic_react_1.label("my toggle.")(b => monadic_react_1.bool("edit", "checkbox", `basic toggle`)(b)),
     monadic_react_1.label("my fancy toggle.")(b => monadic_react_1.bool("edit", "fancy toggle", `fancy toggle`)(b)),
     monadic_react_1.label("The last toggle: ")(b => monadic_react_1.bool("edit", "plus/minus", `a plus/minus toggle.`)(b)),
-], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
+])(b))(true).bind(`fancy_toggle_bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
 
 
 /***/ }),

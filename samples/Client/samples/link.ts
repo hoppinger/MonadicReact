@@ -10,8 +10,8 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
 
 export let link_sample : C<void> =
-  any<void, void>([
+  any<void, void>(`link sample`)([
     _ => link(`Google`, "https://www.google.com"),
     _ => link(`Facebook`, "https://www.facebook.com"),
     _ => link(`Hoppinger`, "https://www.hoppinger.com")
-  ], `link sample`)(null)
+  ])(null)

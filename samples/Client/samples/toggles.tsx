@@ -9,13 +9,13 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
 
 export let toggles_sample : C<void> =
-  repeat<boolean>(b =>
-    any<boolean, boolean>([
+  repeat<boolean>()(b =>
+    any<boolean, boolean>(`toggles`)([
       label<boolean, boolean>("my toggle.")(b =>
         bool("edit", "checkbox", `basic toggle`)(b)),
       label<boolean, boolean>("my fancy toggle.")(b =>
         bool("edit", "fancy toggle", `fancy toggle`)(b)),
       label<boolean, boolean>("The last toggle: ")(b =>
         bool("edit", "plus/minus", `a plus/minus toggle.`)(b)),
-    ], `toggles`)(b))(true).bind(`fancy_toggle_bind`, c =>
+    ])(b))(true).bind(`fancy_toggle_bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
