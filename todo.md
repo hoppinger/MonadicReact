@@ -17,6 +17,7 @@
 
 
 ## various improvements (1 day)
+- [ ] always input arrays, not lists (multi selector/selector)
 - [ ] div takes no useless array of arguments
 - [ ] any/repeat take as first parameters the optional ones
 - [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A

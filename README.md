@@ -11,7 +11,8 @@ Installation is the usual `npm install monadic_react`.
 To use the application, create one or more components of type `C<void>`, for example:
 
 ```
-let my_component : C<void> = string("view")("Hello world of monads!").ignore()
+let my_component : C<void> =
+  string("view")("Hello world of monads!").ignore()
 ```
 
 The component is then wrapped in a page for the router. Let us keep things easy and define a route which matches everything:
@@ -28,7 +29,7 @@ The component can then be instantiated by invoking the application constructor a
 ```
 <div className="component">
   {
-    application("edit", window.location.href.replace(slug, ""), slug, Immutable.List<Route<{}>>([main_page()])))
+    application("edit", window.location.href, "", Immutable.List<Route<{}>>([main_page()])))
   }
 </div>
 ```

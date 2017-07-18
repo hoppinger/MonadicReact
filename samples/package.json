@@ -10,7 +10,7 @@
     "npm": "3.5.0"
   },
   "scripts": {
-    "server": "nodemon app.js",
+    "server": "./node_modules/.bin/nodemon app.js",
     "webpack": "./node_modules/.bin/webpack -w",
     "stylesheets": "./node_modules/.bin/gulp"
   },
@@ -51,6 +51,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "http-server": "^0.10.0",
+    "nodemon": "^1.11.0",
     "source-map-loader": "^0.1.6",
     "typescript": "^2.4.1",
     "webpack": "^2.3.2"
