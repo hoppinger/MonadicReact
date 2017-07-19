@@ -1,14 +1,15 @@
 ## doing
 - documentation
-- test published npm package locally
 - cleanup dependencies in imports (samples and monad definition)
 
 ## GO (7 days)
+- [ ] headless renderer setup in scaffolder
 - [ ] info pages
   - [ ] welcome
   - [ ] manifesto
   - [ ] contact
 - [ ] login/logout
+- [ ] access to admin pages
 - [ ] course selection
 - [ ] lecture selection
 - [ ] exam selection
@@ -16,13 +17,7 @@
 
 
 ## various improvements
-- [ ] test published npm package locally
-- [x] always input arrays, not lists (multi selector/selector)
-- [x] div takes no useless array of arguments
-- [x] any/repeat/retract take as first parameters the optional ones
 - [ ] cleanup dependencies in imports (samples and monad definition)
-- [x] improve scaffolder-related names in small sample
-- [x] mode should always also check context.mode
 
 ## samples (3 days)
 - [ ] all primitives, one per sample (use menu nesting)
@@ -47,8 +42,9 @@
   - [ ] verify all snippets
   - [ ] screenshots
 - [x] publish online for designers
-- [ ] remove dotnet core from sample
-  - [ ] restore samples requireing an API: file, forms, workflow
+- [x] remove dotnet core from sample
+  - [ ] restore samples requiring an API: file, forms, workflow
+    - [ ] fake api with dictionary
 - [ ] linkedin post
 - [ ] reddit post
 
@@ -82,3 +78,4 @@
 - [ ] add math plugin https://github.com/efloti/draft-js-mathjax-plugin
 - [ ] also parse url query
 - [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A
+- [ ] use never instead of filter(_ => false)

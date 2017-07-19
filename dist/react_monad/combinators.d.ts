@@ -1,5 +1,4 @@
 /// <reference types="react" />
-import * as Immutable from "immutable";
 import { C, Cont, CmdCommon, Context } from './core';
 export declare type RepeatProps<A> = {
     kind: "repeat";
@@ -63,6 +62,6 @@ export declare type MenuEntrySubMenu<A> = {
     children: Array<MenuEntryValue<A>>;
 };
 export declare type MenuEntry<A> = MenuEntryValue<A> | MenuEntrySubMenu<A>;
-export declare let simple_menu: <A, B>(type: SimpleMenuType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: Immutable.List<MenuEntry<A>>, p: (_: A) => C<B>, selected_item?: A, selected_sub_menu?: string) => C<B>;
+export declare let simple_menu: <A, B>(type: SimpleMenuType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: MenuEntry<A>[], p: (_: A) => C<B>, selected_item?: A, selected_sub_menu?: string) => C<B>;
 export declare let custom: <A>(key?: string, dbg?: () => string) => (render: (ctxt: () => Context) => (_: Cont<A>) => JSX.Element) => C<A>;
 export declare let hide: (f_name: string, f: C<void>) => C<void>;

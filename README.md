@@ -286,22 +286,145 @@ c.set_url(t, make_url<T, K>([...url elements...])).bind(
 Note that a special url is `fallback_url`, which matches any url. It is usually used for handling errors or making sure that the homepage is accessible even if the address has been wrongly typed.
 
 ### Templates
-Based on the functionality that we have set up so far, it becomes possible to define templates. Templates can
+Based on the functionality that we have set up so far, it becomes possible to define templates. Templates usually take as input one or more components, and return themselves a component which coordinates and augments the input components:
+
+```
+template : (C<A>, C<B>, C<C>, ...) => C<R>
+```
 
 #### Menu template
-Todo
+A very useful template is the `menu`. The entries of the menu are defined as either entries or sub-menus. The sub-menus may only have entries:
+
+```
+type MenuEntryValue<A> = { kind:"item", value:A }
+type MenuEntrySubMenu<A> = { kind:"sub menu", label:string, children:Array<MenuEntryValue<A>> }
+type MenuEntry<A> = MenuEntryValue<A> | MenuEntrySubMenu<A>
+```
+
+We can easily construct menu entries by means of utility functions:
+
+```
+mk_submenu_entry = function<A>(label:string, children:Array<MenuEntryValue<A>>) : MenuEntrySubMenu<A> { return { kind:"sub menu", label:label, children:children } }
+mk_menu_entry = function<A>(v:A) : MenuEntryValue<A> { return { kind:"item", value:v } }
+```
+
+The `simple_menu` is a template which takes as input a series of items, a default selection (and sub-selection), and a component `p` that works with the current selection (`p:A => C<B>`). The component `p` is the "inner content" of the menu. The menu itself passes the output of `p` through, therefore the `simple_menu` returns a `C<B>` as result:
+
+```
+simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) :
+  ((items:Array<MenuEntry<A>>, p:(_:A)=>C<B>, selected_item?:A, selected_sub_menu?:string) => C<B>)
+```
+
+Sample usage is quite intuitive: we define a data structure which we can render, pass a list of such structures to `simple_menu`, and pass an appropriate renderer (in this case the renderer is just stored in the page itself, but this need not be the case):
+
+```
+type MyPage = { title:string, content:C<void> }
+
+export let menu_sample : C<void> =
+  simple_menu<MyPage, void>("side menu", p => p.title, `fictional pages menu`)(
+    [
+      { title:"About", content:string("view")("This page talks about us")},
+      { title:"Content", content:string("view")("This page is full of interesting content")}
+    ],
+    p => p.content
+  ).ignore()
+
+```
+
 
 #### Form templates
-Todo
+Other very useful templates are the form templates. The form templates take care of typical form-related tasks.
+
+The `simple_inner_form` is the core of the form templates. It takes as input a declarative description of the attributes to show in the form, and returns a function `FormData<M> => C<FormData<M>>` which essentially goes from an instance of the model `M` to populate the initial form, to a component which will yield the new value(s) of `M`:
+
+```
+simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, attributes:FormEntry<M>[]) : (_:FormData<M>) => C<FormData<M>> {
+```
+
+The reason why we work with `FormData<M>` instead of directly with `M` is that `FormData` contains both an instance of the model and eventual validation errors:
+
+```type FormData<M> = { model:M } & FormErrors```
+
+The form entries declaratively represent individual elements of the form, described as a discriminated union. For each form entry, we specify the name of the attribute, the function to extract the value of the attribute from the model (`in:M=>string`), the function to merge the new value of the attribute with the model (`out:M=>string=>M`), and a validation function for this attribute:
+
+```
+type FormEntry<M> =
+  | { kind:"string", field_name:string, in:(_:M)=>string, out:(_:M)=>(_:string)=>M, get_errors:(_:M)=>Array<string> }
+  | { kind:"number", field_name:string, in:(_:M)=>number, out:(_:M)=>(_:number)=>M, get_errors:(_:M)=>Array<string> }
+  | { kind:"date", field_name:string, in:(_:M)=>Moment.Moment, out:(_:M)=>(_:Moment.Moment)=>M, get_errors:(_:M)=>Array<string> }
+  ...
+```
+
+Some form entries are meant for an auto-saving form. For example, `lazy image` and `lazy file` will directly upload the new values the moment they are changed in the form, without passing them through to a save button:
+
+```
+type FormEntry<M> =
+  ...
+  | { kind:"lazy image",  field_name:string, download:(c:M) => C<string>, upload:(c:M) => (src:string) => C<string> }
+  | { kind:"lazy file", field_name:string, filename:(_:M) => string, out:(_:M)=>(_:File)=>M, url:(_:M) => string, upload:(_:M) => (_:File) => C<void> }
+  ```
+
+Of course a form also needs to save data. After building the form with `simple_inner_form`, we could simply bind to a button. The button acts as a filter which propagates the data it receives (of type `FormData<M>`) whenever it is clicked. The button is then further bound to a component responsible for saving. In pseudocode:
+
+```
+download.bind(
+simple_inner_form<M>.bind(
+button.map((fd:FormData<M>) => fd.model).bind(
+upload)))
+```
+
+This strategy is so recurrent that we have provided a template for it, called `simple_form_with_save_button`, which accepts not only the entries needed by the inner form, but also the download and upload components:
+
+```
+simple_form_with_save_button = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[], download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void>
+```
+
+Of course, the strategy above could also be implemented without adding a button, and immediately (actually we use a `delayer` to wait at least 200ms) upload the new data. In this case we obtain an auto-saving form. This alternate strategy is also quite common, therefore it is implemented as a template:
+
+```
+simple_form_with_autosave = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[], download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void>
+```
 
 #### Workflow template
-Todo
+Given various components, each associated with a name, it is possible to show them sequentially, connecting them via the well known "next"/"prev" buttons. This is precisely what the `simple_workflow` does. It takes as input a map of step names (of type `S`) and individual pages of the workflow (of type `WorkflowData<S,M> => C<WorkflowData<S,M>`), and manages the workflow:
+
+```
+simple_workflow = function<S,M>(workflow_name:string, steps:Immutable.Map<S, (_:WorkflowData<S,M>) => C<WorkflowData<S,M>>>, initial_model:C<M>, initial_step:S) : C<M>
+```
+
+The `WorkflowData` contains the current value of the model (of type `M`) being built by the workflow, and the current step (of type `S`):
+
+```
+type WorkflowData<S,M> = { model:M, step:S }
+```
 
 ### Injecting custom react components
-Todo
+It might seem that the current library, despite its great expressive power, could be restrictive: since everything has to conform to interface `C<A>`, it might seem that the existing world of react components is cut out. Fortunately, this is not the case: it is possible to use external components with a very simple wrapping strategy, which is called `custom`. `custom` accepts as input a `render` function which will, in turn, accept as input the monadic react context and the continuation to invoke when the wrapped component is done. The result of `custom` is yet another `C<A>`, but the yielded values of type `A` are passed through from the custom component:
+
+```
+custom = function<A>(key?:string, dbg?:() => string) : (render:(ctxt:()=>Context) => (_:Cont<A>) => JSX.Element) => C<A> {
+```
+
+An example of this wrapping strategy involves defining one's (adapter) component which must accept context and continuation as properties:
+
+```
+type CounterProps = { ..., context:()=>Context, cont:Cont<number> }
+type CounterState = { ... }
+class Counter extends React.Component<CounterProps, CounterState> {
+  ...
+}
+```
+
+This component is then later on invoked by `custom`:
+
+```
+custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).bind(...)
+```
 
 ### Advanced
-Todo
+The core of the application is meant to be stable and unchanging. This means that the basic behaviour of `unit`, `bind`, `map`, etc. can simply be expected to remain the same.
+
+Templates and combinators, on the other hand, should rather be seen as dynamic entities: depending on the domain, it is possible to build one's own templates and combinators in order to capture local structures of the application being built.
 
 #### Building your own templates
 Todo
@@ -310,9 +433,10 @@ Todo
 Todo
 
 # Samples
-Todo
+To see the library in action in a simple application and to get inspiration on how to use it, you can jump to [the samples](../blob/master/samples).
+
 
 # About the authors
 This library has mostly been set up by Dr. Giuseppe Maggiore, and is to some extent inspired from his PhD thesis on monadic coroutines for game development.
 
-Giuseppe works as CTO for Hoppinger BV, a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its innovation efforts.
+Giuseppe works as CTO for Hoppinger BV, a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its ongoing innovation strategy.

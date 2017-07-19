@@ -46660,7 +46660,7 @@ exports.pagination_sample = monadic_react_1.paginate(10, (cp, ipp) => monadic_re
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(20);
-exports.rich_text_sample = monadic_react_1.rich_text(null, "edit").bind(`rich text sample`, s => monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view"))(s).ignore());
+exports.rich_text_sample = monadic_react_1.repeat()((s) => monadic_react_1.rich_text(s, "edit"))(null).bind(`rich text sample`, s => monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view"))(s).ignore());
 
 
 /***/ }),

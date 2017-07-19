@@ -108,9 +108,9 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   }
 }
 
-export let application = (mode:Mode, base_url:string, slug:string, routes:Immutable.List<Route<{}>>) : JSX.Element => {
+export let application = (mode:Mode, base_url:string, slug:string, routes:Array<Route<{}>>) : JSX.Element => {
   console.log("Calling application with", window.location.href, slug, base_url)
-  return React.createElement<ApplicationProps>(Application, { mode:mode, base_url:base_url, slug:slug, routes:routes })
+  return React.createElement<ApplicationProps>(Application, { mode:mode, base_url:base_url, slug:slug, routes:Immutable.List<Route<{}>>(routes) })
 }
 
 export let get_context = function(key?:string, dbg?:() => string) : C<Context> { return make_C<Context>(ctxt => cont =>

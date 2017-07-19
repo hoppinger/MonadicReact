@@ -1,9 +1,12 @@
 {
   "name": "monadic_react",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "scripts": {
+    "server": "cd samples; ../node_modules/.bin/nodemon app.js",
+    "webpack": "./node_modules/.bin/webpack -w",
+    "stylesheets": "./node_modules/.bin/gulp"
   },
   "dependencies": {
     "@types/draft-js": "^0.9.1",
@@ -23,7 +26,29 @@
     "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {
-    "typescript": "^2.4.1"
+    "awesome-typescript-loader": "^3.1.2",
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-transform-runtime": "^6.22.0",
+    "babel-polyfill": "^6.22.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.22.0",
+    "babel-preset-stage-0": "^6.22.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.0.0",
+    "del": "2.2.0",
+    "express": "^4.15.3",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-clean-css": "^3.2.0",
+    "gulp-merge-media-queries": "^0.2.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^3.1.0",
+    "http-server": "^0.10.0",
+    "nodemon": "^1.11.0",
+    "source-map-loader": "^0.1.6",
+    "typescript": "^2.4.1",
+    "webpack": "^2.3.2"
   },
   "author": "Giuseppe Maggiore",
   "license": "MIT"

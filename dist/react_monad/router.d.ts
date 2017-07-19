@@ -35,6 +35,6 @@ export declare class Application extends React.Component<ApplicationProps, Appli
     context_from_props(props: ApplicationProps, p: C<void>): Context;
     render(): JSX.Element;
 }
-export declare let application: (mode: Mode, base_url: string, slug: string, routes: Immutable.List<Route<{}>>) => JSX.Element;
+export declare let application: (mode: Mode, base_url: string, slug: string, routes: Route<{}>[]) => JSX.Element;
 export declare let get_context: (key?: string, dbg?: () => string) => C<Context>;
 export declare let link_to_route: <T>(label: string, x: T, r: Route<T>, key?: string, className?: string) => C<void>;

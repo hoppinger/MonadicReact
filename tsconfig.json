@@ -7,10 +7,9 @@
         "module": "commonjs",
         "target": "es6",
         "jsx": "react"
-    }, 
-     "include": [
-      "./Client/**/*.ts",
-      "./Client/**/*.tsx"
+    },
+    "files": [
+        "./samples/Client/homepage.tsx"
     ],
    "exclude": [
       "/**/node_modules/*"

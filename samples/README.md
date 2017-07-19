@@ -1,6 +1,5 @@
 # Getting started
-Setup consists of:
-- installing all dependencies with `yarn install` (requires `nodejs` and `yarn`). Alternatively `npm install` will also work.
+Setup consists of installing all dependencies with `yarn install` (requires `nodejs` and `yarn`). Alternatively `npm install` will also work.
 
 ## Compiling
 Running the application requires compiling it. To compile the client-side stylesheets, use
@@ -9,10 +8,10 @@ Running the application requires compiling it. To compile the client-side styles
 
 ## Running locally
 
-To run the application, use the watchers. For the server
+To run the application, use the watchers. For the server, from the `samples` directory, run
 
-```npm run server``` (requires `nodemon` to be globally installed)
+```../node_modules/.bin/nodemon app.js```
 
-for the client
+for the client, from the root directory, run
 
 ```npm run webpack```.

@@ -6,7 +6,7 @@ import {UrlTemplate, application, get_context, Route, Url, make_url, fallback_ur
 Option, C, Mode, unit, bind, string, number, bool, button, selector, multi_selector, label, h1, h2, div, form, image, link, file, overlay,
 custom, repeat, all, any, lift_promise, retract, delay, Context, Cont,
 simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEntrySubMenu,
-rich_text, paginate, Page, list, editable_list} from '.././react_monad/monadic_react'
+rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react'
 
 type CounterProps = { target:number, context:()=>Context, cont:Cont<number> }
 type CounterState = { current:number, signals_sent:number }

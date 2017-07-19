@@ -53,10 +53,6 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
               let errors = e.get_errors(new_c)
               return { model:new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name)} },
             label<string, string>(e.field_name, true)(div<string, string>(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)
-              // c.errors.has(e.field_name) ?
-              //   c.errors.get(e.field_name).map(error =>
-              //     _ => string("view", `${model_name(c.model)}_${e.field_name}_error`)(`Error: ${error}`).ignore())
-              // :
             (image(mode, `${model_name(c.model)}_${e.field_name}`))))
         : e.kind == "lazy image" ?
           retract<FormData<M>, void>(`${model_name(c.model)}_${e.field_name}_retract`)(

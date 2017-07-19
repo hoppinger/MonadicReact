@@ -272,7 +272,7 @@ export type MenuEntryValue<A> = { kind:"item", value:A }
 export type MenuEntrySubMenu<A> = { kind:"sub menu", label:string, children:Array<MenuEntryValue<A>> }
 export type MenuEntry<A> = MenuEntryValue<A> | MenuEntrySubMenu<A>
 export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) :
-  ((items:Immutable.List<MenuEntry<A>>, p:(_:A)=>C<B>, selected_item?:A, selected_sub_menu?:string) => C<B>) {
+  ((items:Array<MenuEntry<A>>, p:(_:A)=>C<B>, selected_item?:A, selected_sub_menu?:string) => C<B>) {
   type ShownRange = { first:number, amount:number }
   type MenuState = {
     selected:{ kind:"nothing" } | { kind:"item", value:A }
@@ -296,7 +296,8 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
     sub_entry_class = "monadic-tabs__sub-entry"
   }
 
-  return (items, p, selected_item:undefined|A, selected_sub_menu:undefined|string) => {
+  return (items_array, p, selected_item:undefined|A, selected_sub_menu:undefined|string) => {
+    let items = Immutable.List<MenuEntry<A>>(items_array)
 
     let entries : (s:MenuState) => Array<(_:MenuState) => C<MenuState>> = (s:MenuState) =>
             (type != "side menu" && s.shown_range.first > 0 ?

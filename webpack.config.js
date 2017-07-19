@@ -1,8 +1,8 @@
 module.exports = {
-    entry: "./Client/app.ts",
+    entry: "./samples/Client/app.ts",
     output: {
         filename: "site.js",
-        path: __dirname + "/wwwroot/js",
+        path: __dirname + "./samples/wwwroot/js",
         libraryTarget: 'var',
         library: 'app'
       },
