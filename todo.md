@@ -1,9 +1,9 @@
 ## doing
 - documentation
-- upload again
 - cleanup dependencies in imports (samples and monad definition)
 
 ## GO (7 days)
+- [ ] deploy on acceptance
 - [ ] headless renderer setup in scaffolder
 - [ ] info pages
   - [ ] welcome
@@ -18,13 +18,13 @@
 
 
 ## various improvements
+- [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 
 ## samples (3 days)
-- [ ] all primitives, one per sample (use menu nesting)
-- [ ] all
-- [ ] workflow/form with selection from list of other entities
-- [ ] form with list of related entities
+- [ ] basic API
+- [ ] basic API file dowload/upload
+- [ ] API form
 - [ ] form with
   - [1/3] date, time, date-time
   - [ ] custom field in form
@@ -32,20 +32,26 @@
   - [ ] tel, url, email
   - [ ] file
   - [x] lazy-file
+- [ ] all primitives, one per sample (use menu nesting)
 - [ ] paginated list of entities
+- [ ] all
+- [ ] workflow/form with selection from list of other entities
+- [ ] form without loading and saving
+- [ ] workflow without loading and saving
+- [ ] form with list of related entities
 
 ## external (3 days)
 - [x] i18n
 - [ ] documentation
   - [x] explanation
   - [ ] verify all snippets
-  - [ ] screenshots
 - [x] publish online for designers
-- [x] remove dotnet core from sample
-  - [ ] restore samples requiring an API: file, forms, workflow
-    - [ ] fake api with dictionary
 - [ ] linkedin post
 - [ ] reddit post
+  - [ ] functional programming
+  - [ ] webdev
+  - [ ] programming
+- [ ] hacker news
 
 ## styling
 - [x] menu

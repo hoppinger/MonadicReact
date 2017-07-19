@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "scripts": {
