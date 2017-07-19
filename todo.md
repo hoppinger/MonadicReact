@@ -1,5 +1,6 @@
 ## doing
 - documentation
+- upload again
 - cleanup dependencies in imports (samples and monad definition)
 
 ## GO (7 days)
@@ -36,6 +37,7 @@
 ## external (3 days)
 - [x] i18n
 - [ ] documentation
+  - [x] explanation
   - [ ] verify all snippets
   - [ ] screenshots
 - [x] publish online for designers
@@ -76,3 +78,5 @@
 - [ ] also parse url query
 - [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A
 - [ ] use never instead of filter(_ => false)
+- [ ] pagination should be refactored with the regular combinators
+- [ ] other more complex combinators should also be built with regular combinators

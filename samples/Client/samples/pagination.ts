@@ -10,7 +10,8 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react'
 
 export let pagination_sample : C<void> =
-  paginate<number, void>(10, (cp:number, ipp:number) =>
-    unit<Page<number>>(({ num_pages:10, page_index:cp, items:cp })), `pagination sample`)(
-    n => string("view")(`The current page is ${n+1}`).ignore()
-  )
+  div<void,void>(undefined, `pagination sample`)(_ =>
+    paginate<number, void>(10, (cp:number, ipp:number) =>
+      unit<Page<number>>(({ num_pages:10, page_index:cp, items:cp })), `pagination sample`)(
+      n => string("view")(`The current page is ${n+1}`).ignore()
+  ))(null)

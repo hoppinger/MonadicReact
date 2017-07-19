@@ -1,8 +1,9 @@
+console.log( __dirname + "/samples/wwwroot/js");
 module.exports = {
     entry: "./samples/Client/app.ts",
     output: {
         filename: "site.js",
-        path: __dirname + "./samples/wwwroot/js",
+        path: __dirname + "/samples/wwwroot/js",
         libraryTarget: 'var',
         library: 'app'
       },
