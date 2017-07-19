@@ -427,10 +427,69 @@ The core of the application is meant to be stable and unchanging. This means tha
 Templates and combinators, on the other hand, should rather be seen as dynamic entities: depending on the domain, it is possible to build one's own templates and combinators in order to capture local structures of the application being built.
 
 #### Building your own templates
-Todo
+_Note: the following contains a mix of TypeScript and pseudocode_
+
+Building templates is perhaps the most commonly occurring scenario. Templates are reusable components which automate some recurring tasks. Templates are therefore used to capture domain-specific knowledge, and reduce code duplication.
+
+Typical uses for templates are the definition of page structures, for example a page that is divided in four blocks would take as input four components, joining them together roughly as:
+
+```
+four_blocks : (b1:C<A>,b2:C<A>,b3:C<A>,b4:C<A>) => C<A>
+```
+
+The implementation of `four_blocks` would roughly just invoke the four blocks inside `any`. Whenever a block has an output, the output is just passed through as output of `four_blocks` itself:
+
+```
+let four_blocks = function<A>(b1:C<A>,b2:C<A>,b3:C<A>,b4:C<A>) : C<A> {
+  return any<void, A>()([
+    _ => b1, _ => b2, _ => b3, _ => b4
+  ])(null)
+}
+```
+
+Of course, the blocks could be less anonymous. For example, a page with a menu, a header, a footer, and a content could have a signature such as:
+
+```
+standard_layout : (menu:C<A>, content:(_:A) => C<B>, header:C<void>, footer:C<void>) => C<B>
+```
+
+The implementation of `standard_layout` binds the menu and the content together, whereas header and footer are just "silenced" by means of the `never` combinator:
+
+```
+let standard_layout = function<A,B>(menu:C<A>, content:(_:A) => C<B>, header:C<void>, footer:C<void>) : C<B> {
+  return any<void, B>()([
+    div<void, B>(`header_class_name` _ => header.never<B>())
+    div<void, B>(`menu_with_content_class_name`, _ => menu.bind(`menu with content`, x => content(x)))
+    div<void, B>(`footer_class_name`, _ => footer.never<B>())
+  ])(null)
+}
+```
 
 #### Building your own combinators
-Todo
+_Note: the following contains a mix of TypeScript and pseudocode_
+
+It is also possible to define one's combinators. This usually requires defining a supporting React component (a separate class). The typical workflow for defining a combinator `k` usually involves defining:
+- the attributes needed by `k` (`KProps`);
+- the output type of `k` (`B`);
+- the React component class for `k` (`K`);
+- the function to instantiate the class.
+
+The general shape becomes therefore:
+
+```
+type KProps = { ...attributes needed by k... } & CmdCommon<B>
+type KState = { ...state needed by k... }
+class K extends React.Component<KProps, KState> {
+  ...
+}
+let k = function(...attributes needed by k...) : C<B> {
+  return make_C<B>(ctxt => cont =>
+    React.createElement<KProps>(K,
+      { ...attributes needed by k..., context:ctxt, cont:cont, key:key }))
+}
+```
+
+The definition of class `K` should be quite careful when it comes to invoking `cont`. Too many accidental invocations can lead to loops, especially in the presence of `repeat` (very common when building forms). On the other hand, `K` is expected to invoke `cont` upon `componentWill/DidMount` and `componentWillReceiveProps`. `componentWillReceiveProps` should only (re)invoke `cont` if the output has changed though.
 
 # Samples
 To see the library in action in a simple application and to get inspiration on how to use it, you can jump to [the samples](../blob/master/samples).
@@ -440,3 +499,8 @@ To see the library in action in a simple application and to get inspiration on h
 This library has mostly been set up by Dr. Giuseppe Maggiore, and is to some extent inspired from his PhD thesis on monadic coroutines for game development.
 
 Giuseppe works as CTO for Hoppinger BV, a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its ongoing innovation strategy.
+
+## Contact
+<giuseppe@hoppinger.com> is the obvious place to start.
+
+[The github repository](https://github.com/giuseppemag/MonadicReact) is also a great place to give feedback, and of course to participate!

@@ -31,10 +31,7 @@
   - [ ] tel, url, email
   - [ ] file
   - [x] lazy-file
-- [x] list and paginator samples in own files
-- [x] edit list
 - [ ] paginated list of entities
-- [x] files
 
 ## external (3 days)
 - [x] i18n
