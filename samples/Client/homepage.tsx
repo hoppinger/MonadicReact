@@ -26,7 +26,7 @@ import {editable_list_sample} from './samples/editable_list'
 import {link_sample} from './samples/link'
 import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
-
+import {course_form_with_autosave_sample} from './samples/form'
 
 type Sample = { sample:C<void>, description:string }
 type MiniPage = { visible:boolean, page:C<void> }
@@ -57,7 +57,8 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: selector_sample, description:"selector" }),
         mk_menu_entry({ sample: multiselector_sample, description:"multi-selector" }),
         mk_menu_entry({ sample: moments_sample, description:"dates and times" }),
-        mk_menu_entry({ sample: toggles_sample, description:"coordinated toggles" })
+        mk_menu_entry({ sample: toggles_sample, description:"coordinated toggles" }),
+        mk_menu_entry({ sample: course_form_with_autosave_sample, description:"Simple form sample" })
       ]),
       mk_submenu_entry("lists", [
         mk_menu_entry({ sample: list_sample, description:"list" }),
