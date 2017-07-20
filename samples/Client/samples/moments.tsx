@@ -14,16 +14,16 @@ export let moments_sample : C<void> =
     any<Moment.Moment, Moment.Moment>(`input number`)([
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a time: ", true)(time("edit", "time"))
-      )(c).bind(`time bind`, c =>
+      )(c).then(`time bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
 
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date: ", true)(date("edit", "date"))
-      )(c).bind(`date bind`, c =>
+      )(c).then(`date bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
 
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date with time: ", true)(date_time("edit", "date-time"))
-      )(c).bind(`date-time bind`, c =>
+      )(c).then(`date-time bind`, c =>
       string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
     ]))(Moment(Moment.now())).ignore()

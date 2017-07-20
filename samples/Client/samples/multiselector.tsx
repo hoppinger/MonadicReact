@@ -9,5 +9,5 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react'
 
 export let multiselector_sample : C<void> =
-  multi_selector<number>("checkbox",x => x.toString())([1, 3, 5], [1, 5]).bind(`multi_selector`, n =>
+  multi_selector<number>("checkbox",x => x.toString())([1, 3, 5], [1, 5]).then(`multi_selector`, n =>
   string("view")(JSON.stringify(n)).ignore())

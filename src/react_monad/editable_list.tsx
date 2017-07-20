@@ -22,14 +22,14 @@ let perform = function<A>(s:EditableListState<A>, op:ListOperation<A>) : Editabl
 }
 
 export let editable_list = function<A>(list_name:string, initial_items:C<List<A>>, create_new_form:(_:EditableListState<A>) => C<A>) : C<EditableListState<A>> {
-  return initial_items.bind(list_name, items =>
+  return initial_items.then(list_name, items =>
   repeat<EditableListState<A>>(`monadic-list ${list_name}`)(
     form<EditableListState<A>, EditableListState<A>>(`monadic-list-form`)(
       any<EditableListState<A>, EditableListState<A>>()([
         s => list<A, ListOperation<A>>(s.items, undefined, `monadic-list-items`)(i => n =>
           any<ListOperation<A>, ListOperation<A>>(`item_${n}`, `monadic-list-item`)([
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell`)(_ =>
-              label<boolean, boolean>("")(bool("edit", "radio"))(s.selected_index == i).bind(undefined, selected =>
+              label<boolean, boolean>("")(bool("edit", "radio"))(s.selected_index == i).then(undefined, selected =>
                 unit<ListOperation<A>>({ kind:"toggle", value:n, index:i, selected:selected }).filter(_ =>
                   selected != (s.selected_index == i)))),
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell`)(op =>
@@ -37,8 +37,8 @@ export let editable_list = function<A>(list_name:string, initial_items:C<List<A>
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell monadic-list-lastcell`)(_ =>
               button<ListOperation<A>>(`X`)({ kind:"remove", value:n, index:i }))
           ])(undefined)
-          ).bind(`inner list`, op => unit(perform(s,op))),
-          s => create_new_form(s).bind(`monadic-new-list-item`, new_value => unit(perform(s, { kind:"add", value:new_value })))
+          ).then(`inner list`, op => unit(perform(s,op))),
+          s => create_new_form(s).then(`monadic-new-list-item`, new_value => unit(perform(s, { kind:"add", value:new_value })))
         ]
     )))({ items:items, selected_index:undefined }))
 }

@@ -28,7 +28,7 @@ export type Context = {
 export type Cont<A> = (callback:() => void) => (_:A) => void
 export type C<A> = {
   comp:(ctxt:() => Context) => (cont:Cont<A>) => JSX.Element
-  bind:<B>(key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string)=>C<B>
+  then:<B>(key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string)=>C<B>
   // bind_once:<B>(key:string, k:(_:A)=>C<B>, dbg?:()=>string)=>C<B>
   never:<B>(key?:string)=>C<B>
   ignore:(key?:string)=>C<void>
@@ -40,7 +40,7 @@ export type C<A> = {
 export function make_C<A>(comp:(ctxt:()=>Context) => (cont:Cont<A>) => JSX.Element) : C<A> {
   return {
     comp:comp,
-    bind:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string) : C<B> {
+    then:function<B>(this:C<A>, key:string, k:(_:A)=>C<B>, className?:string, dbg?:()=>string) : C<B> {
             return bind<A,B>(key, this, k, className, dbg)
           },
     map:function<B>(this:C<A>, f:(_:A)=>B, key?:string, dbg?:()=>string) : C<B> {
@@ -56,10 +56,10 @@ export function make_C<A>(comp:(ctxt:()=>Context) => (cont:Cont<A>) => JSX.Eleme
       return never<A, B>(this, key)
     },
     ignore_with:function<B>(this:C<A>, x:B) : C<B> {
-      return this.bind<B>(``, _ => unit<B>(x))
+      return this.then<B>(``, _ => unit<B>(x))
     },
     ignore:function(this:C<A>, key?:string) : C<void> {
-      return this.bind(key, _ => unit<void>(null))
+      return this.then(key, _ => unit<void>(null))
     }
   }
 }
@@ -193,4 +193,51 @@ export let filter = function<A>(key?:string, dbg?:() => string) : ((_:(_:A) => b
     make_C<A>(ctxt => cont =>
       React.createElement<FilterProps<A>>(Filter,
         { kind:"filter", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
+}
+
+
+
+
+
+export type SimpleApplicationProps = { mode:Mode, p:C<void> }
+export type SimpleApplicationState = { context:Context }
+export class SimpleApplication extends React.Component<SimpleApplicationProps, SimpleApplicationState> {
+  constructor(props:SimpleApplicationProps, context:any) {
+    super(props, context)
+
+    this.state = { context:this.context_from_props(this.props, props.p) }
+  }
+
+  context_from_props(props:SimpleApplicationProps, p:C<void>) : Context {
+     let self = this
+     return {
+        mode:props.mode,
+        current_page:p,
+        set_mode:(new_mode, callback) =>
+          make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, mode:new_mode}},
+              () => inner_callback(callback)(null)) || null),
+        logic_frame:0,
+        force_reload:(callback) =>
+          make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, logic_frame:this.state.context.logic_frame+1}},
+              () => inner_callback(callback)(null)) || null),
+        set_page:function<T>(x:T, new_page:Route<T>, callback?:()=>void) {
+          return unit<void>(null)
+        },
+        set_url:function<T>(x:T, new_url:Url<T>, callback?:()=>void) {
+          return unit<void>(null)
+        }
+      }
+  }
+
+  render() {
+    return <div className="monadic-application" key={`application@${this.state.context.logic_frame}`}>
+      {
+        this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback())
+      }
+    </div>
+  }
+}
+
+export let simple_application = (mode:Mode, p:C<void>) : JSX.Element => {
+  return React.createElement<SimpleApplicationProps>(SimpleApplication, { mode:mode, p:p })
 }

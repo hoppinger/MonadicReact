@@ -11,7 +11,7 @@ rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react
 
 export let editable_list_sample : C<void> =
   editable_list<number>(`editable-number-list`, unit(Range(1,5).toList()),
-    s => button<number>(`+`)(s.items.max() + 1)).bind(`editable number list container`, s =>
+    s => button<number>(`+`)(s.items.max() + 1)).then(`editable number list container`, s =>
     string("view")(`The selected item is ${s.items.get(s.selected_index)}`).ignore())
 
 

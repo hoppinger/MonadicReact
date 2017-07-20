@@ -18,7 +18,10 @@
 
 
 ## various improvements
+- [ ] deploy publicly
 - [x] submenu routes
+- [x] routerless application
+- [x] bind ~> then
 - [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 
@@ -28,6 +31,7 @@
 - [ ] API form
 - [ ] form with
   - [1/3] date, time, date-time
+  - [ ] images
   - [ ] custom field in form
   - [ ] rich-text
   - [ ] tel, url, email

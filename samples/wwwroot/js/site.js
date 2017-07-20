@@ -11797,7 +11797,7 @@ const combinators_1 = __webpack_require__(82);
 function make_C(comp) {
     return {
         comp: comp,
-        bind: function (key, k, className, dbg) {
+        then: function (key, k, className, dbg) {
             return exports.bind(key, this, k, className, dbg);
         },
         map: function (f, key, dbg) {
@@ -11813,10 +11813,10 @@ function make_C(comp) {
             return combinators_1.never(this, key);
         },
         ignore_with: function (x) {
-            return this.bind(``, _ => exports.unit(x));
+            return this.then(``, _ => exports.unit(x));
         },
         ignore: function (key) {
-            return this.bind(key, _ => exports.unit(null));
+            return this.then(key, _ => exports.unit(null));
         }
     };
 }
@@ -11916,6 +11916,35 @@ class Filter extends React.Component {
 }
 exports.filter = function (key, dbg) {
     return f => p => make_C(ctxt => cont => React.createElement(Filter, { kind: "filter", debug_info: dbg, p: p, f: f, context: ctxt, cont: cont, key: key }));
+};
+class SimpleApplication extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = { context: this.context_from_props(this.props, props.p) };
+    }
+    context_from_props(props, p) {
+        let self = this;
+        return {
+            mode: props.mode,
+            current_page: p,
+            set_mode: (new_mode, callback) => make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { mode: new_mode }) }), () => inner_callback(callback)(null)) || null),
+            logic_frame: 0,
+            force_reload: (callback) => make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { logic_frame: this.state.context.logic_frame + 1 }) }), () => inner_callback(callback)(null)) || null),
+            set_page: function (x, new_page, callback) {
+                return exports.unit(null);
+            },
+            set_url: function (x, new_url, callback) {
+                return exports.unit(null);
+            }
+        };
+    }
+    render() {
+        return React.createElement("div", { className: "monadic-application", key: `application@${this.state.context.logic_frame}` }, this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback()));
+    }
+}
+exports.SimpleApplication = SimpleApplication;
+exports.simple_application = (mode, p) => {
+    return React.createElement(SimpleApplication, { mode: mode, p: p });
 };
 
 
@@ -20741,7 +20770,7 @@ exports.simple_menu = function (type, to_string, key, dbg) {
         return exports.repeat()(html_1.div()(exports.any(undefined, content_menu_class)([
             html_1.div(menu_class)(s => exports.any(undefined, entries_class)(entries(s))(s)),
             html_1.div(content_class)((s) => s.selected.kind == "item" ?
-                p(s.selected.value).bind(undefined, (p_res) => core_1.unit(Object.assign({}, s, { last_action: { kind: "p", p_res: p_res } })))
+                p(s.selected.value).then(undefined, (p_res) => core_1.unit(Object.assign({}, s, { last_action: { kind: "p", p_res: p_res } })))
                 :
                     core_1.unit(s).never())
         ])))({ selected: selected_item == undefined ? { kind: "nothing" } : { kind: "item", value: selected_item },
@@ -20755,10 +20784,10 @@ exports.simple_menu = function (type, to_string, key, dbg) {
 exports.custom = function (key, dbg) {
     return (render) => core_1.make_C(ctxt => cont => render(ctxt)(cont));
 };
-exports.hide = (f_name, f) => exports.repeat()(visible => primitives_1.bool("edit", "plus/minus")(visible))(false).bind(`${f_name} toggle`, visible => !visible ?
+exports.hide = (f_name, f) => exports.repeat()(visible => primitives_1.bool("edit", "plus/minus")(visible))(false).then(`${f_name} toggle`, visible => !visible ?
     core_1.unit(null)
     :
-        f.bind(`visible ${f_name}`, _ => core_1.unit(null)));
+        f.then(`visible ${f_name}`, _ => core_1.unit(null)));
 
 
 /***/ }),
@@ -45908,11 +45937,11 @@ const link_1 = __webpack_require__(395);
 const overlay_1 = __webpack_require__(400);
 const context_1 = __webpack_require__(391);
 const form_1 = __webpack_require__(393);
-exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react_1.div("monadic-title-preview")(monadic_react_1.label(s.description, false)(monadic_react_1.bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible => !visible ?
+exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react_1.div("monadic-title-preview")(monadic_react_1.label(s.description, false)(monadic_react_1.bool("edit", "plus/minus"))))(false).then(`${s.description} toggle`, visible => !visible ?
     monadic_react_1.unit(null)
     :
-        s.sample.bind(`visible ${s.description}`, _ => monadic_react_1.unit(null)));
-let sample_minipage = e => s => monadic_react_1.get_context().bind(s.description, c => c.set_url({}, monadic_react_1.make_url([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")])).bind(`${s.description}_set_url`, _ => monadic_react_1.h2(s.description, "", s.description)(_ => s.sample)(null)));
+        s.sample.then(`visible ${s.description}`, _ => monadic_react_1.unit(null)));
+let sample_minipage = e => s => monadic_react_1.get_context().then(s.description, c => c.set_url({}, monadic_react_1.make_url([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")])).then(`${s.description}_set_url`, _ => monadic_react_1.h2(s.description, "", s.description)(_ => s.sample)(null)));
 function HomePage(slug) {
     let all_samples = [
         monadic_react_1.mk_submenu_entry("controls", [
@@ -46092,7 +46121,7 @@ exports.update_Course = update_Course;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
-exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert an even number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).bind(`input number bind`, n => monadic_react_1.button(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map(n => `Your selection is ${n.toString()}`).bind(`button to string`, s => monadic_react_1.string("view")(s).ignore()));
+exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert an even number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, n => monadic_react_1.button(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map(n => `Your selection is ${n.toString()}`).then(`button to string`, s => monadic_react_1.string("view")(s).ignore()));
 
 
 /***/ }),
@@ -46104,9 +46133,9 @@ exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_reac
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
 exports.context_sample = monadic_react_1.any()([
-    _ => monadic_react_1.button(`Force reload`)(null).bind(undefined, _ => monadic_react_1.get_context().bind(undefined, ctxt => ctxt.force_reload())),
-    _ => monadic_react_1.button(`Toggle mode`)(null).bind(undefined, _ => monadic_react_1.get_context().bind(undefined, ctxt => ctxt.set_mode(ctxt.mode == "view" ? "edit" : "view")))
-])(null).bind(`context sample`, _ => monadic_react_1.get_context().bind(undefined, ctxt => monadic_react_1.string("view")(`Context: ${JSON.stringify(ctxt)}`).ignore()));
+    _ => monadic_react_1.button(`Force reload`)(null).then(undefined, _ => monadic_react_1.get_context().then(undefined, ctxt => ctxt.force_reload())),
+    _ => monadic_react_1.button(`Toggle mode`)(null).then(undefined, _ => monadic_react_1.get_context().then(undefined, ctxt => ctxt.set_mode(ctxt.mode == "view" ? "edit" : "view")))
+])(null).then(`context sample`, _ => monadic_react_1.get_context().then(undefined, ctxt => monadic_react_1.string("view")(`Context: ${JSON.stringify(ctxt)}`).ignore()));
 
 
 /***/ }),
@@ -46118,7 +46147,7 @@ exports.context_sample = monadic_react_1.any()([
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(69);
 const monadic_react_1 = __webpack_require__(17);
-exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-list`, monadic_react_1.unit(immutable_1.Range(1, 5).toList()), s => monadic_react_1.button(`+`)(s.items.max() + 1)).bind(`editable number list container`, s => monadic_react_1.string("view")(`The selected item is ${s.items.get(s.selected_index)}`).ignore());
+exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-list`, monadic_react_1.unit(immutable_1.Range(1, 5).toList()), s => monadic_react_1.button(`+`)(s.items.max() + 1)).then(`editable number list container`, s => monadic_react_1.string("view")(`The selected item is ${s.items.get(s.selected_index)}`).ignore());
 
 
 /***/ }),
@@ -46155,7 +46184,7 @@ exports.course_form_sample = monadic_react_1.simple_form_with_save_button("edit"
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
-exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).bind(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
+exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
 
 
 /***/ }),
@@ -46209,9 +46238,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Moment = __webpack_require__(0);
 const monadic_react_1 = __webpack_require__(17);
 exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input number`)([
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).bind(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).bind(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).bind(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).then(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).then(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).then(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
 ]))(Moment(Moment.now())).ignore();
 
 
@@ -46223,7 +46252,7 @@ exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input num
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
-exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x.toString())([1, 3, 5], [1, 5]).bind(`multi_selector`, n => monadic_react_1.string("view")(JSON.stringify(n)).ignore());
+exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x.toString())([1, 3, 5], [1, 5]).then(`multi_selector`, n => monadic_react_1.string("view")(JSON.stringify(n)).ignore());
 
 
 /***/ }),
@@ -46268,7 +46297,7 @@ exports.pagination_sample = monadic_react_1.div(undefined, `pagination sample`)(
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
-exports.rich_text_sample = monadic_react_1.repeat()((s) => monadic_react_1.rich_text(s, "edit"))(null).bind(`rich text sample`, s => monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view"))(s).ignore());
+exports.rich_text_sample = monadic_react_1.repeat()((s) => monadic_react_1.rich_text(s, "edit"))(null).then(`rich text sample`, s => monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view"))(s).ignore());
 
 
 /***/ }),
@@ -46295,7 +46324,7 @@ class Counter extends React.Component {
             React.createElement("button", { onClick: () => this.setState(Object.assign({}, this.state, { current: this.state.current + 1 }), () => this.state.current >= this.props.target + 1 && this.setState(Object.assign({}, this.state, { current: 0 }), () => this.props.cont(() => this.setState(Object.assign({}, this.state, { signals_sent: this.state.signals_sent + 1 })))(this.state.signals_sent + 1))) }, "+1"));
     }
 }
-exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString())([1, 3, 5]).bind(`target_selector`, n => monadic_react_1.custom()(ctxt => cont => React.createElement(Counter, { target: n, context: ctxt, cont: cont })).bind(`counter`, s => monadic_react_1.string("view")(`The component has ticked ${s} times.`).ignore()));
+exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString())([1, 3, 5]).then(`target_selector`, n => monadic_react_1.custom()(ctxt => cont => React.createElement(Counter, { target: n, context: ctxt, cont: cont })).then(`counter`, s => monadic_react_1.string("view")(`The component has ticked ${s} times.`).ignore()));
 
 
 /***/ }),
@@ -46322,7 +46351,7 @@ exports.toggles_sample = monadic_react_1.repeat()(b => monadic_react_1.any(`togg
     monadic_react_1.label("my toggle.")(b => monadic_react_1.bool("edit", "checkbox", `basic toggle`)(b)),
     monadic_react_1.label("my fancy toggle.")(b => monadic_react_1.bool("edit", "fancy toggle", `fancy toggle`)(b)),
     monadic_react_1.label("The last toggle: ")(b => monadic_react_1.bool("edit", "plus/minus", `a plus/minus toggle.`)(b)),
-])(b))(true).bind(`fancy_toggle_bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
+])(b))(true).then(`fancy_toggle_bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
 
 
 /***/ }),
@@ -46341,13 +46370,13 @@ let perform = function (s, op) {
     return op.kind == "add" ? Object.assign({}, s, { items: s.items.push(op.value) }) : op.kind == "remove" ? Object.assign({}, s, { items: s.items.remove(op.index), selected_index: s.selected_index == op.index ? undefined : op.index > s.selected_index ? s.selected_index : s.selected_index - 1 }) : Object.assign({}, s, { selected_index: op.selected ? op.index : s.selected_index == op.index ? undefined : s.selected_index });
 };
 exports.editable_list = function (list_name, initial_items, create_new_form) {
-    return initial_items.bind(list_name, items => combinators_1.repeat(`monadic-list ${list_name}`)(html_1.form(`monadic-list-form`)(combinators_1.any()([
+    return initial_items.then(list_name, items => combinators_1.repeat(`monadic-list ${list_name}`)(html_1.form(`monadic-list-form`)(combinators_1.any()([
         s => list_1.list(s.items, undefined, `monadic-list-items`)(i => n => combinators_1.any(`item_${n}`, `monadic-list-item`)([
-            html_1.div(`monadic-list-cell`)(_ => html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).bind(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
+            html_1.div(`monadic-list-cell`)(_ => html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).then(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
             html_1.div(`monadic-list-cell`)(op => primitives_1.string("view")(`This is item ${n}, with index ${i}`).filter(_ => false).ignore_with(op)),
             html_1.div(`monadic-list-cell monadic-list-lastcell`)(_ => html_1.button(`X`)({ kind: "remove", value: n, index: i }))
-        ])(undefined)).bind(`inner list`, op => core_1.unit(perform(s, op))),
-        s => create_new_form(s).bind(`monadic-new-list-item`, new_value => core_1.unit(perform(s, { kind: "add", value: new_value })))
+        ])(undefined)).then(`inner list`, op => core_1.unit(perform(s, op))),
+        s => create_new_form(s).then(`monadic-new-list-item`, new_value => core_1.unit(perform(s, { kind: "add", value: new_value })))
     ])))({ items: items, selected_index: undefined }));
 };
 
@@ -46384,7 +46413,7 @@ exports.simple_inner_form = function (mode, model_name, entries) {
                     return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
                 }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))))
                 : e.kind == "lazy image" ?
-                    combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => _ => c, _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src => combinators_1.repeat()((src) => html_1.label(e.field_name, true)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src => e.upload(c.model)(new_src)))(src)).ignore())
+                    combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => _ => c, _ => e.download(c.model).then(`${model_name(c.model)}_${e.field_name}_downloader`, src => combinators_1.repeat()((src) => html_1.label(e.field_name, true)(html_1.image(mode, `${model_name(c.model)}_${e.field_name}`))(src).then(`${model_name(c.model)}_${e.field_name}_uploader`, new_src => e.upload(c.model)(new_src)))(src)).ignore())
                     : e.kind == "file" ?
                         combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                             let new_c = e.out(c.model)(s);
@@ -46392,7 +46421,7 @@ exports.simple_inner_form = function (mode, model_name, entries) {
                             return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
                         }, html_1.label(e.field_name, true)(html_1.div(`monadic-field ${c.errors.has(e.field_name) ? "monadic-field-error" : ""}`)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).ignore_with(null))))
                         : e.kind == "lazy file" ?
-                            combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => f => (Object.assign({}, c, { model: e.out(c.model)(f) })), _ => html_1.label(e.field_name, true)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f => e.upload(c.model)(f).ignore_with(f)))(null))
+                            combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => null, c => f => (Object.assign({}, c, { model: e.out(c.model)(f) })), _ => html_1.label(e.field_name, true)(_ => html_1.file(mode, e.filename(c.model), e.url(c.model)).then(`${model_name(c.model)}_${e.field_name}_uploader`, f => e.upload(c.model)(f).ignore_with(f)))(null))
                             : e.kind == "datetime" ?
                                 combinators_1.retract(`${model_name(c.model)}_${e.field_name}_retract`)(c => e.in(c.model), c => s => {
                                     let new_c = e.out(c.model)(s);
@@ -46412,22 +46441,22 @@ exports.form_errors = function (model_name, entries) {
             c => core_1.unit(null).never()))(fd).filter(_ => false);
 };
 exports.simple_form_with_autosave = function (mode, model_name, entries, download_M, upload_M) {
-    return download_M.bind(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() })
-        .bind(`${model_name(c)}_error_recap`, combinators_1.any()([
+    return download_M.then(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() })
+        .then(`${model_name(c)}_error_recap`, combinators_1.any()([
         c => exports.form_errors(model_name, entries)(c).ignore_with(c).filter(_ => false),
         c => core_1.unit(c)
     ]))
         .filter(c => c.errors.isEmpty(), `${model_name(c)}_error_filter`)
-        .map(c => c.model).bind(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delay`)(upload_M)).ignore());
+        .map(c => c.model).then(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delay`)(upload_M)).ignore());
 };
 exports.simple_form_with_save_button = function (mode, model_name, entries, download_M, upload_M) {
-    return download_M.bind(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).bind(`${model_name(c)}_form`, c => combinators_1.any()([
+    return download_M.then(undefined, c => exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).then(`${model_name(c)}_form`, c => combinators_1.any()([
         exports.form_errors(model_name, entries),
         c => html_1.button(`save`, !c.errors.isEmpty())(c)
-    ])(c)).map(c => c.model).bind(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delayer`)(upload_M)).ignore());
+    ])(c)).map(c => c.model).then(`${model_name(c)}_uploader`, combinators_1.delay(200, `${model_name(c)}_delayer`)(upload_M)).ignore());
 };
 exports.simple_form_with_prev_and_next_buttons = function (mode, model_name, entries, prev_enabled, next_enabled, prev_visible, next_visible, on_prev, on_next) {
-    return c => exports.simple_inner_form(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c => combinators_1.any()([
+    return c => exports.simple_inner_form(mode, model_name, entries)(c).then(`${model_name(c.model)}_form`, c => combinators_1.any()([
         exports.form_errors(model_name, entries),
         c => prev_visible(c) ? html_1.button(`prev`, prev_enabled(c))(c).map(c => (Object.assign({}, c, { model: on_prev(c.model) }))) : core_1.unit(c).filter(_ => false),
         c => next_visible(c) ? html_1.button(`next`, next_enabled(c))(c).map(c => (Object.assign({}, c, { model: on_next(c.model) }))) : core_1.unit(c).filter(_ => false)
@@ -46761,7 +46790,7 @@ exports.get_context = function (key, dbg) {
     return core_1.make_C(ctxt => cont => (core_1.unit(ctxt()).comp(ctxt)(cont)));
 };
 exports.link_to_route = function (label, x, r, key, className) {
-    return html_1.button(label)(null).bind(key, _ => exports.get_context().bind(undefined, c => c.set_page(x, r), className).ignore());
+    return html_1.button(label)(null).then(key, _ => exports.get_context().then(undefined, c => c.set_page(x, r), className).ignore());
 };
 
 
@@ -46775,7 +46804,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = __webpack_require__(35);
 const combinators_1 = __webpack_require__(82);
 exports.simple_workflow = function (workflow_name, steps, initial_model, initial_step) {
-    return initial_model.bind(`${workflow_name}_initial_binder`, m => combinators_1.repeat(`${workflow_name}_repeater`)(cd => steps.has(cd.step) ?
+    return initial_model.then(`${workflow_name}_initial_binder`, m => combinators_1.repeat(`${workflow_name}_repeater`)(cd => steps.has(cd.step) ?
         steps.get(cd.step)(cd)
         :
             core_1.unit(cd).filter(_ => false))({ model: m, step: initial_step }).map(c => c.model));

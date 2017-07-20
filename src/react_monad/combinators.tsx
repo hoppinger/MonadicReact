@@ -344,7 +344,7 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
             s => any<MenuState, MenuState>(undefined, entries_class)(entries(s))(s)),
           div<MenuState, MenuState>(content_class)(
           (s:MenuState) => s.selected.kind == "item" ?
-            p(s.selected.value).bind<MenuState>(undefined, (p_res:B) => unit<MenuState>({...s, last_action:{ kind:"p", p_res:p_res }}))
+            p(s.selected.value).then<MenuState>(undefined, (p_res:B) => unit<MenuState>({...s, last_action:{ kind:"p", p_res:p_res }}))
           :
             unit<MenuState>(s).never<MenuState>())
         ]
@@ -364,8 +364,8 @@ export let custom = function<A>(key?:string, dbg?:() => string) : (render:(ctxt:
 
 export let hide = (f_name:string, f:C<void>) =>
   repeat<boolean>()(visible =>
-    bool("edit", "plus/minus")(visible))(false).bind(`${f_name} toggle`, visible =>
+    bool("edit", "plus/minus")(visible))(false).then(`${f_name} toggle`, visible =>
     !visible ?
       unit<void>(null)
     :
-      f.bind(`visible ${f_name}`, _ => unit<void>(null)))
+      f.then(`visible ${f_name}`, _ => unit<void>(null)))

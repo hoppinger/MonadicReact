@@ -117,7 +117,7 @@ export let get_context = function(key?:string, dbg?:() => string) : C<Context> {
   (unit<Context>(ctxt()).comp(ctxt)(cont))) }
 
 export let link_to_route = function<T>(label:string, x:T, r:Route<T>, key?:string, className?:string) : C<void> {
-  return button<void>(label)(null).bind(key, _ =>
-           get_context().bind(undefined, c =>
+  return button<void>(label)(null).then(key, _ =>
+           get_context().then(undefined, c =>
            c.set_page(x, r), className).ignore())
 }

@@ -13,7 +13,7 @@ type FictionalPage = { title:string, content:string }
 export let button_sample : C<void> =
   repeat<number>(`input number`)(n =>
       label<number, number>("Insert an even number: ", true)(n =>
-        number("edit", "number")(n))(n))(0).bind(`input number bind`, n =>
+        number("edit", "number")(n))(n))(0).then(`input number bind`, n =>
   button<number>(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map<string>(n =>
-  `Your selection is ${n.toString()}`).bind(`button to string`, s =>
+  `Your selection is ${n.toString()}`).then(`button to string`, s =>
   string("view")(s).ignore()))

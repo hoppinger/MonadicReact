@@ -57,9 +57,9 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
         : e.kind == "lazy image" ?
           retract<FormData<M>, void>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => null, c => _ => c,
-            _ => e.download(c.model).bind(`${model_name(c.model)}_${e.field_name}_downloader`, src =>
+            _ => e.download(c.model).then(`${model_name(c.model)}_${e.field_name}_downloader`, src =>
             repeat<string>()((src:string) =>
-              label<string, string>(e.field_name, true)(image(mode, `${model_name(c.model)}_${e.field_name}`))(src).bind(`${model_name(c.model)}_${e.field_name}_uploader`, new_src =>
+              label<string, string>(e.field_name, true)(image(mode, `${model_name(c.model)}_${e.field_name}`))(src).then(`${model_name(c.model)}_${e.field_name}_uploader`, new_src =>
               e.upload(c.model)(new_src)))(src)).ignore())
         : e.kind == "file" ?
           retract<FormData<M>, File>(`${model_name(c.model)}_${e.field_name}_retract`)(
@@ -73,7 +73,7 @@ export let simple_inner_form = function<M>(mode:Mode, model_name:(_:M)=>string, 
           retract<FormData<M>, File>(`${model_name(c.model)}_${e.field_name}_retract`)(
             c => null, c => f => ({...c, model:e.out(c.model)(f)}),
             _ => label<void, File>(e.field_name, true)(_ =>
-                  file(mode, e.filename(c.model), e.url(c.model)).bind(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
+                  file(mode, e.filename(c.model), e.url(c.model)).then(`${model_name(c.model)}_${e.field_name}_uploader`, f =>
                   e.upload(c.model)(f).ignore_with(f)))(null))
         : e.kind == "datetime" ?
           retract<FormData<M>, Moment.Moment>(`${model_name(c.model)}_${e.field_name}_retract`)(
@@ -104,28 +104,28 @@ export let form_errors = function<M>(model_name:(_:M)=>string, entries:FormEntry
 
 export let simple_form_with_autosave = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[],
     download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void> {
-  return download_M.bind(undefined, c =>
+  return download_M.then(undefined, c =>
   simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() })
-  .bind(`${model_name(c)}_error_recap`,
+  .then(`${model_name(c)}_error_recap`,
   any<FormData<M>, FormData<M>>()([
     c => form_errors<M>(model_name, entries)(c).ignore_with(c).filter(_ => false),
     c => unit<FormData<M>>(c)
   ]))
   .filter(c => c.errors.isEmpty(), `${model_name(c)}_error_filter`)
-  .map<M>(c => c.model).bind(`${model_name(c)}_uploader`,
+  .map<M>(c => c.model).then(`${model_name(c)}_uploader`,
   delay<M>(200, `${model_name(c)}_delay`)(upload_M)).ignore())
 }
 
 
 export let simple_form_with_save_button = function<M>(mode:Mode, model_name:(_:M)=>string, entries:FormEntry<M>[],
     download_M:C<M>, upload_M:(_:M)=>C<M>) : C<void> {
-  return download_M.bind(undefined, c =>
-    simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() }).bind(`${model_name(c)}_form`, c =>
+  return download_M.then(undefined, c =>
+    simple_inner_form<M>(mode, model_name, entries)({ model:c, errors:Immutable.Map<string,Array<string>>() }).then(`${model_name(c)}_form`, c =>
       any<FormData<M>, FormData<M>>()([
         form_errors<M>(model_name, entries),
         c => button<FormData<M>>(`save`, !c.errors.isEmpty())(c)
       ])(c)
-    ).map<M>(c => c.model).bind(`${model_name(c)}_uploader`,
+    ).map<M>(c => c.model).then(`${model_name(c)}_uploader`,
     delay<M>(200, `${model_name(c)}_delayer`)(upload_M)).ignore())
 }
 
@@ -134,7 +134,7 @@ export let simple_form_with_prev_and_next_buttons = function<M>(mode:Mode, model
     prev_visible:(_:FormData<M>)=>boolean, next_visible:(_:FormData<M>)=>boolean,
     on_prev:(_:M)=>M, on_next:(_:M)=>M) : (_:FormData<M>) => C<FormData<M>> {
   return c =>
-    simple_inner_form<M>(mode, model_name, entries)(c).bind(`${model_name(c.model)}_form`, c =>
+    simple_inner_form<M>(mode, model_name, entries)(c).then(`${model_name(c.model)}_form`, c =>
       any<FormData<M>, FormData<M>>()([
         form_errors<M>(model_name, entries),
         c => prev_visible(c) ? button<FormData<M>>(`prev`, prev_enabled(c))(c).map<FormData<M>>(c => ({...c, model:on_prev(c.model)})) : unit<FormData<M>>(c).filter(_ => false),

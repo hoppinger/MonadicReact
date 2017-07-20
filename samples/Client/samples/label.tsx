@@ -11,5 +11,5 @@ rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react
 export let label_sample : C<void> =
   repeat<number>(`input number`)(n =>
       label<number, number>("Insert a number: ", true)(n =>
-        number("edit", "number")(n))(n))(0).bind(`input number bind`, c =>
+        number("edit", "number")(n))(n))(0).then(`input number bind`, c =>
   string("view")(`Your selection is ${c.toString()}`).ignore())
