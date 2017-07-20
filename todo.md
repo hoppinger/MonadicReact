@@ -4,7 +4,7 @@
 
 ## GO (7 days)
 - [ ] deploy on acceptance
-- [ ] headless renderer setup in scaffolder
+- [x] headless renderer setup in scaffolder
 - [ ] info pages
   - [ ] welcome
   - [ ] manifesto

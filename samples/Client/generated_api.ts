@@ -17,11 +17,11 @@ export function get_Course(id:number):Promise<CourseItem> {
     })
 }
 
-export function update_Course(c:Models.Course):Promise<any> {
+export function update_Course(c:Models.Course):Promise<void> {
     let courseIndex = Items.findIndex(x => x.Id == c.Id);
-    
+
     if(courseIndex != -1) {
         Items[courseIndex] = c;
     }
-    return Promise.resolve("")
+    return Promise.resolve(null)
 }

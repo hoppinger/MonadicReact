@@ -3,6 +3,10 @@
   "version": "1.0.12",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
+  "typings": "dist/monadic_react.d.ts",
+  "typescript": {
+    "definition": "dist/monadic_react.d.ts"
+  },
   "scripts": {
     "server": "cd samples; ../node_modules/.bin/nodemon app.js",
     "webpack": "./node_modules/.bin/webpack -w",

@@ -58,7 +58,9 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: multiselector_sample, description:"multi-selector" }),
         mk_menu_entry({ sample: moments_sample, description:"dates and times" }),
         mk_menu_entry({ sample: toggles_sample, description:"coordinated toggles" }),
-        mk_menu_entry({ sample: course_form_with_autosave_sample, description:"Simple form sample" })
+      ]),
+      mk_submenu_entry("forms", [
+        mk_menu_entry({ sample: course_form_with_autosave_sample, description:"simple form" })
       ]),
       mk_submenu_entry("lists", [
         mk_menu_entry({ sample: list_sample, description:"list" }),
