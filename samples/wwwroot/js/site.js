@@ -45907,6 +45907,7 @@ const editable_list_1 = __webpack_require__(391);
 const link_1 = __webpack_require__(393);
 const overlay_1 = __webpack_require__(398);
 const context_1 = __webpack_require__(390);
+const form_1 = __webpack_require__(778);
 exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react_1.div("monadic-title-preview")(monadic_react_1.label(s.description, false)(monadic_react_1.bool("edit", "plus/minus"))))(false).bind(`${s.description} toggle`, visible => !visible ?
     monadic_react_1.unit(null)
     :
@@ -45924,7 +45925,8 @@ function HomePage(slug) {
             monadic_react_1.mk_menu_entry({ sample: selector_and_custom_class_1.selector_sample, description: "selector" }),
             monadic_react_1.mk_menu_entry({ sample: multiselector_1.multiselector_sample, description: "multi-selector" }),
             monadic_react_1.mk_menu_entry({ sample: moments_1.moments_sample, description: "dates and times" }),
-            monadic_react_1.mk_menu_entry({ sample: toggles_1.toggles_sample, description: "coordinated toggles" })
+            monadic_react_1.mk_menu_entry({ sample: toggles_1.toggles_sample, description: "coordinated toggles" }),
+            monadic_react_1.mk_menu_entry({ sample: form_1.course_form_with_autosave_sample, description: "Simple form sample" })
         ]),
         monadic_react_1.mk_submenu_entry("lists", [
             monadic_react_1.mk_menu_entry({ sample: list_1.list_sample, description: "list" }),
@@ -73845,6 +73847,61 @@ module.exports = function(module) {
 module.exports = __webpack_amd_options__;
 
 /* WEBPACK VAR INJECTION */}.call(exports, {}))
+
+/***/ }),
+/* 777 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+let Items = [
+    { Id: 1, Name: "TestCourse", Points: 1 },
+    { Id: 2, Name: "Course 2", Points: 10 },
+    { Id: 3, Name: "Third test", Points: 15 },
+];
+function get_Course(id) {
+    let course = Items.filter(x => x.Id == id);
+    return Promise.resolve({
+        Item: course.length > 0 ? course[0] : null
+    });
+}
+exports.get_Course = get_Course;
+function update_Course(c) {
+    let courseIndex = Items.findIndex(x => x.Id == c.Id);
+    if (courseIndex != -1) {
+        Items[courseIndex] = c;
+    }
+    return Promise.resolve("");
+}
+exports.update_Course = update_Course;
+
+
+/***/ }),
+/* 778 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Api = __webpack_require__(777);
+const monadic_react_1 = __webpack_require__(20);
+// Utils: these will be scaffolded at a later time
+//let download_course_with_logo : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course_with_pictures(c_id).then(c => c.Item), "semi exponential", `course_downloader_lift_${c_id}`)(null)
+//let upload_course_with_logo : (_:Models.Course) => C<Models.Course> = c =>
+//  lift_promise<Models.Course, Models.Course>(c => Api.update_Course_with_pictures(c).then(_ => c),
+//  "semi exponential", `course_uploader_lift_${c.Id}`)(c)
+let download_course = c_id => monadic_react_1.lift_promise(x => Api.get_Course(c_id).then(c => c.Item), "semi exponential", `course_downloader_lift_${c_id}`)(null);
+let upload_course = c => monadic_react_1.lift_promise(c => Api.update_Course(c).then(_ => c), "semi exponential", `course_uploader_lift_${c.Id}`)(c);
+exports.course_form_with_autosave_sample = monadic_react_1.simple_form_with_autosave("edit", c => `course_${c.Id}`, [
+    { kind: "string", field_name: "Name", in: c => c.Name || "", out: c => (n) => (Object.assign({}, c, { Name: n })), get_errors: c => c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
+    { kind: "number", field_name: "Points", in: c => c.Points || 0, out: c => (p) => (Object.assign({}, c, { Points: p })), get_errors: c => c.Points < 1 ? ["The course must be worth at least one point."] : [] },
+], download_course(1), upload_course);
+exports.course_form_sample = monadic_react_1.simple_form_with_save_button("edit", c => `course_${c.Id}`, [
+    { kind: "string", field_name: "Name", in: c => c.Name || "", out: c => (n) => (Object.assign({}, c, { Name: n })), get_errors: c => c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
+    { kind: "number", field_name: "Points", in: c => c.Points || 0, out: c => (p) => (Object.assign({}, c, { Points: p })), get_errors: c => c.Points < 1 ? ["The course must be worth at least one point."] : [] },
+], download_course(1), upload_course);
+
 
 /***/ })
 /******/ ]);
