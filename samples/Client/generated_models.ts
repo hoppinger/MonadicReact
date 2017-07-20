@@ -1,4 +1,5 @@
 export type Course = {
     Id: number,
-    Name: string
+    Name: string,
+    Points: number
 }
