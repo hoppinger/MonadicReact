@@ -18,7 +18,7 @@
 
 
 ## various improvements
-- [ ] submenu routes
+- [x] submenu routes
 - [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 

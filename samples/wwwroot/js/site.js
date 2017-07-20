@@ -45928,7 +45928,7 @@ function HomePage(slug) {
             monadic_react_1.mk_menu_entry({ sample: toggles_1.toggles_sample, description: "coordinated toggles" }),
         ]),
         monadic_react_1.mk_submenu_entry("forms", [
-            monadic_react_1.mk_menu_entry({ sample: form_1.course_form_with_autosave_sample, description: "Simple form sample" })
+            monadic_react_1.mk_menu_entry({ sample: form_1.course_form_with_autosave_sample, description: "simple form" })
         ]),
         monadic_react_1.mk_submenu_entry("lists", [
             monadic_react_1.mk_menu_entry({ sample: list_1.list_sample, description: "list" }),
@@ -45974,7 +45974,13 @@ function HomePage(slug) {
         url: monadic_react_1.make_url([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")]),
         page: (_) => monadic_react_1.simple_menu("side menu", s => s.description)(all_samples, sample_minipage(e), s, e.label)
     });
-    let all_menu_routes = Array().concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))));
+    let submenu_route = (e) => ({
+        url: monadic_react_1.make_url([e.label.replace(/\s/g, "_")]),
+        page: (_) => monadic_react_1.simple_menu("side menu", s => s.description)(all_samples, sample_minipage(e), undefined, e.label)
+    });
+    let all_menu_routes = Array()
+        .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
+        .concat(all_samples.map(s => submenu_route(s)));
     return React.createElement("div", null, React.createElement("div", { className: "component" }, monadic_react_1.application("edit", window.location.href.replace(slug, ""), slug, all_menu_routes.concat([
         xxx(),
         yyy(),

@@ -116,7 +116,14 @@ export function HomePage(slug:string) : JSX.Element {
     page:(_:{}) => simple_menu<Sample, void>("side menu", s => s.description)(all_samples, sample_minipage(e), s, e.label)
   })
 
-  let all_menu_routes = Array<Route<{}>>().concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
+  let submenu_route : (e:MenuEntrySubMenu<Sample>) => Route<{}> = (e) => ({
+    url: make_url<{}, never>([e.label.replace(/\s/g, "_")]),
+    page:(_:{}) => simple_menu<Sample, void>("side menu", s => s.description)(all_samples, sample_minipage(e), undefined, e.label)
+  })
+
+  let all_menu_routes = Array<Route<{}>>()
+    .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
+    .concat(all_samples.map(s => submenu_route(s)))
 
   return <div>
       {
