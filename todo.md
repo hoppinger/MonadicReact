@@ -18,7 +18,10 @@
 
 
 ## various improvements
-- [ ] deploy publicly
+- [ ] deploy on https://monadic_react.productie.hoppinger.com/
+- [ ] only hide tab arrows if less than maximum
+- [ ] use never instead of filter(_ => false)
+- [ ] pagination should be refactored with the regular combinators
 - [x] submenu routes
 - [x] routerless application
 - [x] bind ~> then
@@ -68,7 +71,7 @@
 - [ ] edit lists and monadic-list-item
 - [ ] links
 - [ ] overlays
-- [ ] pagination
+- [ ] paginator
 - [ ] rich text (all text styles and images)
 - [ ] toggle without label (for example within an edit list)
 - [ ] tabs "pagination"
@@ -88,6 +91,4 @@
 - [ ] add math plugin https://github.com/efloti/draft-js-mathjax-plugin
 - [ ] also parse url query
 - [ ] repeat-from, a wrapper on repeat which takes as first input the initial value A
-- [ ] use never instead of filter(_ => false)
-- [ ] pagination should be refactored with the regular combinators
 - [ ] other more complex combinators should also be built with regular combinators

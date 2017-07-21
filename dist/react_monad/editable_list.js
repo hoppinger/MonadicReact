@@ -17,12 +17,12 @@ var perform = function (s, op) {
     return op.kind == "add" ? __assign({}, s, { items: s.items.push(op.value) }) : op.kind == "remove" ? __assign({}, s, { items: s.items.remove(op.index), selected_index: s.selected_index == op.index ? undefined : op.index > s.selected_index ? s.selected_index : s.selected_index - 1 }) : __assign({}, s, { selected_index: op.selected ? op.index : s.selected_index == op.index ? undefined : s.selected_index });
 };
 exports.editable_list = function (list_name, initial_items, create_new_form) {
-    return initial_items.bind(list_name, function (items) {
+    return initial_items.then(list_name, function (items) {
         return combinators_1.repeat("monadic-list " + list_name)(html_1.form("monadic-list-form")(combinators_1.any()([
             function (s) { return list_1.list(s.items, undefined, "monadic-list-items")(function (i) { return function (n) {
                 return combinators_1.any("item_" + n, "monadic-list-item")([
                     html_1.div("monadic-list-cell")(function (_) {
-                        return html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).bind(undefined, function (selected) {
+                        return html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).then(undefined, function (selected) {
                             return core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(function (_) {
                                 return selected != (s.selected_index == i);
                             });
@@ -35,8 +35,8 @@ exports.editable_list = function (list_name, initial_items, create_new_form) {
                         return html_1.button("X")({ kind: "remove", value: n, index: i });
                     })
                 ])(undefined);
-            }; }).bind("inner list", function (op) { return core_1.unit(perform(s, op)); }); },
-            function (s) { return create_new_form(s).bind("monadic-new-list-item", function (new_value) { return core_1.unit(perform(s, { kind: "add", value: new_value })); }); }
+            }; }).then("inner list", function (op) { return core_1.unit(perform(s, op)); }); },
+            function (s) { return create_new_form(s).then("monadic-new-list-item", function (new_value) { return core_1.unit(perform(s, { kind: "add", value: new_value })); }); }
         ])))({ items: items, selected_index: undefined });
     });
 };

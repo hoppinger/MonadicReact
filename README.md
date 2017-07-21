@@ -18,15 +18,15 @@ To use the application, create one or more components of type `C<void>`, for exa
 
 ```
 let my_component : C<void> =
-  string("view")("Hello world of monads!").ignore()
+string("view")("Hello world of monads!").ignore()
 ```
 
 The component is then wrapped in a page for the router. Let us keep things easy and define a route which matches everything:
 
 ```
 let menu_page = () : Route<{}> => ({
-  url: fallback_url(),
-  page: (_:{}) => my_component
+url: fallback_url(),
+page: (_:{}) => my_component
 })
 ```
 
@@ -34,9 +34,9 @@ The component can then be instantiated by invoking the application constructor a
 
 ```
 <div className="component">
-  {
-    application("edit", window.location.href, "", Immutable.List<Route<{}>>([main_page()])))
-  }
+{
+application("edit", window.location.href, "", Immutable.List<Route<{}>>([main_page()])))
+}
 </div>
 ```
 
@@ -45,11 +45,11 @@ chain two components together:
 
 ```
 let my_component : C<void> =
-multi_selector<number>("checkbox",x => x.toString())([1, 3, 5]).bind(`multi_selector`, n =>
-  string("view")(JSON.stringify(n.toArray())).ignore())
+multi_selector<number>("checkbox",x => x.toString())([1, 3, 5]).then(`multi_selector`, n =>
+string("view")(JSON.stringify(n.toArray())).ignore())
 ```
 
-In the sample above we have used the `bind` operator in order to feed the output of the multi-selector in the string renderer.
+In the sample above we have used the `then` operator in order to feed the output of the multi-selector in the string renderer.
 
 ## React monad
 The react monad is based on the simple idea that a non-trivial react component will eventually produce data, which is usually fed into another component.
@@ -79,9 +79,11 @@ The simplest operation that we need to be able to perform is creating instances 
 
 Given an `M<A>`, we then want to be able to compose it with other instances of `M<B>` which are dependent of it. This dependency is expressed by saying that, in order to get to the instance of `M<B>` that we wish to obtain, we need a value of type `A` which will somehow come out of `M<A>`:
 
-`bind : M<A> => (A => M<B>) => M<B>`
+`then : M<A> => (A => M<B>) => M<B>`
 
-After having defined `unit` and `bind`, which are the bare minimum needed in order to be able to have a working monad, we can start thinking in terms of usability of our monad as a library. This usually leads to an "onion" design, with a basic core, surrounded by primitives, surrounded by combinators, templates, etc. As long as primitives, combinators, and templates all yield instances of `M`, they will still be valid input for further binding or applying the other combinators yet again. This is the fundamental principle of composability: a library should make it possible to keep nesting constructs inside each other in order to be flexible and not artificially constraining.
+(Note: a proper name for `then` would be `bind`, but since it is already a member of function objects, this would lead to mistakes.)
+
+After having defined `unit` and `then`, which are the bare minimum needed in order to be able to have a working monad, we can start thinking in terms of usability of our monad as a library. This usually leads to an "onion" design, with a basic core, surrounded by primitives, surrounded by combinators, templates, etc. As long as primitives, combinators, and templates all yield instances of `M`, they will still be valid input for further thening or applying the other combinators yet again. This is the fundamental principle of composability: a library should make it possible to keep nesting constructs inside each other in order to be flexible and not artificially constraining.
 
 It is useful for some to first learn monads in terms of simple, concrete containers such as `Option` or `List`, and then move on to the more abstract ones such as the present implementation.
 
@@ -91,20 +93,20 @@ The core of the library, found in file `core.tsx`, contains the definition of th
 ```
 type Cont<A> = (callback:() => void) => (_:A) => void
 type C<A> = {
-  comp:(ctxt:() => Context) => (cont:Cont<A>) => JSX.Element
-  ...
+comp:(ctxt:() => Context) => (cont:Cont<A>) => JSX.Element
+...
 }
 ```
 
-Using the library does not require interacting with this data type directly: that is done by invoking functions `unit` and `bind`:
+Using the library does not require interacting with this data type directly: that is done by invoking functions `unit` and `then`:
 
 ```
 unit = function<A>(x:A, key?:string, dbg?:() => string) : C<A> = ...
 
-bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> = ...
+then = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> = ...
 ```
 
-Notice that, in contrast with the definitions of `unit` and `bind` given above, we have some more parameters: since react expects a `key` in order to accelerate the reconciliation process, all generated components may specify an (optional) key. `bind` will still work if the key is passed as `undefined`, even though it is not always ideal.
+Notice that, in contrast with the definitions of `unit` and `then` given above, we have some more parameters: since react expects a `key` in order to accelerate the reconciliation process, all generated components may specify an (optional) key. `then` will still work if the key is passed as `undefined`, even though it is not always ideal.
 
 Of course, we can also perform basic transformations on components' data, for example by applying a given transformation function to each output of an existing component. This effectively turns a component of type `C<A>` in a (related) component of type `C<B>`, as long as we provide a function `f:A=>B`:
 
@@ -118,7 +120,7 @@ Similarly, we can restrict the output of an existing component. This effectively
 filter: <A>(key?: string, dbg?: () => string) => (p: (_: A) => boolean) => (_: C<A>) => C<A>;
 ```
 
-Note that, given an instance `p:C<A>`, we can directly call some methods on it such as: `p.bind(...)`, `p.ignore()`, `p.never<B>()` instead of having to invoke `bind(p, ...)`.
+Note that, given an instance `p:C<A>`, we can directly call some methods on it such as: `p.then(...)`, `p.ignore()`, `p.never<B>()` instead of having to invoke `then(p, ...)`.
 
 ### Primitives
 Having defined the core operators is just the first step. To be able to do anything actually useful on a webpage, we have defined a series of primitives which encapsulate common HTML constructs as instances of our monad. Each primitive accepts as input the `mode` (`"view" | "edit"`) in order to instantiate the component as editable or just to show its contents.
@@ -210,20 +212,20 @@ As an example of a retraction, consider:
 type Person = { Name:string, Surname:string }
 
 let person_name : (_:Person) => C<Person> = p =>
-  retract<Person>()(p => p.Name, p => n => ({...p, Name:n}), string("view"))
+retract<Person>()(p => p.Name, p => n => ({...p, Name:n}), string("view"))
 ```
 
 When combined with `repeat` and `any`, then we get a form:
 
 ```
 let person_form =
-  repeat<Person>("state_repeater")(
-    any<Person>("field_selector")([
-      person_name,
-      person_surname
-    ])
-  ).bind("person_form", p =>
-  ...do something with p...)
+repeat<Person>("state_repeater")(
+any<Person>("field_selector")([
+person_name,
+person_surname
+])
+).then("person_form", p =>
+...do something with p...)
 ```
 
 `all`, similarly to `any`, gets as input an array of components and, when all components have yielded an output, all the outputs are passed through:
@@ -274,8 +276,8 @@ As we have assembled an url which yields a value of type `T`, we can define the 
 
 ```
 let about : Route<{}> = {
-  url: make_url<{}, never>(["about"]),
-  page: _ => ... definition of about page ...
+url: make_url<{}, never>(["about"]),
+page: _ => ... definition of about page ...
 }
 ```
 
@@ -284,8 +286,8 @@ let about : Route<{}> = {
 A component can also set its own url. This is simply achieved by getting the context and then invoking its method `set_url` with a url payload (in the sample below assume variable `t:T` and `K` keys of `T`):
 
 ```
-get_context().bind(s.description, c =>
-c.set_url(t, make_url<T, K>([...url elements...])).bind(
+get_context().then(s.description, c =>
+c.set_url(t, make_url<T, K>([...url elements...])).then(
 ...)
 ```
 
@@ -318,7 +320,7 @@ The `simple_menu` is a template which takes as input a series of items, a defaul
 
 ```
 simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>string, key?:string, dbg?:() => string) :
-  ((items:Array<MenuEntry<A>>, p:(_:A)=>C<B>, selected_item?:A, selected_sub_menu?:string) => C<B>)
+((items:Array<MenuEntry<A>>, p:(_:A)=>C<B>, selected_item?:A, selected_sub_menu?:string) => C<B>)
 ```
 
 Sample usage is quite intuitive: we define a data structure which we can render, pass a list of such structures to `simple_menu`, and pass an appropriate renderer (in this case the renderer is just stored in the page itself, but this need not be the case):
@@ -327,13 +329,13 @@ Sample usage is quite intuitive: we define a data structure which we can render,
 type MyPage = { title:string, content:C<void> }
 
 export let menu_sample : C<void> =
-  simple_menu<MyPage, void>("side menu", p => p.title, `fictional pages menu`)(
-    [
-      { title:"About", content:string("view")("This page talks about us")},
-      { title:"Content", content:string("view")("This page is full of interesting content")}
-    ],
-    p => p.content
-  ).ignore()
+simple_menu<MyPage, void>("side menu", p => p.title, `fictional pages menu`)(
+[
+{ title:"About", content:string("view")("This page talks about us")},
+{ title:"Content", content:string("view")("This page is full of interesting content")}
+],
+p => p.content
+).ignore()
 
 ```
 
@@ -355,27 +357,27 @@ The form entries declaratively represent individual elements of the form, descri
 
 ```
 type FormEntry<M> =
-  | { kind:"string", field_name:string, in:(_:M)=>string, out:(_:M)=>(_:string)=>M, get_errors:(_:M)=>Array<string> }
-  | { kind:"number", field_name:string, in:(_:M)=>number, out:(_:M)=>(_:number)=>M, get_errors:(_:M)=>Array<string> }
-  | { kind:"date", field_name:string, in:(_:M)=>Moment.Moment, out:(_:M)=>(_:Moment.Moment)=>M, get_errors:(_:M)=>Array<string> }
-  ...
+| { kind:"string", field_name:string, in:(_:M)=>string, out:(_:M)=>(_:string)=>M, get_errors:(_:M)=>Array<string> }
+| { kind:"number", field_name:string, in:(_:M)=>number, out:(_:M)=>(_:number)=>M, get_errors:(_:M)=>Array<string> }
+| { kind:"date", field_name:string, in:(_:M)=>Moment.Moment, out:(_:M)=>(_:Moment.Moment)=>M, get_errors:(_:M)=>Array<string> }
+...
 ```
 
 Some form entries are meant for an auto-saving form. For example, `lazy image` and `lazy file` will directly upload the new values the moment they are changed in the form, without passing them through to a save button:
 
 ```
 type FormEntry<M> =
-  ...
-  | { kind:"lazy image",  field_name:string, download:(c:M) => C<string>, upload:(c:M) => (src:string) => C<string> }
-  | { kind:"lazy file", field_name:string, filename:(_:M) => string, out:(_:M)=>(_:File)=>M, url:(_:M) => string, upload:(_:M) => (_:File) => C<void> }
-  ```
+...
+| { kind:"lazy image",  field_name:string, download:(c:M) => C<string>, upload:(c:M) => (src:string) => C<string> }
+| { kind:"lazy file", field_name:string, filename:(_:M) => string, out:(_:M)=>(_:File)=>M, url:(_:M) => string, upload:(_:M) => (_:File) => C<void> }
+```
 
-Of course a form also needs to save data. After building the form with `simple_inner_form`, we could simply bind to a button. The button acts as a filter which propagates the data it receives (of type `FormData<M>`) whenever it is clicked. The button is then further bound to a component responsible for saving. In pseudocode:
+Of course a form also needs to save data. After building the form with `simple_inner_form`, we could simply compose it with `then` to a button. The button acts as a filter which propagates the data it receives (of type `FormData<M>`) whenever it is clicked. The button is then further bound to a component responsible for saving. In pseudocode:
 
 ```
-download.bind(
-simple_inner_form<M>.bind(
-button.map((fd:FormData<M>) => fd.model).bind(
+download.then(
+simple_inner_form<M>.then(
+button.map((fd:FormData<M>) => fd.model).then(
 upload)))
 ```
 
@@ -417,18 +419,18 @@ An example of this wrapping strategy involves defining one's (adapter) component
 type CounterProps = { ..., context:()=>Context, cont:Cont<number> }
 type CounterState = { ... }
 class Counter extends React.Component<CounterProps, CounterState> {
-  ...
+...
 }
 ```
 
 This component is then later on invoked by `custom`:
 
 ```
-custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).bind(...)
+custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).then(...)
 ```
 
 ### Advanced
-The core of the application is meant to be stable and unchanging. This means that the basic behaviour of `unit`, `bind`, `map`, etc. can simply be expected to remain the same.
+The core of the application is meant to be stable and unchanging. This means that the basic behaviour of `unit`, `then`, `map`, etc. can simply be expected to remain the same.
 
 Templates and combinators, on the other hand, should rather be seen as dynamic entities: depending on the domain, it is possible to build one's own templates and combinators in order to capture local structures of the application being built.
 
@@ -447,9 +449,9 @@ The implementation of `four_blocks` would roughly just invoke the four blocks in
 
 ```
 let four_blocks = function<A>(b1:C<A>,b2:C<A>,b3:C<A>,b4:C<A>) : C<A> {
-  return any<void, A>()([
-    _ => b1, _ => b2, _ => b3, _ => b4
-  ])(null)
+return any<void, A>()([
+_ => b1, _ => b2, _ => b3, _ => b4
+])(null)
 }
 ```
 
@@ -459,15 +461,15 @@ Of course, the blocks could be less anonymous. For example, a page with a menu, 
 standard_layout : (menu:C<A>, content:(_:A) => C<B>, header:C<void>, footer:C<void>) => C<B>
 ```
 
-The implementation of `standard_layout` binds the menu and the content together, whereas header and footer are just "silenced" by means of the `never` combinator:
+The implementation of `standard_layout` thens the menu and the content together, whereas header and footer are just "silenced" by means of the `never` combinator:
 
 ```
 let standard_layout = function<A,B>(menu:C<A>, content:(_:A) => C<B>, header:C<void>, footer:C<void>) : C<B> {
-  return any<void, B>()([
-    div<void, B>(`header_class_name` _ => header.never<B>())
-    div<void, B>(`menu_with_content_class_name`, _ => menu.bind(`menu with content`, x => content(x)))
-    div<void, B>(`footer_class_name`, _ => footer.never<B>())
-  ])(null)
+return any<void, B>()([
+div<void, B>(`header_class_name` _ => header.never<B>())
+div<void, B>(`menu_with_content_class_name`, _ => menu.then(`menu with content`, x => content(x)))
+div<void, B>(`footer_class_name`, _ => footer.never<B>())
+])(null)
 }
 ```
 
@@ -486,12 +488,12 @@ The general shape becomes therefore:
 type KProps = { ...attributes needed by k... } & CmdCommon<B>
 type KState = { ...state needed by k... }
 class K extends React.Component<KProps, KState> {
-  ...
+...
 }
 let k = function(...attributes needed by k...) : C<B> {
-  return make_C<B>(ctxt => cont =>
-    React.createElement<KProps>(K,
-      { ...attributes needed by k..., context:ctxt, cont:cont, key:key }))
+return make_C<B>(ctxt => cont =>
+React.createElement<KProps>(K,
+{ ...attributes needed by k..., context:ctxt, cont:cont, key:key }))
 }
 ```
 

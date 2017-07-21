@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import * as React from "react";
 import { Route, Url } from './router';
 export declare type CmdCommon<A> = {
     cont: Cont<A>;
@@ -40,7 +41,7 @@ export declare type Context = {
 export declare type Cont<A> = (callback: () => void) => (_: A) => void;
 export declare type C<A> = {
     comp: (ctxt: () => Context) => (cont: Cont<A>) => JSX.Element;
-    bind: <B>(key: string, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
+    then: <B>(key: string, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
     never: <B>(key?: string) => C<B>;
     ignore: (key?: string) => C<void>;
     ignore_with: <B>(x: B) => C<B>;
@@ -52,3 +53,16 @@ export declare let unit: <A>(x: A, key?: string, dbg?: () => string) => C<A>;
 export declare let bind: <A, B>(key: string, p: C<A>, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
 export declare let map: <A, B>(key?: string, dbg?: () => string) => (_: (_: A) => B) => (_: C<A>) => C<B>;
 export declare let filter: <A>(key?: string, dbg?: () => string) => (_: (_: A) => boolean) => (_: C<A>) => C<A>;
+export declare type SimpleApplicationProps = {
+    mode: Mode;
+    p: C<void>;
+};
+export declare type SimpleApplicationState = {
+    context: Context;
+};
+export declare class SimpleApplication extends React.Component<SimpleApplicationProps, SimpleApplicationState> {
+    constructor(props: SimpleApplicationProps, context: any);
+    context_from_props(props: SimpleApplicationProps, p: C<void>): Context;
+    render(): JSX.Element;
+}
+export declare let simple_application: (mode: Mode, p: C<void>) => JSX.Element;

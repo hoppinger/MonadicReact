@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("../react_monad/core");
 var combinators_1 = require("../react_monad/combinators");
 exports.simple_workflow = function (workflow_name, steps, initial_model, initial_step) {
-    return initial_model.bind(workflow_name + "_initial_binder", function (m) {
+    return initial_model.then(workflow_name + "_initial_binder", function (m) {
         return combinators_1.repeat(workflow_name + "_repeater")(function (cd) {
             return steps.has(cd.step) ?
                 steps.get(cd.step)(cd)

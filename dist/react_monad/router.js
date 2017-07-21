@@ -125,8 +125,8 @@ exports.get_context = function (key, dbg) {
     }; });
 };
 exports.link_to_route = function (label, x, r, key, className) {
-    return html_1.button(label)(null).bind(key, function (_) {
-        return exports.get_context().bind(undefined, function (c) {
+    return html_1.button(label)(null).then(key, function (_) {
+        return exports.get_context().then(undefined, function (c) {
             return c.set_page(x, r);
         }, className).ignore();
     });

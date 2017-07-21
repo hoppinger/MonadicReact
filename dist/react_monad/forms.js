@@ -35,9 +35,9 @@ exports.simple_inner_form = function (mode, model_name, entries) {
                             return { model: new_c, errors: errors.length > 0 ? c.errors.set(e.field_name, errors) : c.errors.remove(e.field_name) };
                         }; }, html_1.label(e.field_name, true)(html_1.div("monadic-field " + (c.errors.has(e.field_name) ? "monadic-field-error" : ""))(html_1.image(mode, model_name(c.model) + "_" + e.field_name))))
                         : e.kind == "lazy image" ?
-                            combinators_1.retract(model_name(c.model) + "_" + e.field_name + "_retract")(function (c) { return null; }, function (c) { return function (_) { return c; }; }, function (_) { return e.download(c.model).bind(model_name(c.model) + "_" + e.field_name + "_downloader", function (src) {
+                            combinators_1.retract(model_name(c.model) + "_" + e.field_name + "_retract")(function (c) { return null; }, function (c) { return function (_) { return c; }; }, function (_) { return e.download(c.model).then(model_name(c.model) + "_" + e.field_name + "_downloader", function (src) {
                                 return combinators_1.repeat()(function (src) {
-                                    return html_1.label(e.field_name, true)(html_1.image(mode, model_name(c.model) + "_" + e.field_name))(src).bind(model_name(c.model) + "_" + e.field_name + "_uploader", function (new_src) {
+                                    return html_1.label(e.field_name, true)(html_1.image(mode, model_name(c.model) + "_" + e.field_name))(src).then(model_name(c.model) + "_" + e.field_name + "_uploader", function (new_src) {
                                         return e.upload(c.model)(new_src);
                                     });
                                 })(src);
@@ -50,7 +50,7 @@ exports.simple_inner_form = function (mode, model_name, entries) {
                                 }; }, html_1.label(e.field_name, true)(html_1.div("monadic-field " + (c.errors.has(e.field_name) ? "monadic-field-error" : ""))(function (_) { return html_1.file(mode, e.filename(c.model), e.url(c.model)).ignore_with(null); })))
                                 : e.kind == "lazy file" ?
                                     combinators_1.retract(model_name(c.model) + "_" + e.field_name + "_retract")(function (c) { return null; }, function (c) { return function (f) { return (__assign({}, c, { model: e.out(c.model)(f) })); }; }, function (_) { return html_1.label(e.field_name, true)(function (_) {
-                                        return html_1.file(mode, e.filename(c.model), e.url(c.model)).bind(model_name(c.model) + "_" + e.field_name + "_uploader", function (f) {
+                                        return html_1.file(mode, e.filename(c.model), e.url(c.model)).then(model_name(c.model) + "_" + e.field_name + "_uploader", function (f) {
                                             return e.upload(c.model)(f).ignore_with(f);
                                         });
                                     })(null); })
@@ -77,29 +77,29 @@ exports.form_errors = function (model_name, entries) {
     }))(fd).filter(function (_) { return false; }); };
 };
 exports.simple_form_with_autosave = function (mode, model_name, entries, download_M, upload_M) {
-    return download_M.bind(undefined, function (c) {
+    return download_M.then(undefined, function (c) {
         return exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() })
-            .bind(model_name(c) + "_error_recap", combinators_1.any()([
+            .then(model_name(c) + "_error_recap", combinators_1.any()([
             function (c) { return exports.form_errors(model_name, entries)(c).ignore_with(c).filter(function (_) { return false; }); },
             function (c) { return core_1.unit(c); }
         ]))
             .filter(function (c) { return c.errors.isEmpty(); }, model_name(c) + "_error_filter")
-            .map(function (c) { return c.model; }).bind(model_name(c) + "_uploader", combinators_1.delay(200, model_name(c) + "_delay")(upload_M)).ignore();
+            .map(function (c) { return c.model; }).then(model_name(c) + "_uploader", combinators_1.delay(200, model_name(c) + "_delay")(upload_M)).ignore();
     });
 };
 exports.simple_form_with_save_button = function (mode, model_name, entries, download_M, upload_M) {
-    return download_M.bind(undefined, function (c) {
-        return exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).bind(model_name(c) + "_form", function (c) {
+    return download_M.then(undefined, function (c) {
+        return exports.simple_inner_form(mode, model_name, entries)({ model: c, errors: Immutable.Map() }).then(model_name(c) + "_form", function (c) {
             return combinators_1.any()([
                 exports.form_errors(model_name, entries),
                 function (c) { return html_1.button("save", !c.errors.isEmpty())(c); }
             ])(c);
-        }).map(function (c) { return c.model; }).bind(model_name(c) + "_uploader", combinators_1.delay(200, model_name(c) + "_delayer")(upload_M)).ignore();
+        }).map(function (c) { return c.model; }).then(model_name(c) + "_uploader", combinators_1.delay(200, model_name(c) + "_delayer")(upload_M)).ignore();
     });
 };
 exports.simple_form_with_prev_and_next_buttons = function (mode, model_name, entries, prev_enabled, next_enabled, prev_visible, next_visible, on_prev, on_next) {
     return function (c) {
-        return exports.simple_inner_form(mode, model_name, entries)(c).bind(model_name(c.model) + "_form", function (c) {
+        return exports.simple_inner_form(mode, model_name, entries)(c).then(model_name(c.model) + "_form", function (c) {
             return combinators_1.any()([
                 exports.form_errors(model_name, entries),
                 function (c) { return prev_visible(c) ? html_1.button("prev", prev_enabled(c))(c).map(function (c) { return (__assign({}, c, { model: on_prev(c.model) })); }) : core_1.unit(c).filter(function (_) { return false; }); },
