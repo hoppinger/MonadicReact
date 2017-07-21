@@ -1,5 +1,7 @@
 ## doing
 - documentation
+- deploy on https://monadic_react.productie.hoppinger.com/
+- linkedin article
 - cleanup dependencies in imports (samples and monad definition)
 
 ## GO (7 days)
@@ -55,6 +57,8 @@
   - [ ] verify all snippets
 - [x] publish online for designers
 - [ ] linkedin post
+  - [ ] core
+  - [ ] pictures
 - [ ] reddit post
   - [ ] functional programming
   - [ ] webdev
