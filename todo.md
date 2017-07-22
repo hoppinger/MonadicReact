@@ -1,7 +1,5 @@
 ## doing
 - documentation
-- deploy on https://monadic_react.productie.hoppinger.com/
-- linkedin article
 - cleanup dependencies in imports (samples and monad definition)
 
 ## GO (7 days)
@@ -20,7 +18,7 @@
 
 
 ## various improvements
-- [ ] deploy on https://monadic_react.productie.hoppinger.com/
+- [ x deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] only hide tab arrows if less than maximum
 - [ ] use never instead of filter(_ => false)
 - [ ] pagination should be refactored with the regular combinators
@@ -57,13 +55,12 @@
   - [ ] verify all snippets
 - [x] publish online for designers
 - [ ] linkedin post
-  - [ ] core
-  - [ ] pictures
 - [ ] reddit post
   - [ ] functional programming
   - [ ] webdev
   - [ ] programming
 - [ ] hacker news
+- [ ] post on Hoppinger.com with pretty pictures
 
 ## styling
 - [x] menu
