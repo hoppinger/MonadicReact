@@ -37,6 +37,8 @@ export declare type Context = {
     current_page: C<void>;
     set_page: <T>(x: T, new_page: Route<T>, callback?: () => void) => C<void>;
     set_url: <T>(x: T, new_url: Url<T>, callback?: () => void) => C<void>;
+    push_route: (new_route: Route<{}>, callback?: () => void) => C<void>;
+    set_routes: (routes: Array<Route<{}>>, callback?: () => void) => C<void>;
 };
 export declare type Cont<A> = (callback: () => void) => (_: A) => void;
 export declare type C<A> = {

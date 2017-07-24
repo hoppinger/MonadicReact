@@ -25,16 +25,22 @@ export declare type ApplicationProps = {
     mode: Mode;
     base_url: string;
     slug: string;
-    routes: Immutable.List<Route<{}>>;
+    routes: () => Promise<Array<Route<{}>>>;
 };
 export declare type ApplicationState = {
+    kind: "loading routes";
+} | {
+    kind: "running";
     context: Context;
+    routes: Immutable.List<Route<{}>>;
 };
 export declare class Application extends React.Component<ApplicationProps, ApplicationState> {
     constructor(props: ApplicationProps, context: any);
+    load(): void;
+    componentDidMount(): void;
     context_from_props(props: ApplicationProps, p: C<void>): Context;
     render(): JSX.Element;
 }
-export declare let application: (mode: Mode, base_url: string, slug: string, routes: Route<{}>[]) => JSX.Element;
+export declare let application: (mode: Mode, base_url: string, slug: string, routes: () => Promise<Route<{}>[]>) => JSX.Element;
 export declare let get_context: (key?: string, dbg?: () => string) => C<Context>;
 export declare let link_to_route: <T>(label: string, x: T, r: Route<T>, key?: string, className?: string) => C<void>;
