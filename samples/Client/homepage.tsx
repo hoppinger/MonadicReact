@@ -44,6 +44,34 @@ let sample_minipage : (e:MenuEntrySubMenu<Sample>) => ((_:Sample) => C<void>) = 
   c.set_url({}, make_url<{}, never>([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")])).then(`${s.description}_set_url`, _ =>
   h2<void, void>(s.description, "", s.description)(_ => s.sample)(null)))
 
+
+type LoginData = { username:string, email:string, password:string, showing:boolean }
+let validate : (_:LoginData) => boolean = ld => ld.showing && ld.username.length > 0 && ld.email.length > 0 && ld.password.length > 0
+
+let login_form : (_:LoginData) => C<LoginData> = ld =>
+  repeat<LoginData>()(
+    any<LoginData, LoginData>()([
+      retract<LoginData, string>()(ld => ld.username, ld => v => ({...ld, username:v}),
+        string("edit")),
+      retract<LoginData, string>()(ld => ld.email, ld => v => ({...ld, email:v}),
+        string("edit")),
+      retract<LoginData, string>()(ld => ld.password, ld => v => ({...ld, password:v}),
+        string("edit"))
+    ])
+  )(ld).then(undefined, ld =>
+  button<LoginData>("Login as admin", !validate(ld))(ld))
+
+let login_test : C<void> =
+    div<void,void>(``, `login sample`)(_ =>
+    (repeat<LoginData>()(ld =>
+        ld.showing ?
+          login_form(ld)
+        :
+          button<LoginData>("login")({...ld, showing:true})
+    )({username:"", email: "", password:"", showing: false})).then(undefined, ld =>
+    console.log("new login data", ld) ||
+    string("view")(JSON.stringify(ld)).ignore()))(null)
+
 export function HomePage(slug:string) : JSX.Element {
   let all_samples : Array<MenuEntrySubMenu<Sample>> =
     [
@@ -83,13 +111,18 @@ export function HomePage(slug:string) : JSX.Element {
       // ])
     ]
 
+  let login = () : Route<{}> => ({
+    url: make_url<{}, never>(["login"]),
+    page:_ => login_test
+    })
+
   let xxx = () : Route<{}> => ({
     url: make_url<{}, never>(["xxx"]),
     page:_ =>
       any<void, void>(`xxx`)([
-      _ => string("view")("xxx").never<void>(),
-      _ => link_to_route<{}>("YYY", {}, yyy())
-    ])(null) })
+        _ => string("view")("xxx").never<void>(),
+        _ => link_to_route<{}>("YYY", {}, yyy())
+      ])(null) })
 
   let yyy = () : Route<{}> => ({
     url: make_url<{}, never>(["yyy"]),
@@ -136,14 +169,15 @@ export function HomePage(slug:string) : JSX.Element {
         <div className="component">
           {
             application("edit", window.location.href.replace(slug, ""), slug,
-              all_menu_routes.concat(
+              () => Promise.resolve(all_menu_routes.concat(
               [
+                login(),
                 xxx(),
                 yyy(),
                 zzz(),
                 zzz_xxx(),
                 menu_page()
-              ]))
+              ])))
           }
         </div>
       }

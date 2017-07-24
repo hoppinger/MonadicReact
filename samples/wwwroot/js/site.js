@@ -11935,6 +11935,12 @@ class SimpleApplication extends React.Component {
             },
             set_url: function (x, new_url, callback) {
                 return exports.unit(null);
+            },
+            push_route: function (route, callback) {
+                return exports.unit(null);
+            },
+            set_routes: function (routes, callback) {
+                return exports.unit(null);
             }
         };
     }
@@ -45942,6 +45948,17 @@ exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react
     :
         s.sample.then(`visible ${s.description}`, _ => monadic_react_1.unit(null)));
 let sample_minipage = e => s => monadic_react_1.get_context().then(s.description, c => c.set_url({}, monadic_react_1.make_url([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")])).then(`${s.description}_set_url`, _ => monadic_react_1.h2(s.description, "", s.description)(_ => s.sample)(null)));
+let validate = ld => ld.showing && ld.username.length > 0 && ld.email.length > 0 && ld.password.length > 0;
+let login_form = ld => monadic_react_1.repeat()(monadic_react_1.any()([
+    monadic_react_1.retract()(ld => ld.username, ld => v => (Object.assign({}, ld, { username: v })), monadic_react_1.string("edit")),
+    monadic_react_1.retract()(ld => ld.email, ld => v => (Object.assign({}, ld, { email: v })), monadic_react_1.string("edit")),
+    monadic_react_1.retract()(ld => ld.password, ld => v => (Object.assign({}, ld, { password: v })), monadic_react_1.string("edit"))
+]))(ld).then(undefined, ld => monadic_react_1.button("Login as admin", !validate(ld))(ld));
+let login_test = monadic_react_1.div(``, `login sample`)(_ => (monadic_react_1.repeat()(ld => ld.showing ?
+    login_form(ld)
+    :
+        monadic_react_1.button("login")(Object.assign({}, ld, { showing: true })))({ username: "", email: "", password: "", showing: false })).then(undefined, ld => console.log("new login data", ld) ||
+    monadic_react_1.string("view")(JSON.stringify(ld)).ignore()))(null);
 function HomePage(slug) {
     let all_samples = [
         monadic_react_1.mk_submenu_entry("controls", [
@@ -45973,12 +45990,16 @@ function HomePage(slug) {
             monadic_react_1.mk_menu_entry({ sample: overlay_1.overlay_sample, description: "overlay" }),
         ]),
     ];
+    let login = () => ({
+        url: monadic_react_1.make_url(["login"]),
+        page: _ => login_test
+    });
     let xxx = () => ({
         url: monadic_react_1.make_url(["xxx"]),
-        page: _ => monadic_react_1.any(`xxx`)([
+        page: _ => monadic_react_1.get_context().then(`xxx`, ctxt => ctxt.push_route(yyy()).then(undefined, _ => monadic_react_1.any(`xxx`)([
             _ => monadic_react_1.string("view")("xxx").never(),
             _ => monadic_react_1.link_to_route("YYY", {}, yyy())
-        ])(null)
+        ])(null)))
     });
     let yyy = () => ({
         url: monadic_react_1.make_url(["yyy"]),
@@ -46010,13 +46031,13 @@ function HomePage(slug) {
     let all_menu_routes = Array()
         .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
         .concat(all_samples.map(s => submenu_route(s)));
-    return React.createElement("div", null, React.createElement("div", { className: "component" }, monadic_react_1.application("edit", window.location.href.replace(slug, ""), slug, all_menu_routes.concat([
+    return React.createElement("div", null, React.createElement("div", { className: "component" }, monadic_react_1.application("edit", window.location.href.replace(slug, ""), slug, () => Promise.resolve(all_menu_routes.concat([
+        login(),
         xxx(),
-        yyy(),
         zzz(),
         zzz_xxx(),
         menu_page()
-    ]))));
+    ])))));
 }
 exports.HomePage = HomePage;
 exports.HomePage_to = (slug, target_element_id) => {
@@ -46297,7 +46318,7 @@ exports.pagination_sample = monadic_react_1.div(undefined, `pagination sample`)(
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
-exports.rich_text_sample = monadic_react_1.repeat()((s) => monadic_react_1.rich_text(s, "edit"))(null).map(s => s.substr(0, 200)).then(`rich text sample`, monadic_react_1.delay(2000, `rich text delayer`)(monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view")))).ignore();
+exports.rich_text_sample = monadic_react_1.repeat()(monadic_react_1.rich_text("edit"))(null).map(s => s.substr(0, 200)).then(`rich text sample`, monadic_react_1.delay(2000, `rich text delayer`)(monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view")))).ignore();
 
 
 /***/ }),
@@ -46681,8 +46702,8 @@ class RichText extends React.Component {
             }, editable: this.props.mode == "edit" });
     }
 }
-function rich_text(json_state, mode, key, dbg) {
-    return core_1.make_C(ctxt => cont => (React.createElement(RichText, { kind: "rich text", debug_info: dbg, json_state: json_state, mode: mode, context: ctxt, cont: cont, key: key })));
+function rich_text(mode, key, dbg) {
+    return json_state => core_1.make_C(ctxt => cont => (React.createElement(RichText, { kind: "rich text", debug_info: dbg, json_state: json_state, mode: mode, context: ctxt, cont: cont, key: key })));
 }
 exports.rich_text = rich_text;
 
@@ -46746,45 +46767,92 @@ exports.fallback_url = function () {
 class Application extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let initial_page = undefined;
-        props.routes.forEach(r => {
-            let p = r.url.in(props.slug).map(r.page);
-            if (p.kind == "some") {
-                initial_page = p.value;
-                return false;
-            }
-            return true;
-        });
-        this.state = { context: this.context_from_props(this.props, initial_page) };
+        this.state = { kind: "loading routes" };
+    }
+    load() {
+        this.props.routes().then(raw_routes => {
+            let routes = Immutable.List(raw_routes);
+            let initial_page = undefined;
+            routes.forEach(r => {
+                let p = r.url.in(this.props.slug).map(r.page);
+                if (p.kind == "some") {
+                    initial_page = p.value;
+                    return false;
+                }
+                return true;
+            });
+            this.setState(Object.assign({}, this.state, { kind: "running", context: this.context_from_props(this.props, initial_page), routes: routes }));
+        }).catch(() => setTimeout(() => this.load(), 250));
+    }
+    componentDidMount() {
+        this.load();
     }
     context_from_props(props, p) {
         let self = this;
         return {
             mode: props.mode,
             current_page: p,
-            set_mode: (new_mode, callback) => core_1.make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { mode: new_mode }) }), () => inner_callback(callback)(null)) || null),
+            set_mode: (new_mode, callback) => core_1.make_C(ctxt => inner_callback => {
+                if (this.state.kind == "loading routes")
+                    return null;
+                let old_context = this.state.context;
+                let new_state = Object.assign({}, this.state, { context: Object.assign({}, old_context, { mode: new_mode }) });
+                this.setState(new_state, () => inner_callback(callback)(null));
+                return null;
+            }),
             logic_frame: 0,
-            force_reload: (callback) => core_1.make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { logic_frame: this.state.context.logic_frame + 1 }) }), () => inner_callback(callback)(null)) || null),
+            force_reload: (callback) => core_1.make_C(ctxt => inner_callback => {
+                if (this.state.kind == "loading routes")
+                    return null;
+                let old_context = this.state.context;
+                let new_state = Object.assign({}, this.state, { context: Object.assign({}, old_context, { logic_frame: this.state.context.logic_frame + 1 }) });
+                this.setState(new_state, () => inner_callback(callback)(null));
+                return null;
+            }),
             set_page: function (x, new_page, callback) {
                 window.history.pushState("", "", `${self.props.base_url}${new_page.url.out(x)}`);
-                let new_context = Object.assign({}, self.state.context, { current_page: new_page.page(x) });
-                return core_1.make_C(ctxt => inner_callback => self.setState(Object.assign({}, self.state, { context: new_context }), () => inner_callback(callback)(null)) || null);
+                return core_1.make_C(ctxt => inner_callback => {
+                    if (self.state.kind == "loading routes")
+                        return undefined;
+                    let new_context = Object.assign({}, self.state.context, { current_page: new_page.page(x) });
+                    let new_state = Object.assign({}, this.state, { context: new_context });
+                    self.setState(new_state, () => inner_callback(callback)(null));
+                    return null;
+                });
             },
             set_url: function (x, new_url, callback) {
                 // console.log(self.props.base_url, new_url.out(x))
                 window.history.pushState("", "", `${self.props.base_url}${new_url.out(x)}`);
                 return core_1.unit(null);
-            }
+            },
+            push_route: (new_route, callback) => core_1.make_C(ctxt => inner_callback => {
+                if (this.state.kind == "loading routes")
+                    return null;
+                let old_context = this.state.context;
+                let new_state = Object.assign({}, this.state, { routes: this.state.routes.push(new_route) });
+                this.setState(new_state, () => inner_callback(callback)(null));
+                return null;
+            }),
+            set_routes: (routes, callback) => core_1.make_C(ctxt => inner_callback => {
+                if (this.state.kind == "loading routes")
+                    return null;
+                let old_context = this.state.context;
+                let new_state = Object.assign({}, this.state, { routes: Immutable.List(routes) });
+                this.setState(new_state, () => inner_callback(callback)(null));
+                return null;
+            }),
         };
     }
     render() {
-        return React.createElement("div", { className: "monadic-application", key: `application@${this.state.context.logic_frame}` }, this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback()));
+        if (this.state.kind == "loading routes")
+            return React.createElement("div", { className: "loading" }, "Loading...");
+        return React.createElement("div", { className: "monadic-application", key: `application@${this.state.context.logic_frame}` }, this.state.context.current_page.comp(() => this.state.kind != "loading routes" && this.state.context)(callback => _ => callback && callback()));
     }
 }
 exports.Application = Application;
 exports.application = (mode, base_url, slug, routes) => {
     console.log("Calling application with", window.location.href, slug, base_url);
-    return React.createElement(Application, { mode: mode, base_url: base_url, slug: slug, routes: Immutable.List(routes) });
+    return React.createElement(Application, { mode: mode, base_url: base_url, slug: slug, routes: routes });
 };
 exports.get_context = function (key, dbg) {
     return core_1.make_C(ctxt => cont => (core_1.unit(ctxt()).comp(ctxt)(cont)));

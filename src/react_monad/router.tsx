@@ -54,63 +54,113 @@ export let fallback_url = function() : Url<{}> {
 export type PartialRetraction<A,B> = { in:(_:A)=>Option.Option<B>, out:(_:B)=>A }
 export type Route<A> = { url:Url<A>, page:(_:A)=>C<void> }
 
-export type ApplicationProps = { mode:Mode, base_url:string, slug:string, routes:Immutable.List<Route<{}>> }
-export type ApplicationState = { context:Context }
+export type ApplicationProps = { mode:Mode, base_url:string, slug:string, routes:() => Promise<Array<Route<{}>>> }
+export type ApplicationState = { kind:"loading routes" } | { kind:"running", context:Context, routes:Immutable.List<Route<{}>> }
 export class Application extends React.Component<ApplicationProps, ApplicationState> {
   constructor(props:ApplicationProps, context:any) {
     super(props, context)
 
-    let initial_page:C<void> = undefined
-    props.routes.forEach(r => {
-        let p = r.url.in(props.slug).map(r.page)
-        if (p.kind == "some") {
-          initial_page = p.value
-          return false
-        }
-        return true
-    })
+    this.state = { kind:"loading routes" }
+  }
 
-    this.state = { context:this.context_from_props(this.props, initial_page) }
+  load() {
+    this.props.routes().then(raw_routes => {
+      let routes = Immutable.List<Route<{}>>(raw_routes)
+      let initial_page:C<void> = undefined
+      routes.forEach(r => {
+          let p = r.url.in(this.props.slug).map(r.page)
+          if (p.kind == "some") {
+            initial_page = p.value
+            return false
+          }
+          return true
+      })
+
+      this.setState({...this.state, kind:"running",
+        context:this.context_from_props(this.props, initial_page),
+        routes:routes })
+    }).catch(() => setTimeout(() => this.load(), 250))
+  }
+
+  componentDidMount() {
+    this.load()
   }
 
   context_from_props(props:ApplicationProps, p:C<void>) : Context {
-     let self = this
-     return {
-        mode:props.mode,
-        current_page:p,
-        set_mode:(new_mode, callback) =>
-          make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, mode:new_mode}},
-              () => inner_callback(callback)(null)) || null),
-        logic_frame:0,
-        force_reload:(callback) =>
-          make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, logic_frame:this.state.context.logic_frame+1}},
-              () => inner_callback(callback)(null)) || null),
-        set_page:function<T>(x:T, new_page:Route<T>, callback?:()=>void) {
-          window.history.pushState("", "", `${self.props.base_url}${new_page.url.out(x)}`)
+    let self = this
+    return {
+      mode:props.mode,
+      current_page:p,
+      set_mode:(new_mode, callback) =>
+        make_C<void>(ctxt => inner_callback => {
+            if (this.state.kind == "loading routes") return null
+            let old_context = this.state.context
+            let new_state:ApplicationState = {...this.state, context:{...old_context, mode:new_mode}}
+            this.setState(new_state, () =>
+            inner_callback(callback)(null))
+          return null
+        }),
+      logic_frame:0,
+      force_reload:(callback) =>
+        make_C<void>(ctxt => inner_callback => {
+            if (this.state.kind == "loading routes") return null
+            let old_context = this.state.context
+            let new_state:ApplicationState = {...this.state, context:{...old_context, logic_frame:this.state.context.logic_frame+1}}
+            this.setState(new_state, () =>
+            inner_callback(callback)(null))
+          return null
+        }),
+      set_page:function<T>(x:T, new_page:Route<T>, callback?:()=>void) {
+        window.history.pushState("", "", `${self.props.base_url}${new_page.url.out(x)}`)
+        return make_C<void>(ctxt => inner_callback => {
+          if (self.state.kind == "loading routes") return undefined
           let new_context:Context = {...self.state.context, current_page:new_page.page(x)}
-          return make_C<void>(ctxt => inner_callback => self.setState({...self.state, context:new_context},
-              () => inner_callback(callback)(null)) || null)
-        },
-        set_url:function<T>(x:T, new_url:Url<T>, callback?:()=>void) {
-          // console.log(self.props.base_url, new_url.out(x))
-          window.history.pushState("", "", `${self.props.base_url}${new_url.out(x)}`)
-          return unit<void>(null)
-        }
-      }
+          let new_state:ApplicationState = {...this.state, context:new_context}
+          self.setState(new_state, () =>
+          inner_callback(callback)(null))
+          return null
+        })
+      },
+      set_url:function<T>(x:T, new_url:Url<T>, callback?:()=>void) {
+        // console.log(self.props.base_url, new_url.out(x))
+        window.history.pushState("", "", `${self.props.base_url}${new_url.out(x)}`)
+        return unit<void>(null)
+      },
+      push_route:(new_route, callback) =>
+        make_C<void>(ctxt => inner_callback => {
+            if (this.state.kind == "loading routes") return null
+            let old_context = this.state.context
+            let new_state:ApplicationState = {...this.state, routes:this.state.routes.push(new_route)}
+            this.setState(new_state, () =>
+            inner_callback(callback)(null))
+          return null
+        }),
+      set_routes:(routes, callback) =>
+        make_C<void>(ctxt => inner_callback => {
+            if (this.state.kind == "loading routes") return null
+            let old_context = this.state.context
+            let new_state:ApplicationState = {...this.state, routes:Immutable.List<Route<{}>>(routes)}
+            this.setState(new_state, () =>
+            inner_callback(callback)(null))
+          return null
+        }),
+    }
   }
 
   render() {
+    if (this.state.kind == "loading routes")
+      return <div className="loading">Loading...</div>
     return <div className="monadic-application" key={`application@${this.state.context.logic_frame}`}>
       {
-        this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback())
+          this.state.context.current_page.comp(() => this.state.kind != "loading routes" && this.state.context)(callback => _ => callback && callback())
       }
     </div>
   }
 }
 
-export let application = (mode:Mode, base_url:string, slug:string, routes:Array<Route<{}>>) : JSX.Element => {
+export let application = (mode:Mode, base_url:string, slug:string, routes:() => Promise<Array<Route<{}>>>) : JSX.Element => {
   console.log("Calling application with", window.location.href, slug, base_url)
-  return React.createElement<ApplicationProps>(Application, { mode:mode, base_url:base_url, slug:slug, routes:Immutable.List<Route<{}>>(routes) })
+  return React.createElement<ApplicationProps>(Application, { mode:mode, base_url:base_url, slug:slug, routes:routes })
 }
 
 export let get_context = function(key?:string, dbg?:() => string) : C<Context> { return make_C<Context>(ctxt => cont =>

@@ -1,6 +1,5 @@
 ## doing
-- documentation
-- cleanup dependencies in imports (samples and monad definition)
+- dynamic routes
 
 ## GO (7 days)
 - [ ] deploy on acceptance
@@ -18,13 +17,14 @@
 
 
 ## various improvements
-- [ x deploy on https://monadic_react.productie.hoppinger.com/
+- [x] dynamic routes
+- [x] rich-text : string -> C<string>
+- [x] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] only hide tab arrows if less than maximum
-- [ ] use never instead of filter(_ => false)
+- [ ] use never instead of filter(_ => false) in samples
 - [ ] pagination should be refactored with the regular combinators
 - [x] submenu routes
 - [x] routerless application
-- [x] bind ~> then
 - [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 
@@ -54,9 +54,9 @@
   - [x] explanation
   - [ ] verify all snippets
 - [x] publish online for designers
-- [ ] linkedin post
+- [x] linkedin post
 - [ ] reddit post
-  - [ ] functional programming
+  - [x] functional programming
   - [ ] webdev
   - [ ] programming
 - [ ] hacker news
@@ -82,7 +82,8 @@
 ##  scaffolder (4 days)
 - [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
 - [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
-- [ ] default scaffolder views should use the monadic library
+- [ ] login forms should already be scaffolded
+- [ ] entity forms should already be scaffolded
 
 ## fridge
 - [ ] fold

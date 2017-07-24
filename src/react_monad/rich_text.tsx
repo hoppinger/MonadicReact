@@ -121,7 +121,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
           <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
                                  insert_media={(url:string, url_type:MediaType) => this.insert_media(url, url_type)}
-                          
+
                                   />
            :
           null}
@@ -293,8 +293,8 @@ class RichText extends React.Component<RichTextProps,RichTextState> {
   }
 }
 
-export function rich_text(json_state:string, mode:Mode, key?:string, dbg?:() => string) : C<string> {
-  return make_C<string>(ctxt => cont =>
+export function rich_text(mode:Mode, key?:string, dbg?:() => string) : (_:string) => C<string> {
+  return json_state => make_C<string>(ctxt => cont =>
     (React.createElement<RichTextProps>(RichText,
     { kind:"rich text", debug_info:dbg, json_state:json_state, mode:mode, context:ctxt, cont:cont, key:key })))
 }

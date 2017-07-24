@@ -21,6 +21,8 @@ export type Context = {
   // pages:Immutable.Stack<C<void>>
   set_page:<T>(x:T, new_page:Route<T>, callback?:()=>void) => C<void>
   set_url:<T>(x:T, new_url:Url<T>, callback?:()=>void) => C<void>
+  push_route:(new_route:Route<{}>, callback?:()=>void) => C<void>
+  set_routes:(routes:Array<Route<{}>>, callback?:()=>void) => C<void>
   // push_page:(new_page:ApplicationPage, callback?:()=>void) => C<void>
   // pop_page:(callback?:()=>void) => C<void>
 }
@@ -224,6 +226,12 @@ export class SimpleApplication extends React.Component<SimpleApplicationProps, S
           return unit<void>(null)
         },
         set_url:function<T>(x:T, new_url:Url<T>, callback?:()=>void) {
+          return unit<void>(null)
+        },
+        push_route:function(route, callback?:()=>void) {
+          return unit<void>(null)
+        },
+        set_routes:function(routes, callback?:()=>void) {
           return unit<void>(null)
         }
       }
