@@ -18,7 +18,6 @@ export let parse_url = function<T,K extends keyof(T)>(template:UrlTemplate<K>) :
     for (var i = 0; i < url_items.length; i++) {
       let x = Slugify(url_items[i])
       let y = Slugify(template[i])
-      console.log(x, y)
       if (typeof y === "string") {
         if (x != y) return Option.none<T>()
       } else {
@@ -35,7 +34,7 @@ export let instantiate_url = function<T,K extends keyof(T)>(template:UrlTemplate
   return t => {
     let url = ""
     for (var i = 0; i < template.length; i++) {
-      let el = template[i]
+      let el = Slugify(template[i])
       if (typeof el === "string") {
         url = i == 0 ? el : `${url}/${el}`
       } else {
