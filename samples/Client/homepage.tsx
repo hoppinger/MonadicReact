@@ -117,7 +117,7 @@ export function HomePage(slug:string) : JSX.Element {
     })
 
   let xxx = () : Route<{}> => ({
-    url: make_url<{}, never>(["xxx"]),
+    url: make_url<{}, never>(["x x x"]),
     page:_ =>
       any<void, void>(`xxx`)([
         _ => string("view")("xxx").never<void>(),

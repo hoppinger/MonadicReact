@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "typings": "dist/monadic_react.d.ts",
@@ -27,6 +27,7 @@
     "moment": "^2.18.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "slugify": "^1.1.0",
     "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {

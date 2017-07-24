@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
 import * as i18next from 'i18next'
 import * as Option from "./option"
+import * as Slugify from "slugify"
 
 import {C, Mode, Cont, CmdCommon, Context, make_C, unit, bind} from './core'
 import {button} from './html'
@@ -15,8 +16,9 @@ export let parse_url = function<T,K extends keyof(T)>(template:UrlTemplate<K>) :
     let url_items = url.split("/")
     if (url_items.length != template.length) return Option.none<T>()
     for (var i = 0; i < url_items.length; i++) {
-      let x = url_items[i]
-      let y = template[i]
+      let x = Slugify(url_items[i])
+      let y = Slugify(template[i])
+      console.log(x, y)
       if (typeof y === "string") {
         if (x != y) return Option.none<T>()
       } else {

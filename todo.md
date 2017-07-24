@@ -1,5 +1,5 @@
 ## doing
-- dynamic routes
+- slugify all routes (https://www.npmjs.com/package/slugify)
 
 ## GO (7 days)
 - [ ] deploy on acceptance
@@ -17,6 +17,7 @@
 
 
 ## various improvements
+- [ ] slugify all routes (https://www.npmjs.com/package/slugify)
 - [x] dynamic routes
 - [x] rich-text : string -> C<string>
 - [x] deploy on https://monadic_react.productie.hoppinger.com/
