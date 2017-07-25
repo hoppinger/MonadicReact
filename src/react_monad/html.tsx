@@ -15,7 +15,7 @@ export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<str
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type ButtonProps<A> = { kind:"button", type:"a"|"button", label:string, x:A, disabled:boolean, className:string } & CmdCommon<A>
-export type LinkProps = { kind:"link", label:string, url:string, disabled:boolean } & CmdCommon<void>
+export type LinkProps = { kind:"link", label:string, url:string, disabled:boolean, className:string } & CmdCommon<void>
 export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
 type LabelState<A,B> = { p:"creating"|JSX.Element }
@@ -406,14 +406,14 @@ class Link extends React.Component<LinkProps, LinkState> {
     this.state = {}
   }
   render() {
-    return <a href={this.props.url} className={`button ${this.props.disabled ? "disabled" : ""}`}>{this.props.label}</a>
+    return <a href={this.props.url} className={`${this.props.className || ""} ${this.props.disabled ? "disabled" : ""}`}>{this.props.label}</a>
   }
 }
 
-export let link = function<A>(label:string, url:string, disabled?:boolean, key?:string, dbg?:() => string) : C<void> {
+export let link = function<A>(label:string, url:string, disabled?:boolean, key?:string, className?:string, dbg?:() => string) : C<void> {
   return make_C<void>(ctxt => cont =>
     React.createElement<LinkProps>(Link,
-      { kind:"link", debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key }))
+      { kind:"link", debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key, className:className }))
 }
 
 type FileState = {}

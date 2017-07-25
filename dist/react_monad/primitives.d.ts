@@ -5,7 +5,7 @@ export declare type NumberProps = {
     value: number;
     mode: Mode;
 } & CmdCommon<number>;
-export declare type StringType = "email" | "tel" | "text" | "url";
+export declare type StringType = "email" | "tel" | "text" | "url" | "password";
 export declare type StringProps = {
     kind: "string";
     value: string;

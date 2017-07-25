@@ -68,6 +68,7 @@ export declare type LinkProps = {
     label: string;
     url: string;
     disabled: boolean;
+    className: string;
 } & CmdCommon<void>;
 export declare type FileProps = {
     kind: "file";
@@ -87,5 +88,5 @@ export declare let multi_selector: <A>(type: MultiSelectorType, to_string: (_: A
 export declare let image: (mode: Mode, key?: string, dbg?: () => string) => (src: string) => C<string>;
 export declare let a: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
 export declare let button: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
-export declare let link: <A>(label: string, url: string, disabled?: boolean, key?: string, dbg?: () => string) => C<void>;
+export declare let link: <A>(label: string, url: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => C<void>;
 export declare let file: <A>(mode: Mode, label: string, url: string, disabled?: boolean, key?: string, dbg?: () => string) => C<File>;

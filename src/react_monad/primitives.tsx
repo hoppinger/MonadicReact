@@ -9,7 +9,7 @@ function format_int(num:number, length:number) : string {
 }
 
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
-export type StringType = "email"|"tel"|"text"|"url"
+export type StringType = "email"|"tel"|"text"|"url"|"password"
 export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
 export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"|"radio"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
@@ -88,7 +88,10 @@ class String extends React.Component<StringProps,StringState> {
                 <a href={`mailto:${this.state.value}`}>{this.state.value}</a>
               : this.props.type == "url" ?
                 <a href={this.state.value}>{this.state.value}</a>
+              : this.props.type == "password" ?
+                 <span>{Immutable.Repeat("*", this.state.value.length).join("")}</span>
               :
+
                 <span>{this.state.value}</span>
   }
 }
