@@ -1,25 +1,16 @@
 ## doing
-- slugify all routes (https://www.npmjs.com/package/slugify)
 
 ## GO (7 days)
 - [ ] deploy on acceptance
+- [ ] deploy on production
+- [ ] test SEO
 
 
 ## various improvements
-- [ ] routes and mode have changed
-  - [ ] adjust documentation
-  - [ ] adjust samples repository
-- [x] slugify all routes (https://www.npmjs.com/package/slugify)
-- [ ] do not use "view"/"edit" to disable boolean and other elements
-- [ ] remove mode from context
-- [x] dynamic routes
-- [x] rich-text : string -> C<string>
-- [x] deploy on https://monadic_react.productie.hoppinger.com/
+- [ ] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] only hide tab arrows if less than maximum
 - [ ] use never instead of filter(_ => false) in samples
 - [ ] pagination should be refactored with the regular combinators
-- [x] submenu routes
-- [x] routerless application
 - [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 
@@ -83,8 +74,6 @@
 
 ## fridge
 - [ ] fold
-- [ ] mapM
-- [ ] mapL
 - [ ] className by default in all CmdCommon
 - [ ] add math plugin https://github.com/efloti/draft-js-mathjax-plugin
 - [ ] also parse url query
