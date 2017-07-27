@@ -35,7 +35,7 @@ The component can then be instantiated by invoking the application constructor a
 ```
 <div className="component">
 {
-application("edit", window.location.href, "", Immutable.List<Route<{}>>([main_page()])))
+application("edit", window.location.href, "", Promise.resolve([main_page()]))
 }
 </div>
 ```

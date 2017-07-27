@@ -75,6 +75,7 @@
 - [ ] hierarchical menu
 
 ##  scaffolder (4 days)
+- [ ] various scaffolded files are broken (rich text especially)
 - [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
 - [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
 - [ ] login forms should already be scaffolded
