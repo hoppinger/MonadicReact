@@ -13,8 +13,6 @@ export type FilterProps<A> = { kind:"filter", p:C<A>, f:(_:A)=>boolean } & CmdCo
 export type Mode = "edit"|"view"
 
 export type Context = {
-  mode:Mode
-  set_mode:(new_mode:Mode, callback?:()=>void) => C<void>
   logic_frame:number,
   force_reload:(callback?:()=>void) => C<void>
   current_page:C<void>
@@ -201,23 +199,19 @@ export let filter = function<A>(key?:string, dbg?:() => string) : ((_:(_:A) => b
 
 
 
-export type SimpleApplicationProps = { mode:Mode, p:C<void> }
-export type SimpleApplicationState = { context:Context }
-export class SimpleApplication extends React.Component<SimpleApplicationProps, SimpleApplicationState> {
-  constructor(props:SimpleApplicationProps, context:any) {
+export type SimpleApplicationProps<A> = { p:C<A>, cont:(_:A)=>void }
+export type SimpleApplicationState<A> = { context:Context }
+export class SimpleApplication<A> extends React.Component<SimpleApplicationProps<A>, SimpleApplicationState<A>> {
+  constructor(props:SimpleApplicationProps<A>, context:any) {
     super(props, context)
 
-    this.state = { context:this.context_from_props(this.props, props.p) }
+    this.state = { context:this.context_from_props(this.props, unit<void>(null)) }
   }
 
-  context_from_props(props:SimpleApplicationProps, p:C<void>) : Context {
+  context_from_props(props:SimpleApplicationProps<A>, p:C<void>) : Context {
      let self = this
      return {
-        mode:props.mode,
         current_page:p,
-        set_mode:(new_mode, callback) =>
-          make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, mode:new_mode}},
-              () => inner_callback(callback)(null)) || null),
         logic_frame:0,
         force_reload:(callback) =>
           make_C<void>(ctxt => inner_callback => this.setState({...this.state, context:{...this.state.context, logic_frame:this.state.context.logic_frame+1}},
@@ -240,12 +234,12 @@ export class SimpleApplication extends React.Component<SimpleApplicationProps, S
   render() {
     return <div className="monadic-application" key={`application@${this.state.context.logic_frame}`}>
       {
-        this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback())
+        this.props.p.comp(() => this.state.context)(callback => x => this.props.cont(x))
       }
     </div>
   }
 }
 
-export let simple_application = (mode:Mode, p:C<void>) : JSX.Element => {
-  return React.createElement<SimpleApplicationProps>(SimpleApplication, { mode:mode, p:p })
+export let simple_application = function<A>(p:C<A>, cont:(_:A)=>void) : JSX.Element {
+  return React.createElement<SimpleApplicationProps<A>>(SimpleApplication, { p:p, cont:cont })
 }

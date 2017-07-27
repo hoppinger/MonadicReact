@@ -30,8 +30,6 @@ export declare type FilterProps<A> = {
 } & CmdCommon<A>;
 export declare type Mode = "edit" | "view";
 export declare type Context = {
-    mode: Mode;
-    set_mode: (new_mode: Mode, callback?: () => void) => C<void>;
     logic_frame: number;
     force_reload: (callback?: () => void) => C<void>;
     current_page: C<void>;
@@ -55,16 +53,16 @@ export declare let unit: <A>(x: A, key?: string, dbg?: () => string) => C<A>;
 export declare let bind: <A, B>(key: string, p: C<A>, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
 export declare let map: <A, B>(key?: string, dbg?: () => string) => (_: (_: A) => B) => (_: C<A>) => C<B>;
 export declare let filter: <A>(key?: string, dbg?: () => string) => (_: (_: A) => boolean) => (_: C<A>) => C<A>;
-export declare type SimpleApplicationProps = {
-    mode: Mode;
-    p: C<void>;
+export declare type SimpleApplicationProps<A> = {
+    p: C<A>;
+    cont: (_: A) => void;
 };
-export declare type SimpleApplicationState = {
+export declare type SimpleApplicationState<A> = {
     context: Context;
 };
-export declare class SimpleApplication extends React.Component<SimpleApplicationProps, SimpleApplicationState> {
-    constructor(props: SimpleApplicationProps, context: any);
-    context_from_props(props: SimpleApplicationProps, p: C<void>): Context;
+export declare class SimpleApplication<A> extends React.Component<SimpleApplicationProps<A>, SimpleApplicationState<A>> {
+    constructor(props: SimpleApplicationProps<A>, context: any);
+    context_from_props(props: SimpleApplicationProps<A>, p: C<void>): Context;
     render(): JSX.Element;
 }
-export declare let simple_application: (mode: Mode, p: C<void>) => JSX.Element;
+export declare let simple_application: <A>(p: C<A>, cont: (_: A) => void) => JSX.Element;

@@ -90,17 +90,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
   context_from_props(props:ApplicationProps, p:C<void>) : Context {
     let self = this
     return {
-      mode:props.mode,
       current_page:p,
-      set_mode:(new_mode, callback) =>
-        make_C<void>(ctxt => inner_callback => {
-            if (this.state.kind == "loading routes") return null
-            let old_context = this.state.context
-            let new_state:ApplicationState = {...this.state, context:{...old_context, mode:new_mode}}
-            this.setState(new_state, () =>
-            inner_callback(callback)(null))
-          return null
-        }),
       logic_frame:0,
       force_reload:(callback) =>
         make_C<void>(ctxt => inner_callback => {

@@ -3,21 +3,15 @@
 
 ## GO (7 days)
 - [ ] deploy on acceptance
-- [x] headless renderer setup in scaffolder
-- [ ] info pages
-  - [ ] welcome
-  - [ ] manifesto
-  - [ ] contact
-- [ ] login/logout
-- [ ] access to admin pages
-- [ ] course selection
-- [ ] lecture selection
-- [ ] exam selection
-- [ ] dashboard
 
 
 ## various improvements
-- [ ] slugify all routes (https://www.npmjs.com/package/slugify)
+- [ ] routes and mode have changed
+  - [ ] adjust documentation
+  - [ ] adjust samples repository
+- [x] slugify all routes (https://www.npmjs.com/package/slugify)
+- [ ] do not use "view"/"edit" to disable boolean and other elements
+- [ ] remove mode from context
 - [x] dynamic routes
 - [x] rich-text : string -> C<string>
 - [x] deploy on https://monadic_react.productie.hoppinger.com/

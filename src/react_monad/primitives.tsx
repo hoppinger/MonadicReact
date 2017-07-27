@@ -34,7 +34,7 @@ class Number extends React.Component<NumberProps,IntState> {
     this.props.cont(()=>null)(value)
   }
   render() {
-    return this.props.mode == "edit" && this.props.context().mode == "edit" ?
+    return this.props.mode == "edit" ?
         <input type="number"
           value={this.state.value}
           onChange={e => {
@@ -71,7 +71,7 @@ class String extends React.Component<StringProps,StringState> {
     this.props.cont(()=>null)(value)
   }
   render() {
-    return this.props.mode == "edit" && this.props.context().mode == "edit" ? <input type={this.props.type}
+    return this.props.mode == "edit" ? <input type={this.props.type}
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
@@ -122,7 +122,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
     return this.props.style == "fancy toggle" ?
             <input type="checkbox"
               className="monadic-input-choices monadic-input-choices--switch"
-              disabled={this.props.mode == "view" || this.props.context().mode == "view"}
+              disabled={this.props.mode == "view"}
               checked={this.state.value}
               onChange={e =>
                 this.setState({...this.state,
@@ -131,7 +131,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
             : this.props.style == "plus/minus" ?
               <input type="checkbox"
                 className="monadic-input-choices monadic-input-choices--toggle"
-                disabled={this.props.mode == "view" || this.props.context().mode == "view"}
+                disabled={this.props.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
                   this.setState({...this.state,
@@ -140,7 +140,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
             :
               <input type={this.props.style}
                 className="monadic-input-choices monadic-input-choices--checkbox"
-                disabled={this.props.mode == "view" || this.props.context().mode == "view"}
+                disabled={this.props.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
                   this.setState({...this.state,

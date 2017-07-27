@@ -4535,7 +4535,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(777)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(778)(module)))
 
 /***/ }),
 /* 1 */
@@ -10652,7 +10652,7 @@ module.exports = function(it){
 /***/ (function(module, exports, __webpack_require__) {
 
 var store      = __webpack_require__(107)('wks')
-  , uid        = __webpack_require__(66)
+  , uid        = __webpack_require__(67)
   , Symbol     = __webpack_require__(6).Symbol
   , USE_SYMBOL = typeof Symbol == 'function';
 
@@ -10712,7 +10712,7 @@ exports.f = __webpack_require__(14) ? Object.defineProperty : function definePro
 
 var _prodInvariant = __webpack_require__(8);
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var ReactDOMComponentFlags = __webpack_require__(362);
 
 var invariant = __webpack_require__(3);
@@ -11239,7 +11239,7 @@ module.exports = __webpack_require__(14) ? function(object, key, value){
 var global    = __webpack_require__(6)
   , hide      = __webpack_require__(26)
   , has       = __webpack_require__(22)
-  , SRC       = __webpack_require__(66)('src')
+  , SRC       = __webpack_require__(67)('src')
   , TO_STRING = 'toString'
   , $toString = Function[TO_STRING]
   , TPL       = ('' + $toString).split(TO_STRING);
@@ -11920,14 +11920,12 @@ exports.filter = function (key, dbg) {
 class SimpleApplication extends React.Component {
     constructor(props, context) {
         super(props, context);
-        this.state = { context: this.context_from_props(this.props, props.p) };
+        this.state = { context: this.context_from_props(this.props, exports.unit(null)) };
     }
     context_from_props(props, p) {
         let self = this;
         return {
-            mode: props.mode,
             current_page: p,
-            set_mode: (new_mode, callback) => make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { mode: new_mode }) }), () => inner_callback(callback)(null)) || null),
             logic_frame: 0,
             force_reload: (callback) => make_C(ctxt => inner_callback => this.setState(Object.assign({}, this.state, { context: Object.assign({}, this.state.context, { logic_frame: this.state.context.logic_frame + 1 }) }), () => inner_callback(callback)(null)) || null),
             set_page: function (x, new_page, callback) {
@@ -11945,12 +11943,12 @@ class SimpleApplication extends React.Component {
         };
     }
     render() {
-        return React.createElement("div", { className: "monadic-application", key: `application@${this.state.context.logic_frame}` }, this.state.context.current_page.comp(() => this.state.context)(callback => _ => callback && callback()));
+        return React.createElement("div", { className: "monadic-application", key: `application@${this.state.context.logic_frame}` }, this.props.p.comp(() => this.state.context)(callback => x => this.props.cont(x)));
     }
 }
 exports.SimpleApplication = SimpleApplication;
-exports.simple_application = (mode, p) => {
-    return React.createElement(SimpleApplication, { mode: mode, p: p });
+exports.simple_application = function (p, cont) {
+    return React.createElement(SimpleApplication, { p: p, cont: cont });
 };
 
 
@@ -12879,20 +12877,20 @@ module.exports = {
 "use strict";
 
 if(__webpack_require__(14)){
-  var LIBRARY             = __webpack_require__(59)
+  var LIBRARY             = __webpack_require__(60)
     , global              = __webpack_require__(6)
     , fails               = __webpack_require__(7)
     , $export             = __webpack_require__(1)
     , $typed              = __webpack_require__(108)
     , $buffer             = __webpack_require__(145)
     , ctx                 = __webpack_require__(49)
-    , anInstance          = __webpack_require__(58)
+    , anInstance          = __webpack_require__(59)
     , propertyDesc        = __webpack_require__(54)
     , hide                = __webpack_require__(26)
-    , redefineAll         = __webpack_require__(63)
+    , redefineAll         = __webpack_require__(64)
     , toInteger           = __webpack_require__(55)
     , toLength            = __webpack_require__(18)
-    , toIndex             = __webpack_require__(65)
+    , toIndex             = __webpack_require__(66)
     , toPrimitive         = __webpack_require__(42)
     , has                 = __webpack_require__(22)
     , same                = __webpack_require__(201)
@@ -12900,11 +12898,11 @@ if(__webpack_require__(14)){
     , isObject            = __webpack_require__(11)
     , toObject            = __webpack_require__(21)
     , isArrayIter         = __webpack_require__(130)
-    , create              = __webpack_require__(60)
+    , create              = __webpack_require__(61)
     , getPrototypeOf      = __webpack_require__(32)
-    , gOPN                = __webpack_require__(61).f
+    , gOPN                = __webpack_require__(62).f
     , getIterFn           = __webpack_require__(147)
-    , uid                 = __webpack_require__(66)
+    , uid                 = __webpack_require__(67)
     , wks                 = __webpack_require__(13)
     , createArrayMethod   = __webpack_require__(40)
     , createArrayIncludes = __webpack_require__(98)
@@ -12912,7 +12910,7 @@ if(__webpack_require__(14)){
     , ArrayIterators      = __webpack_require__(148)
     , Iterators           = __webpack_require__(74)
     , $iterDetect         = __webpack_require__(104)
-    , setSpecies          = __webpack_require__(64)
+    , setSpecies          = __webpack_require__(65)
     , arrayFill           = __webpack_require__(123)
     , arrayCopyWithin     = __webpack_require__(181)
     , $DP                 = __webpack_require__(15)
@@ -13633,7 +13631,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var META     = __webpack_require__(66)('meta')
+var META     = __webpack_require__(67)('meta')
   , isObject = __webpack_require__(11)
   , has      = __webpack_require__(22)
   , setDesc  = __webpack_require__(15).f
@@ -13800,706 +13798,6 @@ var Logger = function () {
 
 /***/ }),
 /* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-
-
-var _prodInvariant = __webpack_require__(8);
-
-var invariant = __webpack_require__(3);
-
-function checkMask(value, bitmask) {
-  return (value & bitmask) === bitmask;
-}
-
-var DOMPropertyInjection = {
-  /**
-   * Mapping from normalized, camelcased property names to a configuration that
-   * specifies how the associated DOM property should be accessed or rendered.
-   */
-  MUST_USE_PROPERTY: 0x1,
-  HAS_BOOLEAN_VALUE: 0x4,
-  HAS_NUMERIC_VALUE: 0x8,
-  HAS_POSITIVE_NUMERIC_VALUE: 0x10 | 0x8,
-  HAS_OVERLOADED_BOOLEAN_VALUE: 0x20,
-
-  /**
-   * Inject some specialized knowledge about the DOM. This takes a config object
-   * with the following properties:
-   *
-   * isCustomAttribute: function that given an attribute name will return true
-   * if it can be inserted into the DOM verbatim. Useful for data-* or aria-*
-   * attributes where it's impossible to enumerate all of the possible
-   * attribute names,
-   *
-   * Properties: object mapping DOM property name to one of the
-   * DOMPropertyInjection constants or null. If your attribute isn't in here,
-   * it won't get written to the DOM.
-   *
-   * DOMAttributeNames: object mapping React attribute name to the DOM
-   * attribute name. Attribute names not specified use the **lowercase**
-   * normalized name.
-   *
-   * DOMAttributeNamespaces: object mapping React attribute name to the DOM
-   * attribute namespace URL. (Attribute names not specified use no namespace.)
-   *
-   * DOMPropertyNames: similar to DOMAttributeNames but for DOM properties.
-   * Property names not specified use the normalized name.
-   *
-   * DOMMutationMethods: Properties that require special mutation methods. If
-   * `value` is undefined, the mutation method should unset the property.
-   *
-   * @param {object} domPropertyConfig the config as described above.
-   */
-  injectDOMPropertyConfig: function (domPropertyConfig) {
-    var Injection = DOMPropertyInjection;
-    var Properties = domPropertyConfig.Properties || {};
-    var DOMAttributeNamespaces = domPropertyConfig.DOMAttributeNamespaces || {};
-    var DOMAttributeNames = domPropertyConfig.DOMAttributeNames || {};
-    var DOMPropertyNames = domPropertyConfig.DOMPropertyNames || {};
-    var DOMMutationMethods = domPropertyConfig.DOMMutationMethods || {};
-
-    if (domPropertyConfig.isCustomAttribute) {
-      DOMProperty._isCustomAttributeFunctions.push(domPropertyConfig.isCustomAttribute);
-    }
-
-    for (var propName in Properties) {
-      !!DOMProperty.properties.hasOwnProperty(propName) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'injectDOMPropertyConfig(...): You\'re trying to inject DOM property \'%s\' which has already been injected. You may be accidentally injecting the same DOM property config twice, or you may be injecting two configs that have conflicting property names.', propName) : _prodInvariant('48', propName) : void 0;
-
-      var lowerCased = propName.toLowerCase();
-      var propConfig = Properties[propName];
-
-      var propertyInfo = {
-        attributeName: lowerCased,
-        attributeNamespace: null,
-        propertyName: propName,
-        mutationMethod: null,
-
-        mustUseProperty: checkMask(propConfig, Injection.MUST_USE_PROPERTY),
-        hasBooleanValue: checkMask(propConfig, Injection.HAS_BOOLEAN_VALUE),
-        hasNumericValue: checkMask(propConfig, Injection.HAS_NUMERIC_VALUE),
-        hasPositiveNumericValue: checkMask(propConfig, Injection.HAS_POSITIVE_NUMERIC_VALUE),
-        hasOverloadedBooleanValue: checkMask(propConfig, Injection.HAS_OVERLOADED_BOOLEAN_VALUE)
-      };
-      !(propertyInfo.hasBooleanValue + propertyInfo.hasNumericValue + propertyInfo.hasOverloadedBooleanValue <= 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'DOMProperty: Value can be one of boolean, overloaded boolean, or numeric value, but not a combination: %s', propName) : _prodInvariant('50', propName) : void 0;
-
-      if (process.env.NODE_ENV !== 'production') {
-        DOMProperty.getPossibleStandardName[lowerCased] = propName;
-      }
-
-      if (DOMAttributeNames.hasOwnProperty(propName)) {
-        var attributeName = DOMAttributeNames[propName];
-        propertyInfo.attributeName = attributeName;
-        if (process.env.NODE_ENV !== 'production') {
-          DOMProperty.getPossibleStandardName[attributeName] = propName;
-        }
-      }
-
-      if (DOMAttributeNamespaces.hasOwnProperty(propName)) {
-        propertyInfo.attributeNamespace = DOMAttributeNamespaces[propName];
-      }
-
-      if (DOMPropertyNames.hasOwnProperty(propName)) {
-        propertyInfo.propertyName = DOMPropertyNames[propName];
-      }
-
-      if (DOMMutationMethods.hasOwnProperty(propName)) {
-        propertyInfo.mutationMethod = DOMMutationMethods[propName];
-      }
-
-      DOMProperty.properties[propName] = propertyInfo;
-    }
-  }
-};
-
-/* eslint-disable max-len */
-var ATTRIBUTE_NAME_START_CHAR = ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
-/* eslint-enable max-len */
-
-/**
- * DOMProperty exports lookup objects that can be used like functions:
- *
- *   > DOMProperty.isValid['id']
- *   true
- *   > DOMProperty.isValid['foobar']
- *   undefined
- *
- * Although this may be confusing, it performs better in general.
- *
- * @see http://jsperf.com/key-exists
- * @see http://jsperf.com/key-missing
- */
-var DOMProperty = {
-  ID_ATTRIBUTE_NAME: 'data-reactid',
-  ROOT_ATTRIBUTE_NAME: 'data-reactroot',
-
-  ATTRIBUTE_NAME_START_CHAR: ATTRIBUTE_NAME_START_CHAR,
-  ATTRIBUTE_NAME_CHAR: ATTRIBUTE_NAME_START_CHAR + '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
-
-  /**
-   * Map from property "standard name" to an object with info about how to set
-   * the property in the DOM. Each object contains:
-   *
-   * attributeName:
-   *   Used when rendering markup or with `*Attribute()`.
-   * attributeNamespace
-   * propertyName:
-   *   Used on DOM node instances. (This includes properties that mutate due to
-   *   external factors.)
-   * mutationMethod:
-   *   If non-null, used instead of the property or `setAttribute()` after
-   *   initial render.
-   * mustUseProperty:
-   *   Whether the property must be accessed and mutated as an object property.
-   * hasBooleanValue:
-   *   Whether the property should be removed when set to a falsey value.
-   * hasNumericValue:
-   *   Whether the property must be numeric or parse as a numeric and should be
-   *   removed when set to a falsey value.
-   * hasPositiveNumericValue:
-   *   Whether the property must be positive numeric or parse as a positive
-   *   numeric and should be removed when set to a falsey value.
-   * hasOverloadedBooleanValue:
-   *   Whether the property can be used as a flag as well as with a value.
-   *   Removed when strictly equal to false; present without a value when
-   *   strictly equal to true; present with a value otherwise.
-   */
-  properties: {},
-
-  /**
-   * Mapping from lowercase property names to the properly cased version, used
-   * to warn in the case of missing properties. Available only in __DEV__.
-   *
-   * autofocus is predefined, because adding it to the property whitelist
-   * causes unintended side effects.
-   *
-   * @type {Object}
-   */
-  getPossibleStandardName: process.env.NODE_ENV !== 'production' ? { autofocus: 'autoFocus' } : null,
-
-  /**
-   * All of the isCustomAttribute() functions that have been injected.
-   */
-  _isCustomAttributeFunctions: [],
-
-  /**
-   * Checks whether a property name is a custom attribute.
-   * @method
-   */
-  isCustomAttribute: function (attributeName) {
-    for (var i = 0; i < DOMProperty._isCustomAttributeFunctions.length; i++) {
-      var isCustomAttributeFn = DOMProperty._isCustomAttributeFunctions[i];
-      if (isCustomAttributeFn(attributeName)) {
-        return true;
-      }
-    }
-    return false;
-  },
-
-  injection: DOMPropertyInjection
-};
-
-module.exports = DOMProperty;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports) {
-
-module.exports = function(it, Constructor, name, forbiddenField){
-  if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
-    throw TypeError(name + ': incorrect invocation!');
-  } return it;
-};
-
-/***/ }),
-/* 59 */
-/***/ (function(module, exports) {
-
-module.exports = false;
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject    = __webpack_require__(5)
-  , dPs         = __webpack_require__(194)
-  , enumBugKeys = __webpack_require__(126)
-  , IE_PROTO    = __webpack_require__(138)('IE_PROTO')
-  , Empty       = function(){ /* empty */ }
-  , PROTOTYPE   = 'prototype';
-
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
-var createDict = function(){
-  // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(125)('iframe')
-    , i      = enumBugKeys.length
-    , lt     = '<'
-    , gt     = '>'
-    , iframeDocument;
-  iframe.style.display = 'none';
-  __webpack_require__(128).appendChild(iframe);
-  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
-  // createDict = iframe.contentWindow.Object;
-  // html.removeChild(iframe);
-  iframeDocument = iframe.contentWindow.document;
-  iframeDocument.open();
-  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
-  iframeDocument.close();
-  createDict = iframeDocument.F;
-  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
-  return createDict();
-};
-
-module.exports = Object.create || function create(O, Properties){
-  var result;
-  if(O !== null){
-    Empty[PROTOTYPE] = anObject(O);
-    result = new Empty;
-    Empty[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
-    result[IE_PROTO] = O;
-  } else result = createDict();
-  return Properties === undefined ? result : dPs(result, Properties);
-};
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys      = __webpack_require__(196)
-  , hiddenKeys = __webpack_require__(126).concat('length', 'prototype');
-
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
-  return $keys(O, hiddenKeys);
-};
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys       = __webpack_require__(196)
-  , enumBugKeys = __webpack_require__(126);
-
-module.exports = Object.keys || function keys(O){
-  return $keys(O, enumBugKeys);
-};
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var redefine = __webpack_require__(27);
-module.exports = function(target, src, safe){
-  for(var key in src)redefine(target, key, src[key], safe);
-  return target;
-};
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global      = __webpack_require__(6)
-  , dP          = __webpack_require__(15)
-  , DESCRIPTORS = __webpack_require__(14)
-  , SPECIES     = __webpack_require__(13)('species');
-
-module.exports = function(KEY){
-  var C = global[KEY];
-  if(DESCRIPTORS && C && !C[SPECIES])dP.f(C, SPECIES, {
-    configurable: true,
-    get: function(){ return this; }
-  });
-};
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(55)
-  , max       = Math.max
-  , min       = Math.min;
-module.exports = function(index, length){
-  index = toInteger(index);
-  return index < 0 ? max(index + length, 0) : min(index, length);
-};
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports) {
-
-var id = 0
-  , px = Math.random();
-module.exports = function(key){
-  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
-};
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule ContentBlock
- * 
- */
-
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Immutable = __webpack_require__(12);
-
-var findRangesImmutable = __webpack_require__(111);
-
-var List = Immutable.List;
-var Map = Immutable.Map;
-var OrderedSet = Immutable.OrderedSet;
-var Record = Immutable.Record;
-
-
-var EMPTY_SET = OrderedSet();
-
-var defaultRecord = {
-  key: '',
-  type: 'unstyled',
-  text: '',
-  characterList: List(),
-  depth: 0,
-  data: Map()
-};
-
-var ContentBlockRecord = Record(defaultRecord);
-
-var ContentBlock = function (_ContentBlockRecord) {
-  _inherits(ContentBlock, _ContentBlockRecord);
-
-  function ContentBlock() {
-    _classCallCheck(this, ContentBlock);
-
-    return _possibleConstructorReturn(this, _ContentBlockRecord.apply(this, arguments));
-  }
-
-  ContentBlock.prototype.getKey = function getKey() {
-    return this.get('key');
-  };
-
-  ContentBlock.prototype.getType = function getType() {
-    return this.get('type');
-  };
-
-  ContentBlock.prototype.getText = function getText() {
-    return this.get('text');
-  };
-
-  ContentBlock.prototype.getCharacterList = function getCharacterList() {
-    return this.get('characterList');
-  };
-
-  ContentBlock.prototype.getLength = function getLength() {
-    return this.getText().length;
-  };
-
-  ContentBlock.prototype.getDepth = function getDepth() {
-    return this.get('depth');
-  };
-
-  ContentBlock.prototype.getData = function getData() {
-    return this.get('data');
-  };
-
-  ContentBlock.prototype.getInlineStyleAt = function getInlineStyleAt(offset) {
-    var character = this.getCharacterList().get(offset);
-    return character ? character.getStyle() : EMPTY_SET;
-  };
-
-  ContentBlock.prototype.getEntityAt = function getEntityAt(offset) {
-    var character = this.getCharacterList().get(offset);
-    return character ? character.getEntity() : null;
-  };
-
-  /**
-   * Execute a callback for every contiguous range of styles within the block.
-   */
-
-
-  ContentBlock.prototype.findStyleRanges = function findStyleRanges(filterFn, callback) {
-    findRangesImmutable(this.getCharacterList(), haveEqualStyle, filterFn, callback);
-  };
-
-  /**
-   * Execute a callback for every contiguous range of entities within the block.
-   */
-
-
-  ContentBlock.prototype.findEntityRanges = function findEntityRanges(filterFn, callback) {
-    findRangesImmutable(this.getCharacterList(), haveEqualEntity, filterFn, callback);
-  };
-
-  return ContentBlock;
-}(ContentBlockRecord);
-
-function haveEqualStyle(charA, charB) {
-  return charA.getStyle() === charB.getStyle();
-}
-
-function haveEqualEntity(charA, charB) {
-  return charA.getEntity() === charB.getEntity();
-}
-
-module.exports = ContentBlock;
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @typechecks
- */
-
-/**
- * Unicode-enabled replacesments for basic String functions.
- *
- * All the functions in this module assume that the input string is a valid
- * UTF-16 encoding of a Unicode sequence. If it's not the case, the behavior
- * will be undefined.
- *
- * WARNING: Since this module is typechecks-enforced, you may find new bugs
- * when replacing normal String functions with ones provided here.
- */
-
-
-
-var invariant = __webpack_require__(3);
-
-// These two ranges are consecutive so anything in [HIGH_START, LOW_END] is a
-// surrogate code unit.
-var SURROGATE_HIGH_START = 0xD800;
-var SURROGATE_HIGH_END = 0xDBFF;
-var SURROGATE_LOW_START = 0xDC00;
-var SURROGATE_LOW_END = 0xDFFF;
-var SURROGATE_UNITS_REGEX = /[\uD800-\uDFFF]/;
-
-/**
- * @param {number} codeUnit   A Unicode code-unit, in range [0, 0x10FFFF]
- * @return {boolean}          Whether code-unit is in a surrogate (hi/low) range
- */
-function isCodeUnitInSurrogateRange(codeUnit) {
-  return SURROGATE_HIGH_START <= codeUnit && codeUnit <= SURROGATE_LOW_END;
-}
-
-/**
- * Returns whether the two characters starting at `index` form a surrogate pair.
- * For example, given the string s = "\uD83D\uDE0A", (s, 0) returns true and
- * (s, 1) returns false.
- *
- * @param {string} str
- * @param {number} index
- * @return {boolean}
- */
-function isSurrogatePair(str, index) {
-  !(0 <= index && index < str.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'isSurrogatePair: Invalid index %s for string length %s.', index, str.length) : invariant(false) : void 0;
-  if (index + 1 === str.length) {
-    return false;
-  }
-  var first = str.charCodeAt(index);
-  var second = str.charCodeAt(index + 1);
-  return SURROGATE_HIGH_START <= first && first <= SURROGATE_HIGH_END && SURROGATE_LOW_START <= second && second <= SURROGATE_LOW_END;
-}
-
-/**
- * @param {string} str  Non-empty string
- * @return {boolean}    True if the input includes any surrogate code units
- */
-function hasSurrogateUnit(str) {
-  return SURROGATE_UNITS_REGEX.test(str);
-}
-
-/**
- * Return the length of the original Unicode character at given position in the
- * String by looking into the UTF-16 code unit; that is equal to 1 for any
- * non-surrogate characters in BMP ([U+0000..U+D7FF] and [U+E000, U+FFFF]); and
- * returns 2 for the hi/low surrogates ([U+D800..U+DFFF]), which are in fact
- * representing non-BMP characters ([U+10000..U+10FFFF]).
- *
- * Examples:
- * - '\u0020' => 1
- * - '\u3020' => 1
- * - '\uD835' => 2
- * - '\uD835\uDDEF' => 2
- * - '\uDDEF' => 2
- *
- * @param {string} str  Non-empty string
- * @param {number} pos  Position in the string to look for one code unit
- * @return {number}      Number 1 or 2
- */
-function getUTF16Length(str, pos) {
-  return 1 + isCodeUnitInSurrogateRange(str.charCodeAt(pos));
-}
-
-/**
- * Fully Unicode-enabled replacement for String#length
- *
- * @param {string} str  Valid Unicode string
- * @return {number}     The number of Unicode characters in the string
- */
-function strlen(str) {
-  // Call the native functions if there's no surrogate char
-  if (!hasSurrogateUnit(str)) {
-    return str.length;
-  }
-
-  var len = 0;
-  for (var pos = 0; pos < str.length; pos += getUTF16Length(str, pos)) {
-    len++;
-  }
-  return len;
-}
-
-/**
- * Fully Unicode-enabled replacement for String#substr()
- *
- * @param {string} str      Valid Unicode string
- * @param {number} start    Location in Unicode sequence to begin extracting
- * @param {?number} length  The number of Unicode characters to extract
- *                          (default: to the end of the string)
- * @return {string}         Extracted sub-string
- */
-function substr(str, start, length) {
-  start = start || 0;
-  length = length === undefined ? Infinity : length || 0;
-
-  // Call the native functions if there's no surrogate char
-  if (!hasSurrogateUnit(str)) {
-    return str.substr(start, length);
-  }
-
-  // Obvious cases
-  var size = str.length;
-  if (size <= 0 || start > size || length <= 0) {
-    return '';
-  }
-
-  // Find the actual starting position
-  var posA = 0;
-  if (start > 0) {
-    for (; start > 0 && posA < size; start--) {
-      posA += getUTF16Length(str, posA);
-    }
-    if (posA >= size) {
-      return '';
-    }
-  } else if (start < 0) {
-    for (posA = size; start < 0 && 0 < posA; start++) {
-      posA -= getUTF16Length(str, posA - 1);
-    }
-    if (posA < 0) {
-      posA = 0;
-    }
-  }
-
-  // Find the actual ending position
-  var posB = size;
-  if (length < size) {
-    for (posB = posA; length > 0 && posB < size; length--) {
-      posB += getUTF16Length(str, posB);
-    }
-  }
-
-  return str.substring(posA, posB);
-}
-
-/**
- * Fully Unicode-enabled replacement for String#substring()
- *
- * @param {string} str    Valid Unicode string
- * @param {number} start  Location in Unicode sequence to begin extracting
- * @param {?number} end   Location in Unicode sequence to end extracting
- *                        (default: end of the string)
- * @return {string}       Extracted sub-string
- */
-function substring(str, start, end) {
-  start = start || 0;
-  end = end === undefined ? Infinity : end || 0;
-
-  if (start < 0) {
-    start = 0;
-  }
-  if (end < 0) {
-    end = 0;
-  }
-
-  var length = Math.abs(end - start);
-  start = start < end ? start : end;
-  return substr(str, start, length);
-}
-
-/**
- * Get a list of Unicode code-points from a String
- *
- * @param {string} str        Valid Unicode string
- * @return {array<number>}    A list of code-points in [0..0x10FFFF]
- */
-function getCodePoints(str) {
-  var codePoints = [];
-  for (var pos = 0; pos < str.length; pos += getUTF16Length(str, pos)) {
-    codePoints.push(str.codePointAt(pos));
-  }
-  return codePoints;
-}
-
-var UnicodeUtils = {
-  getCodePoints: getCodePoints,
-  getUTF16Length: getUTF16Length,
-  hasSurrogateUnit: hasSurrogateUnit,
-  isCodeUnitInSurrogateRange: isCodeUnitInSurrogateRange,
-  isSurrogatePair: isSurrogatePair,
-  strlen: strlen,
-  substring: substring,
-  substr: substr
-};
-
-module.exports = UnicodeUtils;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19483,6 +18781,706 @@ module.exports = UnicodeUtils;
 }));
 
 /***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ */
+
+
+
+var _prodInvariant = __webpack_require__(8);
+
+var invariant = __webpack_require__(3);
+
+function checkMask(value, bitmask) {
+  return (value & bitmask) === bitmask;
+}
+
+var DOMPropertyInjection = {
+  /**
+   * Mapping from normalized, camelcased property names to a configuration that
+   * specifies how the associated DOM property should be accessed or rendered.
+   */
+  MUST_USE_PROPERTY: 0x1,
+  HAS_BOOLEAN_VALUE: 0x4,
+  HAS_NUMERIC_VALUE: 0x8,
+  HAS_POSITIVE_NUMERIC_VALUE: 0x10 | 0x8,
+  HAS_OVERLOADED_BOOLEAN_VALUE: 0x20,
+
+  /**
+   * Inject some specialized knowledge about the DOM. This takes a config object
+   * with the following properties:
+   *
+   * isCustomAttribute: function that given an attribute name will return true
+   * if it can be inserted into the DOM verbatim. Useful for data-* or aria-*
+   * attributes where it's impossible to enumerate all of the possible
+   * attribute names,
+   *
+   * Properties: object mapping DOM property name to one of the
+   * DOMPropertyInjection constants or null. If your attribute isn't in here,
+   * it won't get written to the DOM.
+   *
+   * DOMAttributeNames: object mapping React attribute name to the DOM
+   * attribute name. Attribute names not specified use the **lowercase**
+   * normalized name.
+   *
+   * DOMAttributeNamespaces: object mapping React attribute name to the DOM
+   * attribute namespace URL. (Attribute names not specified use no namespace.)
+   *
+   * DOMPropertyNames: similar to DOMAttributeNames but for DOM properties.
+   * Property names not specified use the normalized name.
+   *
+   * DOMMutationMethods: Properties that require special mutation methods. If
+   * `value` is undefined, the mutation method should unset the property.
+   *
+   * @param {object} domPropertyConfig the config as described above.
+   */
+  injectDOMPropertyConfig: function (domPropertyConfig) {
+    var Injection = DOMPropertyInjection;
+    var Properties = domPropertyConfig.Properties || {};
+    var DOMAttributeNamespaces = domPropertyConfig.DOMAttributeNamespaces || {};
+    var DOMAttributeNames = domPropertyConfig.DOMAttributeNames || {};
+    var DOMPropertyNames = domPropertyConfig.DOMPropertyNames || {};
+    var DOMMutationMethods = domPropertyConfig.DOMMutationMethods || {};
+
+    if (domPropertyConfig.isCustomAttribute) {
+      DOMProperty._isCustomAttributeFunctions.push(domPropertyConfig.isCustomAttribute);
+    }
+
+    for (var propName in Properties) {
+      !!DOMProperty.properties.hasOwnProperty(propName) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'injectDOMPropertyConfig(...): You\'re trying to inject DOM property \'%s\' which has already been injected. You may be accidentally injecting the same DOM property config twice, or you may be injecting two configs that have conflicting property names.', propName) : _prodInvariant('48', propName) : void 0;
+
+      var lowerCased = propName.toLowerCase();
+      var propConfig = Properties[propName];
+
+      var propertyInfo = {
+        attributeName: lowerCased,
+        attributeNamespace: null,
+        propertyName: propName,
+        mutationMethod: null,
+
+        mustUseProperty: checkMask(propConfig, Injection.MUST_USE_PROPERTY),
+        hasBooleanValue: checkMask(propConfig, Injection.HAS_BOOLEAN_VALUE),
+        hasNumericValue: checkMask(propConfig, Injection.HAS_NUMERIC_VALUE),
+        hasPositiveNumericValue: checkMask(propConfig, Injection.HAS_POSITIVE_NUMERIC_VALUE),
+        hasOverloadedBooleanValue: checkMask(propConfig, Injection.HAS_OVERLOADED_BOOLEAN_VALUE)
+      };
+      !(propertyInfo.hasBooleanValue + propertyInfo.hasNumericValue + propertyInfo.hasOverloadedBooleanValue <= 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'DOMProperty: Value can be one of boolean, overloaded boolean, or numeric value, but not a combination: %s', propName) : _prodInvariant('50', propName) : void 0;
+
+      if (process.env.NODE_ENV !== 'production') {
+        DOMProperty.getPossibleStandardName[lowerCased] = propName;
+      }
+
+      if (DOMAttributeNames.hasOwnProperty(propName)) {
+        var attributeName = DOMAttributeNames[propName];
+        propertyInfo.attributeName = attributeName;
+        if (process.env.NODE_ENV !== 'production') {
+          DOMProperty.getPossibleStandardName[attributeName] = propName;
+        }
+      }
+
+      if (DOMAttributeNamespaces.hasOwnProperty(propName)) {
+        propertyInfo.attributeNamespace = DOMAttributeNamespaces[propName];
+      }
+
+      if (DOMPropertyNames.hasOwnProperty(propName)) {
+        propertyInfo.propertyName = DOMPropertyNames[propName];
+      }
+
+      if (DOMMutationMethods.hasOwnProperty(propName)) {
+        propertyInfo.mutationMethod = DOMMutationMethods[propName];
+      }
+
+      DOMProperty.properties[propName] = propertyInfo;
+    }
+  }
+};
+
+/* eslint-disable max-len */
+var ATTRIBUTE_NAME_START_CHAR = ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD';
+/* eslint-enable max-len */
+
+/**
+ * DOMProperty exports lookup objects that can be used like functions:
+ *
+ *   > DOMProperty.isValid['id']
+ *   true
+ *   > DOMProperty.isValid['foobar']
+ *   undefined
+ *
+ * Although this may be confusing, it performs better in general.
+ *
+ * @see http://jsperf.com/key-exists
+ * @see http://jsperf.com/key-missing
+ */
+var DOMProperty = {
+  ID_ATTRIBUTE_NAME: 'data-reactid',
+  ROOT_ATTRIBUTE_NAME: 'data-reactroot',
+
+  ATTRIBUTE_NAME_START_CHAR: ATTRIBUTE_NAME_START_CHAR,
+  ATTRIBUTE_NAME_CHAR: ATTRIBUTE_NAME_START_CHAR + '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
+
+  /**
+   * Map from property "standard name" to an object with info about how to set
+   * the property in the DOM. Each object contains:
+   *
+   * attributeName:
+   *   Used when rendering markup or with `*Attribute()`.
+   * attributeNamespace
+   * propertyName:
+   *   Used on DOM node instances. (This includes properties that mutate due to
+   *   external factors.)
+   * mutationMethod:
+   *   If non-null, used instead of the property or `setAttribute()` after
+   *   initial render.
+   * mustUseProperty:
+   *   Whether the property must be accessed and mutated as an object property.
+   * hasBooleanValue:
+   *   Whether the property should be removed when set to a falsey value.
+   * hasNumericValue:
+   *   Whether the property must be numeric or parse as a numeric and should be
+   *   removed when set to a falsey value.
+   * hasPositiveNumericValue:
+   *   Whether the property must be positive numeric or parse as a positive
+   *   numeric and should be removed when set to a falsey value.
+   * hasOverloadedBooleanValue:
+   *   Whether the property can be used as a flag as well as with a value.
+   *   Removed when strictly equal to false; present without a value when
+   *   strictly equal to true; present with a value otherwise.
+   */
+  properties: {},
+
+  /**
+   * Mapping from lowercase property names to the properly cased version, used
+   * to warn in the case of missing properties. Available only in __DEV__.
+   *
+   * autofocus is predefined, because adding it to the property whitelist
+   * causes unintended side effects.
+   *
+   * @type {Object}
+   */
+  getPossibleStandardName: process.env.NODE_ENV !== 'production' ? { autofocus: 'autoFocus' } : null,
+
+  /**
+   * All of the isCustomAttribute() functions that have been injected.
+   */
+  _isCustomAttributeFunctions: [],
+
+  /**
+   * Checks whether a property name is a custom attribute.
+   * @method
+   */
+  isCustomAttribute: function (attributeName) {
+    for (var i = 0; i < DOMProperty._isCustomAttributeFunctions.length; i++) {
+      var isCustomAttributeFn = DOMProperty._isCustomAttributeFunctions[i];
+      if (isCustomAttributeFn(attributeName)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  injection: DOMPropertyInjection
+};
+
+module.exports = DOMProperty;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports) {
+
+module.exports = function(it, Constructor, name, forbiddenField){
+  if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
+    throw TypeError(name + ': incorrect invocation!');
+  } return it;
+};
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports) {
+
+module.exports = false;
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject    = __webpack_require__(5)
+  , dPs         = __webpack_require__(194)
+  , enumBugKeys = __webpack_require__(126)
+  , IE_PROTO    = __webpack_require__(138)('IE_PROTO')
+  , Empty       = function(){ /* empty */ }
+  , PROTOTYPE   = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function(){
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = __webpack_require__(125)('iframe')
+    , i      = enumBugKeys.length
+    , lt     = '<'
+    , gt     = '>'
+    , iframeDocument;
+  iframe.style.display = 'none';
+  __webpack_require__(128).appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties){
+  var result;
+  if(O !== null){
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty;
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
+var $keys      = __webpack_require__(196)
+  , hiddenKeys = __webpack_require__(126).concat('length', 'prototype');
+
+exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
+  return $keys(O, hiddenKeys);
+};
+
+/***/ }),
+/* 63 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys       = __webpack_require__(196)
+  , enumBugKeys = __webpack_require__(126);
+
+module.exports = Object.keys || function keys(O){
+  return $keys(O, enumBugKeys);
+};
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var redefine = __webpack_require__(27);
+module.exports = function(target, src, safe){
+  for(var key in src)redefine(target, key, src[key], safe);
+  return target;
+};
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var global      = __webpack_require__(6)
+  , dP          = __webpack_require__(15)
+  , DESCRIPTORS = __webpack_require__(14)
+  , SPECIES     = __webpack_require__(13)('species');
+
+module.exports = function(KEY){
+  var C = global[KEY];
+  if(DESCRIPTORS && C && !C[SPECIES])dP.f(C, SPECIES, {
+    configurable: true,
+    get: function(){ return this; }
+  });
+};
+
+/***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(55)
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports) {
+
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ContentBlock
+ * 
+ */
+
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Immutable = __webpack_require__(12);
+
+var findRangesImmutable = __webpack_require__(111);
+
+var List = Immutable.List;
+var Map = Immutable.Map;
+var OrderedSet = Immutable.OrderedSet;
+var Record = Immutable.Record;
+
+
+var EMPTY_SET = OrderedSet();
+
+var defaultRecord = {
+  key: '',
+  type: 'unstyled',
+  text: '',
+  characterList: List(),
+  depth: 0,
+  data: Map()
+};
+
+var ContentBlockRecord = Record(defaultRecord);
+
+var ContentBlock = function (_ContentBlockRecord) {
+  _inherits(ContentBlock, _ContentBlockRecord);
+
+  function ContentBlock() {
+    _classCallCheck(this, ContentBlock);
+
+    return _possibleConstructorReturn(this, _ContentBlockRecord.apply(this, arguments));
+  }
+
+  ContentBlock.prototype.getKey = function getKey() {
+    return this.get('key');
+  };
+
+  ContentBlock.prototype.getType = function getType() {
+    return this.get('type');
+  };
+
+  ContentBlock.prototype.getText = function getText() {
+    return this.get('text');
+  };
+
+  ContentBlock.prototype.getCharacterList = function getCharacterList() {
+    return this.get('characterList');
+  };
+
+  ContentBlock.prototype.getLength = function getLength() {
+    return this.getText().length;
+  };
+
+  ContentBlock.prototype.getDepth = function getDepth() {
+    return this.get('depth');
+  };
+
+  ContentBlock.prototype.getData = function getData() {
+    return this.get('data');
+  };
+
+  ContentBlock.prototype.getInlineStyleAt = function getInlineStyleAt(offset) {
+    var character = this.getCharacterList().get(offset);
+    return character ? character.getStyle() : EMPTY_SET;
+  };
+
+  ContentBlock.prototype.getEntityAt = function getEntityAt(offset) {
+    var character = this.getCharacterList().get(offset);
+    return character ? character.getEntity() : null;
+  };
+
+  /**
+   * Execute a callback for every contiguous range of styles within the block.
+   */
+
+
+  ContentBlock.prototype.findStyleRanges = function findStyleRanges(filterFn, callback) {
+    findRangesImmutable(this.getCharacterList(), haveEqualStyle, filterFn, callback);
+  };
+
+  /**
+   * Execute a callback for every contiguous range of entities within the block.
+   */
+
+
+  ContentBlock.prototype.findEntityRanges = function findEntityRanges(filterFn, callback) {
+    findRangesImmutable(this.getCharacterList(), haveEqualEntity, filterFn, callback);
+  };
+
+  return ContentBlock;
+}(ContentBlockRecord);
+
+function haveEqualStyle(charA, charB) {
+  return charA.getStyle() === charB.getStyle();
+}
+
+function haveEqualEntity(charA, charB) {
+  return charA.getEntity() === charB.getEntity();
+}
+
+module.exports = ContentBlock;
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @typechecks
+ */
+
+/**
+ * Unicode-enabled replacesments for basic String functions.
+ *
+ * All the functions in this module assume that the input string is a valid
+ * UTF-16 encoding of a Unicode sequence. If it's not the case, the behavior
+ * will be undefined.
+ *
+ * WARNING: Since this module is typechecks-enforced, you may find new bugs
+ * when replacing normal String functions with ones provided here.
+ */
+
+
+
+var invariant = __webpack_require__(3);
+
+// These two ranges are consecutive so anything in [HIGH_START, LOW_END] is a
+// surrogate code unit.
+var SURROGATE_HIGH_START = 0xD800;
+var SURROGATE_HIGH_END = 0xDBFF;
+var SURROGATE_LOW_START = 0xDC00;
+var SURROGATE_LOW_END = 0xDFFF;
+var SURROGATE_UNITS_REGEX = /[\uD800-\uDFFF]/;
+
+/**
+ * @param {number} codeUnit   A Unicode code-unit, in range [0, 0x10FFFF]
+ * @return {boolean}          Whether code-unit is in a surrogate (hi/low) range
+ */
+function isCodeUnitInSurrogateRange(codeUnit) {
+  return SURROGATE_HIGH_START <= codeUnit && codeUnit <= SURROGATE_LOW_END;
+}
+
+/**
+ * Returns whether the two characters starting at `index` form a surrogate pair.
+ * For example, given the string s = "\uD83D\uDE0A", (s, 0) returns true and
+ * (s, 1) returns false.
+ *
+ * @param {string} str
+ * @param {number} index
+ * @return {boolean}
+ */
+function isSurrogatePair(str, index) {
+  !(0 <= index && index < str.length) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'isSurrogatePair: Invalid index %s for string length %s.', index, str.length) : invariant(false) : void 0;
+  if (index + 1 === str.length) {
+    return false;
+  }
+  var first = str.charCodeAt(index);
+  var second = str.charCodeAt(index + 1);
+  return SURROGATE_HIGH_START <= first && first <= SURROGATE_HIGH_END && SURROGATE_LOW_START <= second && second <= SURROGATE_LOW_END;
+}
+
+/**
+ * @param {string} str  Non-empty string
+ * @return {boolean}    True if the input includes any surrogate code units
+ */
+function hasSurrogateUnit(str) {
+  return SURROGATE_UNITS_REGEX.test(str);
+}
+
+/**
+ * Return the length of the original Unicode character at given position in the
+ * String by looking into the UTF-16 code unit; that is equal to 1 for any
+ * non-surrogate characters in BMP ([U+0000..U+D7FF] and [U+E000, U+FFFF]); and
+ * returns 2 for the hi/low surrogates ([U+D800..U+DFFF]), which are in fact
+ * representing non-BMP characters ([U+10000..U+10FFFF]).
+ *
+ * Examples:
+ * - '\u0020' => 1
+ * - '\u3020' => 1
+ * - '\uD835' => 2
+ * - '\uD835\uDDEF' => 2
+ * - '\uDDEF' => 2
+ *
+ * @param {string} str  Non-empty string
+ * @param {number} pos  Position in the string to look for one code unit
+ * @return {number}      Number 1 or 2
+ */
+function getUTF16Length(str, pos) {
+  return 1 + isCodeUnitInSurrogateRange(str.charCodeAt(pos));
+}
+
+/**
+ * Fully Unicode-enabled replacement for String#length
+ *
+ * @param {string} str  Valid Unicode string
+ * @return {number}     The number of Unicode characters in the string
+ */
+function strlen(str) {
+  // Call the native functions if there's no surrogate char
+  if (!hasSurrogateUnit(str)) {
+    return str.length;
+  }
+
+  var len = 0;
+  for (var pos = 0; pos < str.length; pos += getUTF16Length(str, pos)) {
+    len++;
+  }
+  return len;
+}
+
+/**
+ * Fully Unicode-enabled replacement for String#substr()
+ *
+ * @param {string} str      Valid Unicode string
+ * @param {number} start    Location in Unicode sequence to begin extracting
+ * @param {?number} length  The number of Unicode characters to extract
+ *                          (default: to the end of the string)
+ * @return {string}         Extracted sub-string
+ */
+function substr(str, start, length) {
+  start = start || 0;
+  length = length === undefined ? Infinity : length || 0;
+
+  // Call the native functions if there's no surrogate char
+  if (!hasSurrogateUnit(str)) {
+    return str.substr(start, length);
+  }
+
+  // Obvious cases
+  var size = str.length;
+  if (size <= 0 || start > size || length <= 0) {
+    return '';
+  }
+
+  // Find the actual starting position
+  var posA = 0;
+  if (start > 0) {
+    for (; start > 0 && posA < size; start--) {
+      posA += getUTF16Length(str, posA);
+    }
+    if (posA >= size) {
+      return '';
+    }
+  } else if (start < 0) {
+    for (posA = size; start < 0 && 0 < posA; start++) {
+      posA -= getUTF16Length(str, posA - 1);
+    }
+    if (posA < 0) {
+      posA = 0;
+    }
+  }
+
+  // Find the actual ending position
+  var posB = size;
+  if (length < size) {
+    for (posB = posA; length > 0 && posB < size; length--) {
+      posB += getUTF16Length(str, posB);
+    }
+  }
+
+  return str.substring(posA, posB);
+}
+
+/**
+ * Fully Unicode-enabled replacement for String#substring()
+ *
+ * @param {string} str    Valid Unicode string
+ * @param {number} start  Location in Unicode sequence to begin extracting
+ * @param {?number} end   Location in Unicode sequence to end extracting
+ *                        (default: end of the string)
+ * @return {string}       Extracted sub-string
+ */
+function substring(str, start, end) {
+  start = start || 0;
+  end = end === undefined ? Infinity : end || 0;
+
+  if (start < 0) {
+    start = 0;
+  }
+  if (end < 0) {
+    end = 0;
+  }
+
+  var length = Math.abs(end - start);
+  start = start < end ? start : end;
+  return substr(str, start, length);
+}
+
+/**
+ * Get a list of Unicode code-points from a String
+ *
+ * @param {string} str        Valid Unicode string
+ * @return {array<number>}    A list of code-points in [0..0x10FFFF]
+ */
+function getCodePoints(str) {
+  var codePoints = [];
+  for (var pos = 0; pos < str.length; pos += getUTF16Length(str, pos)) {
+    codePoints.push(str.codePointAt(pos));
+  }
+  return codePoints;
+}
+
+var UnicodeUtils = {
+  getCodePoints: getCodePoints,
+  getUTF16Length: getUTF16Length,
+  hasSurrogateUnit: hasSurrogateUnit,
+  isCodeUnitInSurrogateRange: isCodeUnitInSurrogateRange,
+  isSurrogatePair: isSurrogatePair,
+  strlen: strlen,
+  substring: substring,
+  substr: substr
+};
+
+module.exports = UnicodeUtils;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -20537,7 +20535,7 @@ module.exports = reactProdInvariant;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(20);
-const Immutable = __webpack_require__(69);
+const Immutable = __webpack_require__(57);
 const i18next = __webpack_require__(240);
 const core_1 = __webpack_require__(35);
 const html_1 = __webpack_require__(83);
@@ -20804,7 +20802,7 @@ exports.hide = (f_name, f) => exports.repeat()(visible => primitives_1.bool("edi
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(20);
-const Immutable = __webpack_require__(69);
+const Immutable = __webpack_require__(57);
 const core_1 = __webpack_require__(35);
 class Label extends React.Component {
     constructor(props, context) {
@@ -21091,11 +21089,11 @@ class Link extends React.Component {
         this.state = {};
     }
     render() {
-        return React.createElement("a", { href: this.props.url, className: `button ${this.props.disabled ? "disabled" : ""}` }, this.props.label);
+        return React.createElement("a", { href: this.props.url, className: `${this.props.className || ""} ${this.props.disabled ? "disabled" : ""}` }, this.props.label);
     }
 }
-exports.link = function (label, url, disabled, key, dbg) {
-    return core_1.make_C(ctxt => cont => React.createElement(Link, { kind: "link", debug_info: dbg, label: label, url: url, disabled: !!disabled, context: ctxt, cont: cont, key: key }));
+exports.link = function (label, url, disabled, key, className, dbg) {
+    return core_1.make_C(ctxt => cont => React.createElement(Link, { kind: "link", debug_info: dbg, label: label, url: url, disabled: !!disabled, context: ctxt, cont: cont, key: key, className: className }));
 };
 class FileComponent extends React.Component {
     constructor(props, context) {
@@ -22162,6 +22160,7 @@ module.exports = SyntheticUIEvent;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(20);
+const Immutable = __webpack_require__(57);
 const Moment = __webpack_require__(0);
 const core_1 = __webpack_require__(35);
 function format_int(num, length) {
@@ -22183,7 +22182,7 @@ class Number extends React.Component {
         this.props.cont(() => null)(value);
     }
     render() {
-        return this.props.mode == "edit" && this.props.context().mode == "edit" ?
+        return this.props.mode == "edit" ?
             React.createElement("input", { type: "number", value: this.state.value, onChange: e => {
                     let new_value = isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber;
                     if (new_value == this.state.value)
@@ -22213,7 +22212,7 @@ class String extends React.Component {
         this.props.cont(() => null)(value);
     }
     render() {
-        return this.props.mode == "edit" && this.props.context().mode == "edit" ? React.createElement("input", { type: this.props.type, value: this.state.value, onChange: e => {
+        return this.props.mode == "edit" ? React.createElement("input", { type: this.props.type, value: this.state.value, onChange: e => {
                 if (this.state.value == e.currentTarget.value)
                     return;
                 this.setState(Object.assign({}, this.state, { value: e.currentTarget.value }), () => this.call_cont(this.state.value));
@@ -22227,8 +22226,10 @@ class String extends React.Component {
                             React.createElement("a", { href: `mailto:${this.state.value}` }, this.state.value)
                             : this.props.type == "url" ?
                                 React.createElement("a", { href: this.state.value }, this.state.value)
-                                :
-                                    React.createElement("span", null, this.state.value);
+                                : this.props.type == "password" ?
+                                    React.createElement("span", null, Immutable.Repeat("*", this.state.value.length).join(""))
+                                    :
+                                        React.createElement("span", null, this.state.value);
     }
 }
 exports.string = (mode, type, key, dbg) => function (value) {
@@ -22251,11 +22252,11 @@ class Bool extends React.Component {
     }
     render() {
         return this.props.style == "fancy toggle" ?
-            React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--switch", disabled: this.props.mode == "view" || this.props.context().mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
+            React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--switch", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
             : this.props.style == "plus/minus" ?
-                React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--toggle", disabled: this.props.mode == "view" || this.props.context().mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
+                React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--toggle", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
                 :
-                    React.createElement("input", { type: this.props.style, className: "monadic-input-choices monadic-input-choices--checkbox", disabled: this.props.mode == "view" || this.props.context().mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) });
+                    React.createElement("input", { type: this.props.style, className: "monadic-input-choices monadic-input-choices--checkbox", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) });
     }
 }
 exports.bool = (mode, style, key, dbg) => function (value) {
@@ -22349,7 +22350,7 @@ exports.time = (mode, key, dbg) => function (value) {
 // true  -> Array#includes
 var toIObject = __webpack_require__(29)
   , toLength  = __webpack_require__(18)
-  , toIndex   = __webpack_require__(65);
+  , toIndex   = __webpack_require__(66);
 module.exports = function(IS_INCLUDES){
   return function($this, el, fromIndex){
     var O      = toIObject($this)
@@ -22376,10 +22377,10 @@ module.exports = function(IS_INCLUDES){
 var global            = __webpack_require__(6)
   , $export           = __webpack_require__(1)
   , redefine          = __webpack_require__(27)
-  , redefineAll       = __webpack_require__(63)
+  , redefineAll       = __webpack_require__(64)
   , meta              = __webpack_require__(53)
   , forOf             = __webpack_require__(73)
-  , anInstance        = __webpack_require__(58)
+  , anInstance        = __webpack_require__(59)
   , isObject          = __webpack_require__(11)
   , fails             = __webpack_require__(7)
   , $iterDetect       = __webpack_require__(104)
@@ -22576,7 +22577,7 @@ module.exports = function(exec, skipClosing){
 /***/ (function(module, exports, __webpack_require__) {
 
 // Forced replacement prototype accessors methods
-module.exports = __webpack_require__(59)|| !__webpack_require__(7)(function(){
+module.exports = __webpack_require__(60)|| !__webpack_require__(7)(function(){
   var K = Math.random();
   // In FF throws only define methods
   __defineSetter__.call(null, K, function(){ /* empty */});
@@ -22606,7 +22607,7 @@ module.exports = function(key){
 
 var global = __webpack_require__(6)
   , hide   = __webpack_require__(26)
-  , uid    = __webpack_require__(66)
+  , uid    = __webpack_require__(67)
   , TYPED  = uid('typed_array')
   , VIEW   = uid('view')
   , ABV    = !!(global.ArrayBuffer && global.DataView)
@@ -24269,7 +24270,7 @@ module.exports = canDefineProperty;
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 var toObject = __webpack_require__(21)
-  , toIndex  = __webpack_require__(65)
+  , toIndex  = __webpack_require__(66)
   , toLength = __webpack_require__(18);
 module.exports = function fill(value /*, start = 0, end = @length */){
   var O      = toObject(this)
@@ -24382,7 +24383,7 @@ module.exports = Array.isArray || function isArray(arg){
 
 "use strict";
 
-var create         = __webpack_require__(60)
+var create         = __webpack_require__(61)
   , descriptor     = __webpack_require__(54)
   , setToStringTag = __webpack_require__(75)
   , IteratorPrototype = {};
@@ -24401,7 +24402,7 @@ module.exports = function(Constructor, NAME, next){
 
 "use strict";
 
-var LIBRARY        = __webpack_require__(59)
+var LIBRARY        = __webpack_require__(60)
   , $export        = __webpack_require__(1)
   , redefine       = __webpack_require__(27)
   , hide           = __webpack_require__(26)
@@ -24603,7 +24604,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var shared = __webpack_require__(107)('keys')
-  , uid    = __webpack_require__(66);
+  , uid    = __webpack_require__(67);
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
@@ -24769,15 +24770,15 @@ module.exports = {
 
 var global         = __webpack_require__(6)
   , DESCRIPTORS    = __webpack_require__(14)
-  , LIBRARY        = __webpack_require__(59)
+  , LIBRARY        = __webpack_require__(60)
   , $typed         = __webpack_require__(108)
   , hide           = __webpack_require__(26)
-  , redefineAll    = __webpack_require__(63)
+  , redefineAll    = __webpack_require__(64)
   , fails          = __webpack_require__(7)
-  , anInstance     = __webpack_require__(58)
+  , anInstance     = __webpack_require__(59)
   , toInteger      = __webpack_require__(55)
   , toLength       = __webpack_require__(18)
-  , gOPN           = __webpack_require__(61).f
+  , gOPN           = __webpack_require__(62).f
   , dP             = __webpack_require__(15).f
   , arrayFill      = __webpack_require__(123)
   , setToStringTag = __webpack_require__(75)
@@ -25046,7 +25047,7 @@ exports[DATA_VIEW] = $DataView;
 
 var global         = __webpack_require__(6)
   , core           = __webpack_require__(48)
-  , LIBRARY        = __webpack_require__(59)
+  , LIBRARY        = __webpack_require__(60)
   , wksExt         = __webpack_require__(203)
   , defineProperty = __webpack_require__(15).f;
 module.exports = function(name){
@@ -25135,7 +25136,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BlockMapBuilder = __webpack_require__(87);
 var CharacterMetadata = __webpack_require__(39);
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var DraftEntity = __webpack_require__(109);
 var Immutable = __webpack_require__(12);
 var SelectionState = __webpack_require__(88);
@@ -27893,7 +27894,7 @@ module.exports = function(it, msg){
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
 var toObject = __webpack_require__(21)
-  , toIndex  = __webpack_require__(65)
+  , toIndex  = __webpack_require__(66)
   , toLength = __webpack_require__(18);
 
 module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0, end = @length*/){
@@ -28000,15 +28001,15 @@ module.exports = Function.bind || function bind(that /*, args... */){
 "use strict";
 
 var dP          = __webpack_require__(15).f
-  , create      = __webpack_require__(60)
-  , redefineAll = __webpack_require__(63)
+  , create      = __webpack_require__(61)
+  , redefineAll = __webpack_require__(64)
   , ctx         = __webpack_require__(49)
-  , anInstance  = __webpack_require__(58)
+  , anInstance  = __webpack_require__(59)
   , defined     = __webpack_require__(37)
   , forOf       = __webpack_require__(73)
   , $iterDefine = __webpack_require__(133)
   , step        = __webpack_require__(191)
-  , setSpecies  = __webpack_require__(64)
+  , setSpecies  = __webpack_require__(65)
   , DESCRIPTORS = __webpack_require__(14)
   , fastKey     = __webpack_require__(53).fastKey
   , SIZE        = DESCRIPTORS ? '_s' : 'size';
@@ -28161,11 +28162,11 @@ module.exports = function(NAME){
 
 "use strict";
 
-var redefineAll       = __webpack_require__(63)
+var redefineAll       = __webpack_require__(64)
   , getWeak           = __webpack_require__(53).getWeak
   , anObject          = __webpack_require__(5)
   , isObject          = __webpack_require__(11)
-  , anInstance        = __webpack_require__(58)
+  , anInstance        = __webpack_require__(59)
   , forOf             = __webpack_require__(73)
   , createArrayMethod = __webpack_require__(40)
   , $has              = __webpack_require__(22)
@@ -28304,7 +28305,7 @@ module.exports = Math.log1p || function log1p(x){
 "use strict";
 
 // 19.1.2.1 Object.assign(target, source, ...)
-var getKeys  = __webpack_require__(62)
+var getKeys  = __webpack_require__(63)
   , gOPS     = __webpack_require__(106)
   , pIE      = __webpack_require__(86)
   , toObject = __webpack_require__(21)
@@ -28342,7 +28343,7 @@ module.exports = !$assign || __webpack_require__(7)(function(){
 
 var dP       = __webpack_require__(15)
   , anObject = __webpack_require__(5)
-  , getKeys  = __webpack_require__(62);
+  , getKeys  = __webpack_require__(63);
 
 module.exports = __webpack_require__(14) ? Object.defineProperties : function defineProperties(O, Properties){
   anObject(O);
@@ -28360,7 +28361,7 @@ module.exports = __webpack_require__(14) ? Object.defineProperties : function de
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = __webpack_require__(29)
-  , gOPN      = __webpack_require__(61).f
+  , gOPN      = __webpack_require__(62).f
   , toString  = {}.toString;
 
 var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -28405,7 +28406,7 @@ module.exports = function(object, names){
 /* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys   = __webpack_require__(62)
+var getKeys   = __webpack_require__(63)
   , toIObject = __webpack_require__(29)
   , isEnum    = __webpack_require__(86).f;
 module.exports = function(isEntries){
@@ -28427,7 +28428,7 @@ module.exports = function(isEntries){
 /***/ (function(module, exports, __webpack_require__) {
 
 // all object keys, includes non-enumerable and symbols
-var gOPN     = __webpack_require__(61)
+var gOPN     = __webpack_require__(62)
   , gOPS     = __webpack_require__(106)
   , anObject = __webpack_require__(5)
   , Reflect  = __webpack_require__(6).Reflect;
@@ -28796,7 +28797,7 @@ var AtomicBlockUtils = __webpack_require__(595);
 var BlockMapBuilder = __webpack_require__(87);
 var CharacterMetadata = __webpack_require__(39);
 var CompositeDraftDecorator = __webpack_require__(596);
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var ContentState = __webpack_require__(149);
 var DefaultDraftBlockRenderMap = __webpack_require__(150);
 var DefaultDraftInlineStyle = __webpack_require__(209);
@@ -29275,7 +29276,7 @@ module.exports = DraftStringKey;
 
 
 var CharacterMetadata = __webpack_require__(39);
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var DefaultDraftBlockRenderMap = __webpack_require__(150);
 var DraftEntity = __webpack_require__(109);
 var Immutable = __webpack_require__(12);
@@ -43236,7 +43237,7 @@ module.exports = PooledClass.addPoolingTo(CallbackQueue);
 
 
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var ReactDOMComponentTree = __webpack_require__(16);
 var ReactInstrumentation = __webpack_require__(34);
 
@@ -43973,7 +43974,7 @@ module.exports = ReactInputSelection;
 var _prodInvariant = __webpack_require__(8);
 
 var DOMLazyTree = __webpack_require__(78);
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var React = __webpack_require__(80);
 var ReactBrowserEventEmitter = __webpack_require__(117);
 var ReactCurrentOwner = __webpack_require__(46);
@@ -46156,7 +46157,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(17);
 exports.context_sample = monadic_react_1.any()([
     _ => monadic_react_1.button(`Force reload`)(null).then(undefined, _ => monadic_react_1.get_context().then(undefined, ctxt => ctxt.force_reload())),
-    _ => monadic_react_1.button(`Toggle mode`)(null).then(undefined, _ => monadic_react_1.get_context().then(undefined, ctxt => ctxt.set_mode(ctxt.mode == "view" ? "edit" : "view")))
 ])(null).then(`context sample`, _ => monadic_react_1.get_context().then(undefined, ctxt => monadic_react_1.string("view")(`Context: ${JSON.stringify(ctxt)}`).ignore()));
 
 
@@ -46167,7 +46167,7 @@ exports.context_sample = monadic_react_1.any()([
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const immutable_1 = __webpack_require__(69);
+const immutable_1 = __webpack_require__(57);
 const monadic_react_1 = __webpack_require__(17);
 exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-list`, monadic_react_1.unit(immutable_1.Range(1, 5).toList()), s => monadic_react_1.button(`+`)(s.items.max() + 1)).then(`editable number list container`, s => monadic_react_1.string("view")(`The selected item is ${s.items.get(s.selected_index)}`).ignore());
 
@@ -46231,7 +46231,7 @@ exports.link_sample = monadic_react_1.any(`link sample`)([
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const immutable_1 = __webpack_require__(69);
+const immutable_1 = __webpack_require__(57);
 const monadic_react_1 = __webpack_require__(17);
 exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view")(`This is item ${n}`).ignore());
 
@@ -46356,7 +46356,7 @@ exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString()
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const immutable_1 = __webpack_require__(69);
+const immutable_1 = __webpack_require__(57);
 const monadic_react_1 = __webpack_require__(17);
 exports.tabbed_menu_sample = monadic_react_1.simple_menu({ kind: "tabs", max_tabs: 5 }, p => p.title, `tabbed menu`)(immutable_1.Range(1, 10).map(i => ({ title: `Tab ${i}`, content: `This is the content of the tab ${i}.` })).map(s => ({ kind: "item", value: s })).toArray(), p => monadic_react_1.string("view")(p.content)).ignore();
 
@@ -46410,7 +46410,7 @@ exports.editable_list = function (list_name, initial_items, create_new_form) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Immutable = __webpack_require__(69);
+const Immutable = __webpack_require__(57);
 const core_1 = __webpack_require__(35);
 const primitives_1 = __webpack_require__(97);
 const html_1 = __webpack_require__(83);
@@ -46717,9 +46717,9 @@ exports.rich_text = rich_text;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(20);
-const Immutable = __webpack_require__(69);
+const Immutable = __webpack_require__(57);
 const Option = __webpack_require__(179);
-const Slugify = __webpack_require__(779);
+const Slugify = __webpack_require__(776);
 const core_1 = __webpack_require__(35);
 const html_1 = __webpack_require__(83);
 exports.parse_url = function (template) {
@@ -46731,7 +46731,6 @@ exports.parse_url = function (template) {
         for (var i = 0; i < url_items.length; i++) {
             let x = Slugify(url_items[i]);
             let y = Slugify(template[i]);
-            console.log(x, y);
             if (typeof y === "string") {
                 if (x != y)
                     return Option.none();
@@ -46750,7 +46749,7 @@ exports.instantiate_url = function (template) {
     return t => {
         let url = "";
         for (var i = 0; i < template.length; i++) {
-            let el = template[i];
+            let el = Slugify(template[i]);
             if (typeof el === "string") {
                 url = i == 0 ? el : `${url}/${el}`;
             }
@@ -46793,16 +46792,7 @@ class Application extends React.Component {
     context_from_props(props, p) {
         let self = this;
         return {
-            mode: props.mode,
             current_page: p,
-            set_mode: (new_mode, callback) => core_1.make_C(ctxt => inner_callback => {
-                if (this.state.kind == "loading routes")
-                    return null;
-                let old_context = this.state.context;
-                let new_state = Object.assign({}, this.state, { context: Object.assign({}, old_context, { mode: new_mode }) });
-                this.setState(new_state, () => inner_callback(callback)(null));
-                return null;
-            }),
             logic_frame: 0,
             force_reload: (callback) => core_1.make_C(ctxt => inner_callback => {
                 if (this.state.kind == "loading routes")
@@ -47193,7 +47183,7 @@ module.exports = function(hint){
 /***/ (function(module, exports, __webpack_require__) {
 
 // all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(62)
+var getKeys = __webpack_require__(63)
   , gOPS    = __webpack_require__(106)
   , pIE     = __webpack_require__(86);
 module.exports = function(it){
@@ -47212,7 +47202,7 @@ module.exports = function(it){
 /* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys   = __webpack_require__(62)
+var getKeys   = __webpack_require__(63)
   , toIObject = __webpack_require__(29);
 module.exports = function(object, el){
   var O      = toIObject(object)
@@ -47595,7 +47585,7 @@ $export($export.P + $export.F * !__webpack_require__(38)([].reduce, true), 'Arra
 var $export    = __webpack_require__(1)
   , html       = __webpack_require__(128)
   , cof        = __webpack_require__(36)
-  , toIndex    = __webpack_require__(65)
+  , toIndex    = __webpack_require__(66)
   , toLength   = __webpack_require__(18)
   , arraySlice = [].slice;
 
@@ -47669,7 +47659,7 @@ $export($export.P + $export.F * (fails(function(){
 /* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(64)('Array');
+__webpack_require__(65)('Array');
 
 /***/ }),
 /* 443 */
@@ -48110,7 +48100,7 @@ var global            = __webpack_require__(6)
   , inheritIfRequired = __webpack_require__(129)
   , toPrimitive       = __webpack_require__(42)
   , fails             = __webpack_require__(7)
-  , gOPN              = __webpack_require__(61).f
+  , gOPN              = __webpack_require__(62).f
   , gOPD              = __webpack_require__(31).f
   , dP                = __webpack_require__(15).f
   , $trim             = __webpack_require__(76).trim
@@ -48119,7 +48109,7 @@ var global            = __webpack_require__(6)
   , Base              = $Number
   , proto             = $Number.prototype
   // Opera ~12 has broken Object#toString
-  , BROKEN_COF        = cof(__webpack_require__(60)(proto)) == NUMBER
+  , BROKEN_COF        = cof(__webpack_require__(61)(proto)) == NUMBER
   , TRIM              = 'trim' in String.prototype;
 
 // 7.1.3 ToNumber(argument)
@@ -48427,7 +48417,7 @@ $export($export.S + $export.F, 'Object', {assign: __webpack_require__(193)});
 
 var $export = __webpack_require__(1)
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-$export($export.S, 'Object', {create: __webpack_require__(60)});
+$export($export.S, 'Object', {create: __webpack_require__(61)});
 
 /***/ }),
 /* 482 */
@@ -48549,7 +48539,7 @@ $export($export.S, 'Object', {is: __webpack_require__(201)});
 
 // 19.1.2.14 Object.keys(O)
 var toObject = __webpack_require__(21)
-  , $keys    = __webpack_require__(62);
+  , $keys    = __webpack_require__(63);
 
 __webpack_require__(41)('keys', function(){
   return function keys(it){
@@ -48633,14 +48623,14 @@ $export($export.G + $export.F * (parseInt != $parseInt), {parseInt: $parseInt});
 
 "use strict";
 
-var LIBRARY            = __webpack_require__(59)
+var LIBRARY            = __webpack_require__(60)
   , global             = __webpack_require__(6)
   , ctx                = __webpack_require__(49)
   , classof            = __webpack_require__(84)
   , $export            = __webpack_require__(1)
   , isObject           = __webpack_require__(11)
   , aFunction          = __webpack_require__(25)
-  , anInstance         = __webpack_require__(58)
+  , anInstance         = __webpack_require__(59)
   , forOf              = __webpack_require__(73)
   , speciesConstructor = __webpack_require__(139)
   , task               = __webpack_require__(144).set
@@ -48836,7 +48826,7 @@ if(!USE_NATIVE){
     this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
     this._n = false;          // <- notify
   };
-  Internal.prototype = __webpack_require__(63)($Promise.prototype, {
+  Internal.prototype = __webpack_require__(64)($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected){
       var reaction    = newPromiseCapability(speciesConstructor(this, $Promise));
@@ -48863,7 +48853,7 @@ if(!USE_NATIVE){
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 __webpack_require__(75)($Promise, PROMISE);
-__webpack_require__(64)(PROMISE);
+__webpack_require__(65)(PROMISE);
 Wrapper = __webpack_require__(48)[PROMISE];
 
 // statics
@@ -48959,7 +48949,7 @@ $export($export.S + $export.F * !__webpack_require__(7)(function(){
 
 // 26.1.2 Reflect.construct(target, argumentsList [, newTarget])
 var $export    = __webpack_require__(1)
-  , create     = __webpack_require__(60)
+  , create     = __webpack_require__(61)
   , aFunction  = __webpack_require__(25)
   , anObject   = __webpack_require__(5)
   , isObject   = __webpack_require__(11)
@@ -49258,7 +49248,7 @@ $export($export.S, 'Reflect', {set: set});
 var global            = __webpack_require__(6)
   , inheritIfRequired = __webpack_require__(129)
   , dP                = __webpack_require__(15).f
-  , gOPN              = __webpack_require__(61).f
+  , gOPN              = __webpack_require__(62).f
   , isRegExp          = __webpack_require__(103)
   , $flags            = __webpack_require__(101)
   , $RegExp           = global.RegExp
@@ -49297,7 +49287,7 @@ if(__webpack_require__(14) && (!CORRECT_NEW || __webpack_require__(7)(function()
   __webpack_require__(27)(global, 'RegExp', $RegExp);
 }
 
-__webpack_require__(64)('RegExp');
+__webpack_require__(65)('RegExp');
 
 /***/ }),
 /* 515 */
@@ -49589,7 +49579,7 @@ __webpack_require__(28)('fontsize', function(createHTML){
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export        = __webpack_require__(1)
-  , toIndex        = __webpack_require__(65)
+  , toIndex        = __webpack_require__(66)
   , fromCharCode   = String.fromCharCode
   , $fromCodePoint = String.fromCodePoint;
 
@@ -49818,7 +49808,7 @@ var global         = __webpack_require__(6)
   , $fails         = __webpack_require__(7)
   , shared         = __webpack_require__(107)
   , setToStringTag = __webpack_require__(75)
-  , uid            = __webpack_require__(66)
+  , uid            = __webpack_require__(67)
   , wks            = __webpack_require__(13)
   , wksExt         = __webpack_require__(203)
   , wksDefine      = __webpack_require__(146)
@@ -49829,11 +49819,11 @@ var global         = __webpack_require__(6)
   , toIObject      = __webpack_require__(29)
   , toPrimitive    = __webpack_require__(42)
   , createDesc     = __webpack_require__(54)
-  , _create        = __webpack_require__(60)
+  , _create        = __webpack_require__(61)
   , gOPNExt        = __webpack_require__(195)
   , $GOPD          = __webpack_require__(31)
   , $DP            = __webpack_require__(15)
-  , $keys          = __webpack_require__(62)
+  , $keys          = __webpack_require__(63)
   , gOPD           = $GOPD.f
   , dP             = $DP.f
   , gOPN           = gOPNExt.f
@@ -49956,11 +49946,11 @@ if(!USE_NATIVE){
 
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f   = $defineProperty;
-  __webpack_require__(61).f = gOPNExt.f = $getOwnPropertyNames;
+  __webpack_require__(62).f = gOPNExt.f = $getOwnPropertyNames;
   __webpack_require__(86).f  = $propertyIsEnumerable;
   __webpack_require__(106).f = $getOwnPropertySymbols;
 
-  if(DESCRIPTORS && !__webpack_require__(59)){
+  if(DESCRIPTORS && !__webpack_require__(60)){
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
@@ -50053,7 +50043,7 @@ var $export      = __webpack_require__(1)
   , $typed       = __webpack_require__(108)
   , buffer       = __webpack_require__(145)
   , anObject     = __webpack_require__(5)
-  , toIndex      = __webpack_require__(65)
+  , toIndex      = __webpack_require__(66)
   , toLength     = __webpack_require__(18)
   , isObject     = __webpack_require__(11)
   , ArrayBuffer  = __webpack_require__(6).ArrayBuffer
@@ -50093,7 +50083,7 @@ $export($export.P + $export.U + $export.F * __webpack_require__(7)(function(){
   }
 });
 
-__webpack_require__(64)(ARRAY_BUFFER);
+__webpack_require__(65)(ARRAY_BUFFER);
 
 /***/ }),
 /* 544 */
@@ -50494,8 +50484,8 @@ var $export     = __webpack_require__(1)
   , OBSERVABLE  = __webpack_require__(13)('observable')
   , aFunction   = __webpack_require__(25)
   , anObject    = __webpack_require__(5)
-  , anInstance  = __webpack_require__(58)
-  , redefineAll = __webpack_require__(63)
+  , anInstance  = __webpack_require__(59)
+  , redefineAll = __webpack_require__(64)
   , hide        = __webpack_require__(26)
   , forOf       = __webpack_require__(73)
   , RETURN      = forOf.RETURN;
@@ -50683,7 +50673,7 @@ hide($Observable.prototype, OBSERVABLE, function(){ return this; });
 
 $export($export.G, {Observable: $Observable});
 
-__webpack_require__(64)('Observable');
+__webpack_require__(65)('Observable');
 
 /***/ }),
 /* 571 */
@@ -52132,7 +52122,7 @@ module.exports = factory;
 
 var BlockMapBuilder = __webpack_require__(87);
 var CharacterMetadata = __webpack_require__(39);
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var DraftModifier = __webpack_require__(23);
 var EditorState = __webpack_require__(10);
 var SelectionState = __webpack_require__(88);
@@ -53511,7 +53501,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var DraftEditorTextNode = __webpack_require__(605);
 var React = __webpack_require__(20);
 var ReactDOM = __webpack_require__(77);
@@ -54000,7 +53990,7 @@ module.exports = {
 
 
 var CharacterMetadata = __webpack_require__(39);
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var Immutable = __webpack_require__(12);
 
 var convertFromHTMLtoContentBlocks = __webpack_require__(216);
@@ -54694,7 +54684,7 @@ var _assign = __webpack_require__(9);
 
 var _extends = _assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var ContentBlock = __webpack_require__(67);
+var ContentBlock = __webpack_require__(68);
 var ContentState = __webpack_require__(149);
 var DraftEntity = __webpack_require__(109);
 
@@ -54817,7 +54807,7 @@ module.exports = createCharacterList;
 
 
 
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var substr = UnicodeUtils.substr;
 
@@ -54863,7 +54853,7 @@ module.exports = decodeEntityRanges;
 
 
 
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var _require = __webpack_require__(12);
 
@@ -55906,7 +55896,7 @@ module.exports = editOnSelect;
 
 
 var DraftStringKey = __webpack_require__(215);
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var strlen = UnicodeUtils.strlen;
 
@@ -55952,7 +55942,7 @@ module.exports = encodeEntityRanges;
 
 
 
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var findRangesImmutable = __webpack_require__(111);
 
@@ -56027,7 +56017,7 @@ module.exports = encodeInlineStyleRanges;
  * 
  */
 
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var getRangeClientRects = __webpack_require__(220);
 var invariant = __webpack_require__(3);
@@ -57030,7 +57020,7 @@ module.exports = keyCommandMoveSelectionToStartOfBlock;
 
 
 var EditorState = __webpack_require__(10);
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var moveSelectionBackward = __webpack_require__(154);
 var removeTextWithStrategy = __webpack_require__(89);
@@ -57080,7 +57070,7 @@ module.exports = keyCommandPlainBackspace;
 
 
 var EditorState = __webpack_require__(10);
-var UnicodeUtils = __webpack_require__(68);
+var UnicodeUtils = __webpack_require__(69);
 
 var moveSelectionForward = __webpack_require__(227);
 var removeTextWithStrategy = __webpack_require__(89);
@@ -58014,7 +58004,7 @@ module.exports = UnicodeBidiService;
 
 
 
-var UAParser = __webpack_require__(776);
+var UAParser = __webpack_require__(777);
 
 var UNKNOWN = 'Unknown';
 
@@ -63011,7 +63001,7 @@ module.exports = FallbackCompositionState;
 
 
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 
 var MUST_USE_PROPERTY = DOMProperty.injection.MUST_USE_PROPERTY;
 var HAS_BOOLEAN_VALUE = DOMProperty.injection.HAS_BOOLEAN_VALUE;
@@ -64476,7 +64466,7 @@ var AutoFocusUtils = __webpack_require__(692);
 var CSSPropertyOperations = __webpack_require__(694);
 var DOMLazyTree = __webpack_require__(78);
 var DOMNamespaces = __webpack_require__(163);
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var DOMPropertyOperations = __webpack_require__(361);
 var EventPluginHub = __webpack_require__(93);
 var EventPluginRegistry = __webpack_require__(116);
@@ -65942,7 +65932,7 @@ module.exports = ReactDOMInput;
 
 
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var ReactComponentTreeHook = __webpack_require__(30);
 
 var warning = __webpack_require__(4);
@@ -66911,7 +66901,7 @@ module.exports = {
 
 
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var EventPluginRegistry = __webpack_require__(116);
 var ReactComponentTreeHook = __webpack_require__(30);
 
@@ -67821,7 +67811,7 @@ module.exports = ReactHostOperationHistoryHook;
 
 
 
-var DOMProperty = __webpack_require__(57);
+var DOMProperty = __webpack_require__(58);
 var EventPluginHub = __webpack_require__(93);
 var EventPluginUtils = __webpack_require__(164);
 var ReactComponentEnvironment = __webpack_require__(167);
@@ -73021,6 +73011,118 @@ module.exports = traverseAllChildren;
 /* 776 */
 /***/ (function(module, exports, __webpack_require__) {
 
+
+;(function (name, root, factory) {
+  if (true) {
+    module.exports = factory()
+  }
+  /* istanbul ignore next */
+  else if (typeof define === 'function' && define.amd) {
+    define(factory)
+  }
+  else {
+    root[name] = factory()
+  }
+}('slugify', this, function () {
+  var charMap = {
+    // latin
+    'À': 'A', 'Á': 'A', 'Â': 'A', 'Ã': 'A', 'Ä': 'A', 'Å': 'A', 'Æ': 'AE',
+    'Ç': 'C', 'È': 'E', 'É': 'E', 'Ê': 'E', 'Ë': 'E', 'Ì': 'I', 'Í': 'I',
+    'Î': 'I', 'Ï': 'I', 'Ð': 'D', 'Ñ': 'N', 'Ò': 'O', 'Ó': 'O', 'Ô': 'O',
+    'Õ': 'O', 'Ö': 'O', 'Ő': 'O', 'Ø': 'O', 'Ù': 'U', 'Ú': 'U', 'Û': 'U',
+    'Ü': 'U', 'Ű': 'U', 'Ý': 'Y', 'Þ': 'TH', 'ß': 'ss', 'à': 'a', 'á': 'a',
+    'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'æ': 'ae', 'ç': 'c', 'è': 'e',
+    'é': 'e', 'ê': 'e', 'ë': 'e', 'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+    'ð': 'd', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
+    'ő': 'o', 'ø': 'o', 'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ű': 'u',
+    'ý': 'y', 'þ': 'th', 'ÿ': 'y', 'ẞ': 'SS',
+    // greek
+    'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': '8',
+    'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm', 'ν': 'n', 'ξ': '3', 'ο': 'o', 'π': 'p',
+    'ρ': 'r', 'σ': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'ps', 'ω': 'w',
+    'ά': 'a', 'έ': 'e', 'ί': 'i', 'ό': 'o', 'ύ': 'y', 'ή': 'h', 'ώ': 'w', 'ς': 's',
+    'ϊ': 'i', 'ΰ': 'y', 'ϋ': 'y', 'ΐ': 'i',
+    'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': '8',
+    'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M', 'Ν': 'N', 'Ξ': '3', 'Ο': 'O', 'Π': 'P',
+    'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'PS', 'Ω': 'W',
+    'Ά': 'A', 'Έ': 'E', 'Ί': 'I', 'Ό': 'O', 'Ύ': 'Y', 'Ή': 'H', 'Ώ': 'W', 'Ϊ': 'I',
+    'Ϋ': 'Y',
+    // turkish
+    'ş': 's', 'Ş': 'S', 'ı': 'i', 'İ': 'I', 'ç': 'c', 'Ç': 'C', 'ü': 'u', 'Ü': 'U',
+    'ö': 'o', 'Ö': 'O', 'ğ': 'g', 'Ğ': 'G',
+    // russian
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+    'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+    'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c',
+    'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': 'u', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu',
+    'я': 'ya',
+    'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'Zh',
+    'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O',
+    'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C',
+    'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sh', 'Ъ': 'U', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu',
+    'Я': 'Ya',
+    // ukranian
+    'Є': 'Ye', 'І': 'I', 'Ї': 'Yi', 'Ґ': 'G', 'є': 'ye', 'і': 'i', 'ї': 'yi', 'ґ': 'g',
+    // czech
+    'č': 'c', 'ď': 'd', 'ě': 'e', 'ň': 'n', 'ř': 'r', 'š': 's', 'ť': 't', 'ů': 'u',
+    'ž': 'z', 'Č': 'C', 'Ď': 'D', 'Ě': 'E', 'Ň': 'N', 'Ř': 'R', 'Š': 'S', 'Ť': 'T',
+    'Ů': 'U', 'Ž': 'Z',
+    // polish
+    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z',
+    'ż': 'z', 'Ą': 'A', 'Ć': 'C', 'Ę': 'e', 'Ł': 'L', 'Ń': 'N', 'Ś': 'S',
+    'Ź': 'Z', 'Ż': 'Z',
+    // latvian
+    'ā': 'a', 'č': 'c', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n',
+    'š': 's', 'ū': 'u', 'ž': 'z', 'Ā': 'A', 'Č': 'C', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'i',
+    'Ķ': 'k', 'Ļ': 'L', 'Ņ': 'N', 'Š': 'S', 'Ū': 'u', 'Ž': 'Z',
+    // currency
+    '€': 'euro', '₢': 'cruzeiro', '₣': 'french franc', '£': 'pound',
+    '₤': 'lira', '₥': 'mill', '₦': 'naira', '₧': 'peseta', '₨': 'rupee',
+    '₩': 'won', '₪': 'new shequel', '₫': 'dong', '₭': 'kip', '₮': 'tugrik',
+    '₯': 'drachma', '₰': 'penny', '₱': 'peso', '₲': 'guarani', '₳': 'austral',
+    '₴': 'hryvnia', '₵': 'cedi', '¢': 'cent', '¥': 'yen', '元': 'yuan',
+    '円': 'yen', '﷼': 'rial', '₠': 'ecu', '¤': 'currency', '฿': 'baht',
+    '$': 'dollar',
+    // symbols
+    '©': '(c)', 'œ': 'oe', 'Œ': 'OE', '∑': 'sum', '®': '(r)', '†': '+',
+    '“': '"', '”': '"', '‘': "'", '’': "'", '∂': 'd', 'ƒ': 'f', '™': 'tm',
+    '℠': 'sm', '…': '...', '˚': 'o', 'º': 'o', 'ª': 'a', '•': '*',
+    '∆': 'delta', '∞': 'infinity', '♥': 'love', '&': 'and', '|': 'or',
+    '<': 'less', '>': 'greater'
+  }
+
+  function replace (string, replacement) {
+    return string.split('').reduce(function (result, ch) {
+      if (charMap[ch]) {
+        ch = charMap[ch]
+      }
+      // allowed
+      ch = ch.replace(/[^\w\s$*_+~.()'"!\-:@]/g, '')
+      result += ch
+      return result
+    }, '')
+      // trim leading/trailing spaces
+      .replace(/^\s+|\s+$/g, '')
+      // convert spaces
+      .replace(/[-\s]+/g, replacement || '-')
+      // remove trailing separator
+      .replace('#{replacement}$', '')
+  }
+
+  replace.extend = function (customMap) {
+    for (var key in customMap) {
+      charMap[key] = customMap[key]
+    }
+  }
+
+  return replace
+}))
+
+
+/***/ }),
+/* 777 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var __WEBPACK_AMD_DEFINE_RESULT__;/**
  * UAParser.js v0.7.13
  * Lightweight JavaScript-based User-Agent string parser
@@ -73939,7 +74041,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
         exports.UAParser = UAParser;
     } else {
         // requirejs env (optional)
-        if ("function" === FUNC_TYPE && __webpack_require__(778)) {
+        if ("function" === FUNC_TYPE && __webpack_require__(779)) {
             !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
                 return UAParser;
             }.call(exports, __webpack_require__, exports, module),
@@ -73975,7 +74077,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 
 /***/ }),
-/* 777 */
+/* 778 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -74003,125 +74105,13 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 778 */
+/* 779 */
 /***/ (function(module, exports) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
 module.exports = __webpack_amd_options__;
 
 /* WEBPACK VAR INJECTION */}.call(exports, {}))
-
-/***/ }),
-/* 779 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-;(function (name, root, factory) {
-  if (true) {
-    module.exports = factory()
-  }
-  /* istanbul ignore next */
-  else if (typeof define === 'function' && define.amd) {
-    define(factory)
-  }
-  else {
-    root[name] = factory()
-  }
-}('slugify', this, function () {
-  var charMap = {
-    // latin
-    'À': 'A', 'Á': 'A', 'Â': 'A', 'Ã': 'A', 'Ä': 'A', 'Å': 'A', 'Æ': 'AE',
-    'Ç': 'C', 'È': 'E', 'É': 'E', 'Ê': 'E', 'Ë': 'E', 'Ì': 'I', 'Í': 'I',
-    'Î': 'I', 'Ï': 'I', 'Ð': 'D', 'Ñ': 'N', 'Ò': 'O', 'Ó': 'O', 'Ô': 'O',
-    'Õ': 'O', 'Ö': 'O', 'Ő': 'O', 'Ø': 'O', 'Ù': 'U', 'Ú': 'U', 'Û': 'U',
-    'Ü': 'U', 'Ű': 'U', 'Ý': 'Y', 'Þ': 'TH', 'ß': 'ss', 'à': 'a', 'á': 'a',
-    'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'æ': 'ae', 'ç': 'c', 'è': 'e',
-    'é': 'e', 'ê': 'e', 'ë': 'e', 'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
-    'ð': 'd', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
-    'ő': 'o', 'ø': 'o', 'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ű': 'u',
-    'ý': 'y', 'þ': 'th', 'ÿ': 'y', 'ẞ': 'SS',
-    // greek
-    'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'h', 'θ': '8',
-    'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm', 'ν': 'n', 'ξ': '3', 'ο': 'o', 'π': 'p',
-    'ρ': 'r', 'σ': 's', 'τ': 't', 'υ': 'y', 'φ': 'f', 'χ': 'x', 'ψ': 'ps', 'ω': 'w',
-    'ά': 'a', 'έ': 'e', 'ί': 'i', 'ό': 'o', 'ύ': 'y', 'ή': 'h', 'ώ': 'w', 'ς': 's',
-    'ϊ': 'i', 'ΰ': 'y', 'ϋ': 'y', 'ΐ': 'i',
-    'Α': 'A', 'Β': 'B', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'H', 'Θ': '8',
-    'Ι': 'I', 'Κ': 'K', 'Λ': 'L', 'Μ': 'M', 'Ν': 'N', 'Ξ': '3', 'Ο': 'O', 'Π': 'P',
-    'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'Y', 'Φ': 'F', 'Χ': 'X', 'Ψ': 'PS', 'Ω': 'W',
-    'Ά': 'A', 'Έ': 'E', 'Ί': 'I', 'Ό': 'O', 'Ύ': 'Y', 'Ή': 'H', 'Ώ': 'W', 'Ϊ': 'I',
-    'Ϋ': 'Y',
-    // turkish
-    'ş': 's', 'Ş': 'S', 'ı': 'i', 'İ': 'I', 'ç': 'c', 'Ç': 'C', 'ü': 'u', 'Ü': 'U',
-    'ö': 'o', 'Ö': 'O', 'ğ': 'g', 'Ğ': 'G',
-    // russian
-    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
-    'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
-    'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'c',
-    'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': 'u', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu',
-    'я': 'ya',
-    'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'Zh',
-    'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O',
-    'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 'Ц': 'C',
-    'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sh', 'Ъ': 'U', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu',
-    'Я': 'Ya',
-    // ukranian
-    'Є': 'Ye', 'І': 'I', 'Ї': 'Yi', 'Ґ': 'G', 'є': 'ye', 'і': 'i', 'ї': 'yi', 'ґ': 'g',
-    // czech
-    'č': 'c', 'ď': 'd', 'ě': 'e', 'ň': 'n', 'ř': 'r', 'š': 's', 'ť': 't', 'ů': 'u',
-    'ž': 'z', 'Č': 'C', 'Ď': 'D', 'Ě': 'E', 'Ň': 'N', 'Ř': 'R', 'Š': 'S', 'Ť': 'T',
-    'Ů': 'U', 'Ž': 'Z',
-    // polish
-    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z',
-    'ż': 'z', 'Ą': 'A', 'Ć': 'C', 'Ę': 'e', 'Ł': 'L', 'Ń': 'N', 'Ś': 'S',
-    'Ź': 'Z', 'Ż': 'Z',
-    // latvian
-    'ā': 'a', 'č': 'c', 'ē': 'e', 'ģ': 'g', 'ī': 'i', 'ķ': 'k', 'ļ': 'l', 'ņ': 'n',
-    'š': 's', 'ū': 'u', 'ž': 'z', 'Ā': 'A', 'Č': 'C', 'Ē': 'E', 'Ģ': 'G', 'Ī': 'i',
-    'Ķ': 'k', 'Ļ': 'L', 'Ņ': 'N', 'Š': 'S', 'Ū': 'u', 'Ž': 'Z',
-    // currency
-    '€': 'euro', '₢': 'cruzeiro', '₣': 'french franc', '£': 'pound',
-    '₤': 'lira', '₥': 'mill', '₦': 'naira', '₧': 'peseta', '₨': 'rupee',
-    '₩': 'won', '₪': 'new shequel', '₫': 'dong', '₭': 'kip', '₮': 'tugrik',
-    '₯': 'drachma', '₰': 'penny', '₱': 'peso', '₲': 'guarani', '₳': 'austral',
-    '₴': 'hryvnia', '₵': 'cedi', '¢': 'cent', '¥': 'yen', '元': 'yuan',
-    '円': 'yen', '﷼': 'rial', '₠': 'ecu', '¤': 'currency', '฿': 'baht',
-    '$': 'dollar',
-    // symbols
-    '©': '(c)', 'œ': 'oe', 'Œ': 'OE', '∑': 'sum', '®': '(r)', '†': '+',
-    '“': '"', '”': '"', '‘': "'", '’': "'", '∂': 'd', 'ƒ': 'f', '™': 'tm',
-    '℠': 'sm', '…': '...', '˚': 'o', 'º': 'o', 'ª': 'a', '•': '*',
-    '∆': 'delta', '∞': 'infinity', '♥': 'love', '&': 'and', '|': 'or',
-    '<': 'less', '>': 'greater'
-  }
-
-  function replace (string, replacement) {
-    return string.split('').reduce(function (result, ch) {
-      if (charMap[ch]) {
-        ch = charMap[ch]
-      }
-      // allowed
-      ch = ch.replace(/[^\w\s$*_+~.()'"!\-:@]/g, '')
-      result += ch
-      return result
-    }, '')
-      // trim leading/trailing spaces
-      .replace(/^\s+|\s+$/g, '')
-      // convert spaces
-      .replace(/[-\s]+/g, replacement || '-')
-      // remove trailing separator
-      .replace('#{replacement}$', '')
-  }
-
-  replace.extend = function (customMap) {
-    for (var key in customMap) {
-      charMap[key] = customMap[key]
-    }
-  }
-
-  return replace
-}))
-
 
 /***/ })
 /******/ ]);
