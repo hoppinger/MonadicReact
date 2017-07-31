@@ -56,13 +56,17 @@ export declare type SelectorProps<A> = {
     selected_item: undefined | A;
 } & CmdCommon<A>;
 export declare type ButtonProps<A> = {
-    kind: "button";
-    type: "a" | "button";
     label: string;
     x: A;
     disabled: boolean;
     className: string;
-} & CmdCommon<A>;
+} & CmdCommon<A> & ({
+    kind: "button";
+} | {
+    kind: "a";
+    href: string;
+    rel?: "nofollow";
+});
 export declare type LinkProps = {
     kind: "link";
     label: string;
@@ -86,7 +90,7 @@ export declare function form<A, B>(className?: string, key?: string, dbg?: () =>
 export declare let selector: <A>(type: SelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: A[], selected_item?: A) => C<A>;
 export declare let multi_selector: <A>(type: MultiSelectorType, to_string: (_: A) => string, key?: string, dbg?: () => string) => (items: A[], selected_items?: A[]) => C<A[]>;
 export declare let image: (mode: Mode, key?: string, dbg?: () => string) => (src: string) => C<string>;
-export declare let a: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
+export declare let a: <A>(label: string, href?: string, rel?: "nofollow", disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
 export declare let button: <A>(label: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => (x: A) => C<A>;
 export declare let link: <A>(label: string, url: string, disabled?: boolean, key?: string, className?: string, dbg?: () => string) => C<void>;
 export declare let file: <A>(mode: Mode, label: string, url: string, disabled?: boolean, key?: string, dbg?: () => string) => C<File>;

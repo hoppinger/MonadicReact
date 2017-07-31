@@ -7,6 +7,7 @@
 
 
 ## various improvements
+- [ ] add "p" tag
 - [ ] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] only hide tab arrows if less than maximum
 - [ ] use never instead of filter(_ => false) in samples
@@ -66,7 +67,8 @@
 - [ ] hierarchical menu
 
 ##  scaffolder (4 days)
-- [ ] various scaffolded files are broken (rich text especially)
+- [ ] do not use `setInterval`, always use `setTimeout`
+- [ ] various scaffolded files do not compile (rich text especially)
 - [ ] Api.getMWithPictures/updateMWithPictures operators should already be lifted out of the box (from the scaffolder)
 - [ ] Api.getM/updateM/download_pic/upload_pic operators should already be lifted out of the box (from the scaffolder)
 - [ ] login forms should already be scaffolded

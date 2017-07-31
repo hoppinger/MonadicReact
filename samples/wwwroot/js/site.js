@@ -20756,13 +20756,13 @@ exports.simple_menu = function (type, to_string, key, dbg) {
             :
                 []).concat(items.map((item, i) => {
             return (s) => item.kind == "item" ?
-                html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(html_1.a(to_string(item.value), false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
+                html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(html_1.a(to_string(item.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
                 :
                     exports.any()([
-                        (s) => html_1.div(`${entry_class} `)(html_1.a(item.label, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
+                        (s) => html_1.div(`${entry_class} `)(html_1.a(item.label, undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
                     ].concat((s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
                         (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
-                        item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(html_1.a(to_string(c.value), false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
+                        item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(html_1.a(to_string(c.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
                         :
                             []))(s);
         }).filter((i, i_i) => type == "side menu" || i_i >= s.shown_range.first && (i_i - s.shown_range.first) < s.shown_range.amount)
@@ -21071,17 +21071,20 @@ class Button extends React.Component {
         this.setState(Object.assign({}, this.state, { x: new_props.x }));
     }
     render() {
-        return this.props.type == "a" ?
-            React.createElement("a", { className: `${this.props.className ? this.props.className : ""}${this.props.disabled ? " disabled" : ""}`, onClick: () => this.props.cont(() => { })(this.state.x) }, this.props.label)
+        return this.props.kind == "a" ?
+            React.createElement("a", { href: this.props.href, rel: this.props.rel || "", className: `${this.props.className ? this.props.className : ""}${this.props.disabled ? " disabled" : ""}`, onClick: e => {
+                    this.props.cont(() => { })(this.state.x);
+                    e.stopPropagation();
+                } }, this.props.label)
             :
                 React.createElement("button", { type: "button", className: `button ${this.props.className ? this.props.className : ""}`, disabled: this.props.disabled, onClick: () => this.props.cont(() => { })(this.state.x) }, this.props.label);
     }
 }
-exports.a = function (label, disabled, key, className, dbg) {
-    return x => core_1.make_C(ctxt => cont => React.createElement(Button, { kind: "button", debug_info: dbg, label: label, type: "a", disabled: !!disabled, x: x, context: ctxt, cont: cont, key: key, className: className }));
+exports.a = function (label, href, rel, disabled, key, className, dbg) {
+    return x => core_1.make_C(ctxt => cont => React.createElement(Button, { kind: "a", debug_info: dbg, label: label, href: href || "#", rel: rel, disabled: !!disabled, x: x, context: ctxt, cont: cont, key: key, className: className }));
 };
 exports.button = function (label, disabled, key, className, dbg) {
-    return x => core_1.make_C(ctxt => cont => React.createElement(Button, { kind: "button", debug_info: dbg, label: label, type: "button", disabled: !!disabled, x: x, context: ctxt, cont: cont, key: key, className: className }));
+    return x => core_1.make_C(ctxt => cont => React.createElement(Button, { kind: "button", debug_info: dbg, label: label, disabled: !!disabled, x: x, context: ctxt, cont: cont, key: key, className: className }));
 };
 class Link extends React.Component {
     constructor(props, context) {

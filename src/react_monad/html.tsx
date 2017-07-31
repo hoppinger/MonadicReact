@@ -14,7 +14,7 @@ export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorT
 export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<string>
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
-export type ButtonProps<A> = { kind:"button", type:"a"|"button", label:string, x:A, disabled:boolean, className:string } & CmdCommon<A>
+export type ButtonProps<A> = { label:string, x:A, disabled:boolean, className:string } & CmdCommon<A> & ({ kind:"button" } | { kind:"a", href:string, rel?:"nofollow" })
 export type LinkProps = { kind:"link", label:string, url:string, disabled:boolean, className:string } & CmdCommon<void>
 export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
@@ -376,9 +376,12 @@ class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
     this.setState({...this.state, x:new_props.x})
   }
   render() {
-    return this.props.type == "a" ?
-      <a className={`${this.props.className ? this.props.className : ""}${this.props.disabled ? " disabled" : ""}`} // disabled={this.props.disabled}
-         onClick={() => this.props.cont(() => {})(this.state.x)} >{this.props.label}</a>
+    return this.props.kind == "a" ?
+      <a href={this.props.href} rel={this.props.rel || ""} className={`${this.props.className ? this.props.className : ""}${this.props.disabled ? " disabled" : ""}`} // disabled={this.props.disabled}
+         onClick={e => {
+           this.props.cont(() => {})(this.state.x)
+           e.stopPropagation()
+         } }>{this.props.label}</a>
 
       :
       <button type="button" className={`button ${this.props.className ? this.props.className : ""}`} disabled={this.props.disabled}
@@ -386,16 +389,16 @@ class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
   }
 }
 
-export let a = function<A>(label:string, disabled?:boolean, key?:string, className?:string, dbg?:() => string) : ((x:A) => C<A>) {
+export let a = function<A>(label:string, href?:string, rel?:"nofollow", disabled?:boolean, key?:string, className?:string, dbg?:() => string) : ((x:A) => C<A>) {
   return x => make_C<A>(ctxt => cont =>
     React.createElement<ButtonProps<A>>(Button,
-      { kind:"button", debug_info:dbg, label:label, type:"a", disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key, className:className }))
+      { kind:"a", debug_info:dbg, label:label, href:href || "#", rel:rel, disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key, className:className }))
 }
 
 export let button = function<A>(label:string, disabled?:boolean, key?:string, className?:string, dbg?:() => string) : ((x:A) => C<A>) {
   return x => make_C<A>(ctxt => cont =>
     React.createElement<ButtonProps<A>>(Button,
-      { kind:"button", debug_info:dbg, label:label, type:"button", disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key, className:className }))
+      { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key, className:className }))
 }
 
 

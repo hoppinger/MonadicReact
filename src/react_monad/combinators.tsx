@@ -309,19 +309,19 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
 
                   item.kind == "item" ?
                     div<MenuState, MenuState>(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(
-                      a<MenuState>(to_string(item.value), false, undefined)
+                      a<MenuState>(to_string(item.value), undefined, undefined, false, undefined)
                     )({...s, sub_selected:{ kind:"nothing" }, selected:item, last_action:{kind:"selection"} })
                   :
                     any<MenuState, MenuState>()([
                       (s:MenuState) => div<MenuState, MenuState>(`${entry_class} `)(
-                        a<MenuState>(item.label, false, undefined)
+                        a<MenuState>(item.label, undefined, undefined, false, undefined)
                       )({...s, sub_selected:item, last_action:{kind:"selection"} })
                     ].concat(
                       (s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
                       (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
                         item.children.map(c =>
                           (s:MenuState) => div<MenuState, MenuState>(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(
-                            a<MenuState>(to_string(c.value), false, undefined)
+                            a<MenuState>(to_string(c.value), undefined, undefined, false, undefined)
                           )({...s, sub_selected:item, selected:c, last_action:{kind:"selection"} })
                         )
                       :
