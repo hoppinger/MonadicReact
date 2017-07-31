@@ -380,7 +380,8 @@ class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
       <a href={this.props.href} rel={this.props.rel || ""} className={`${this.props.className ? this.props.className : ""}${this.props.disabled ? " disabled" : ""}`} // disabled={this.props.disabled}
          onClick={e => {
            this.props.cont(() => {})(this.state.x)
-           e.stopPropagation()
+           e.preventDefault()
+           return false
          } }>{this.props.label}</a>
 
       :
