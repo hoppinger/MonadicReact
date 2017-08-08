@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "typings": "dist/monadic_react.d.ts",
@@ -8,13 +8,14 @@
     "definition": "dist/monadic_react.d.ts"
   },
   "scripts": {
-    "server": "cd samples && ../node_modules/.bin/nodemon app.js",
-    "webpack": "./node_modules/.bin/webpack -w",
-    "stylesheets": "./node_modules/.bin/gulp"
+    "be": "cd samples && ../node_modules/.bin/nodemon app.js",
+    "fe": "./node_modules/.bin/webpack -w",
+    "css": "./node_modules/.bin/gulp"
   },
   "dependencies": {
     "@types/draft-js": "^0.9.1",
     "@types/i18next": "^2.3.35",
+    "@types/katex": "^0.5.0",
     "@types/react": "^15.0.30",
     "@types/react-dom": "^15.5.0",
     "babel-polyfill": "^6.22.0",
@@ -24,9 +25,11 @@
     "immutable": "^3.8.1",
     "jquery": "^2.2.2",
     "jquery-ujs": "^1.2.1",
+    "katex": "^0.7.1",
     "moment": "^2.18.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
+    "react-katex": "^1.2.0",
     "slugify": "^1.1.0",
     "whatwg-fetch": "^2.0.2"
   },

@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Immutable from 'immutable';
-import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils} from 'draft-js';
+import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
+import * as ReactKaTeX from 'react-katex';
 
 type DraftEditorCommand =
     "undo" |
@@ -117,7 +118,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
   render() {
     return (
       <div className="editor__inner">
-        {this.props.editable ?
+          {this.props.editable ?
           <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
                                  insert_media={(url:string, url_type:MediaType) => this.insert_media(url, url_type)}
@@ -131,7 +132,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
                   onChange={es => this.onChange(es)}
                   handleKeyCommand={(c:DraftEditorCommand) => this.handleKeyCommand(c)}
                   readOnly={!this.props.editable}
-                  blockRendererFn={mediaBlockRenderer}
+                  blockRendererFn={mediaBlockRenderer(this.props.editable)}
                   ref={(editor) => this.editor = editor }
                   spellCheck={true} />
         </div>
@@ -140,15 +141,35 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
   }
 }
 
-function mediaBlockRenderer(block:any) {
-  if (block.getType() === 'atomic') {
-    return {
-      component: Media,
-      editable: false,
-    };
+function mediaBlockRenderer(editable:boolean) {
+  return (block:ContentBlock) => {
+    if (block.getType() === 'atomic') {
+      return {
+        component: Media(editable),
+        editable: false,
+      };
+    }
+
+    return null;
+  }
+}
+
+type MathProps = {src:string, editable:boolean}
+type MathState = {}
+class Math extends React.Component<MathProps, MathState> {
+
+  constructor(props:MathProps, context:any) {
+    super(props, context)
+
+    this.state = {}
   }
 
-  return null;
+  render() {
+    return <ReactKaTeX.BlockMath
+        math={this.props.src}
+        errorColor={'#cc0000'}
+      />
+  }
 }
 
 const Image = (props:{src:string}) => {
@@ -165,9 +186,10 @@ const YouTube = (props:{src:string}) => {
           </iframe>)
 };
 
-export type MediaType = 'image' | 'video' | 'youtube'
+export type MediaType = 'image' | 'video' | 'youtube' | 'mathblock'
 
-let Media = (props) => {
+type MediaProps = { block:ContentBlock }
+let Media = (editable:boolean) => (props:MediaProps) => {
   let entity = Entity.get(props.block.getEntityAt(0))
   const {src} = entity.getData()
   const type = entity.getType()
@@ -178,6 +200,8 @@ let Media = (props) => {
     return <Video src={src} />;
   } else if (type === 'youtube') {
     return <YouTube src={src} />
+  } else if (type === 'mathblock') {
+    return <Math src={src} editable={editable} />
   }
 
   return null
@@ -236,6 +260,9 @@ class SlideEditorButtonsBar extends React.Component<
             </button>
             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
                     onClick={() => this.props.toggle_block_type('blockquote')}>
+            </button>
+             <button className={`text-editor__menu-button text-editor__menu-button--code`}
+                    onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
             </button>
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>

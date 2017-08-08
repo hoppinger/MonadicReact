@@ -9,7 +9,7 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react'
 
 export let rich_text_sample: C<void> =
-  repeat<string>()(rich_text("edit"))(null).map(s => s.substr(0, 200)).then(`rich text sample`,
+  repeat<string>()(rich_text("edit"))(null).map(s => s.substr(0, 1000)).then(`rich text sample`,
   delay<string>(2000, `rich text delayer`)(
     label<string,string>(`Raw content:`, true)(
       string("view")))).ignore()
