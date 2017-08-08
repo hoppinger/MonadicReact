@@ -288,3 +288,5 @@ __pycache__/
 !/dist/**/*.d.ts
 
 !/samples/**/*.js
+
+node_modules/**/*
