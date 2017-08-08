@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.28",
+  "version": "1.0.29",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "typings": "dist/monadic_react.d.ts",
@@ -15,7 +15,6 @@
   "dependencies": {
     "@types/draft-js": "^0.9.1",
     "@types/i18next": "^2.3.35",
-    "@types/katex": "^0.5.0",
     "@types/react": "^15.0.30",
     "@types/react-dom": "^15.5.0",
     "babel-polyfill": "^6.22.0",

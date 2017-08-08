@@ -4,7 +4,7 @@ import * as Immutable from 'immutable';
 import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
-import * as ReactKaTeX from 'react-katex';
+// import * as ReactKaTeX from 'react-katex';
 
 type DraftEditorCommand =
     "undo" |
@@ -165,10 +165,11 @@ class Math extends React.Component<MathProps, MathState> {
   }
 
   render() {
-    return <ReactKaTeX.BlockMath
-        math={this.props.src}
-        errorColor={'#cc0000'}
-      />
+    return null
+    // <ReactKaTeX.BlockMath
+    //     math={this.props.src}
+    //     errorColor={'#cc0000'}
+    //   />
   }
 }
 
@@ -261,9 +262,9 @@ class SlideEditorButtonsBar extends React.Component<
             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
                     onClick={() => this.props.toggle_block_type('blockquote')}>
             </button>
-             <button className={`text-editor__menu-button text-editor__menu-button--code`}
+             {/* <button className={`text-editor__menu-button text-editor__menu-button--code`}
                     onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
-            </button>
+            </button> */}
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>
             </button>
