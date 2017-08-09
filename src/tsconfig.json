@@ -52,5 +52,9 @@
   },
   "files": [
     "./monadic_react.ts"
-  ]
+  ],
+  "types": [],
+  "exclude": [
+      "/**/node_modules/*"
+    ]
 }

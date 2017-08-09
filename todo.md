@@ -1,14 +1,13 @@
 ## doing
 
 ## GO (7 days)
-- [ ] deploy on acceptance
-- [ ] deploy on production
 - [ ] test SEO
 
 
 ## various improvements
 - [ ] add "p" tag
 - [ ] deploy on https://monadic_react.productie.hoppinger.com/
+- [ ] routing and back button do not agree (yet)
 - [ ] only hide tab arrows if less than maximum
 - [ ] use never instead of filter(_ => false) in samples
 - [ ] pagination should be refactored with the regular combinators
