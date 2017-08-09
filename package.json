@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.36",
+  "version": "1.0.37",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "typings": "dist/monadic_react.d.ts",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/draft-js": "0.9.1",
     "@types/i18next": "2.3.35",
-    "@types/react": "15.5.2",
+    "@types/react": "16.0.2",
     "@types/react-dom": "15.5.2",
     "draft-js": "0.10.0",
     "i18next": "7.1.3",
