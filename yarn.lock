@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@types/draft-js@0.9.1":
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.9.1.tgz#5a626f5ae8409c6530a156a7741cea768142eb4f"
+"@types/draft-js@^0.10.10":
+  version "0.10.10"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.10.10.tgz#154a0db59a02a4bd4ced33720a36cef2853cb12b"
   dependencies:
     "@types/react" "*"
     immutable "^3.8.1"
@@ -12,6 +12,10 @@
 "@types/i18next@2.3.35":
   version "2.3.35"
   resolved "https://registry.yarnpkg.com/@types/i18next/-/i18next-2.3.35.tgz#6be28c2863154c21d81f670563d8ce6e2a3714b5"
+
+"@types/katex@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@types/katex/-/katex-0.5.0.tgz#a7dbb981f1bc89c8b1b5e7fa8a1ce2617ab2f358"
 
 "@types/node@*":
   version "8.0.20"
@@ -2815,6 +2819,12 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+katex@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/katex/-/katex-0.8.1.tgz#64227d979cd3bfe5bbf4f1f2ba64fd53e4fdeeaf"
+  dependencies:
+    match-at "^0.1.0"
+
 kind-of@^3.0.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -3191,6 +3201,10 @@ map-obj@^1.0.0, map-obj@^1.0.1:
 map-stream@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.1.0.tgz#e56aa94c4c8055a16404a0674b78f215f7c8e194"
+
+match-at@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/match-at/-/match-at-0.1.0.tgz#f561e7709ff9a105b85cc62c6b8ee7c15bf24f31"
 
 media-typer@0.3.0:
   version "0.3.0"
