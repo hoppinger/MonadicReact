@@ -4,6 +4,7 @@ import * as Immutable from 'immutable';
 import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
+import * as katex from "katex";
 // import * as ReactKaTeX from 'react-katex';
 
 type DraftEditorCommand =
@@ -104,8 +105,9 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
     return "not-handled"
   }
 
-  insert_media(url:string, url_type:MediaType) {
-    let entity_key = Entity.create(url_type, 'IMMUTABLE', {src: url})
+  insert_media(contentState: Draft.ContentState, url:string, url_type:MediaType) {
+    let new_content_state = contentState.createEntity(url_type, 'IMMUTABLE', {src: url})
+    let entity_key = new_content_state.getLastCreatedEntityKey() 
 
     let new_editor_state =
       AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
@@ -121,8 +123,8 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
           {this.props.editable ?
           <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
-                                 insert_media={(url:string, url_type:MediaType) => this.insert_media(url, url_type)}
-
+                                 insert_media={(url:string, url_type:MediaType) => 
+                                   this.insert_media(this.state.editor_state.getCurrentContent() ,url, url_type)}
                                   />
            :
           null}
@@ -132,7 +134,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
                   onChange={es => this.onChange(es)}
                   handleKeyCommand={(c:DraftEditorCommand) => this.handleKeyCommand(c)}
                   readOnly={!this.props.editable}
-                  blockRendererFn={mediaBlockRenderer(this.props.editable)}
+                  blockRendererFn={mediaBlockRenderer(this.state.editor_state.getCurrentContent(), this.props.editable)}
                   ref={(editor) => this.editor = editor }
                   spellCheck={true} />
         </div>
@@ -141,11 +143,11 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
   }
 }
 
-function mediaBlockRenderer(editable:boolean) {
+function mediaBlockRenderer(contentState: Draft.ContentState ,editable:boolean) {
   return (block:ContentBlock) => {
     if (block.getType() === 'atomic') {
       return {
-        component: Media(editable),
+        component: Media(contentState)(editable),
         editable: false,
       };
     }
@@ -160,16 +162,14 @@ class Math extends React.Component<MathProps, MathState> {
 
   constructor(props:MathProps, context:any) {
     super(props, context)
-
     this.state = {}
   }
-
   render() {
-    return null
-    // <ReactKaTeX.BlockMath
-    //     math={this.props.src}
-    //     errorColor={'#cc0000'}
-    //   />
+    return <span dangerouslySetInnerHTML={{__html: this.generateHTML() }}></span>
+  }
+
+  generateHTML() {
+    return katex.renderToString(this.props.src);
   }
 }
 
@@ -190,8 +190,8 @@ const YouTube = (props:{src:string}) => {
 export type MediaType = 'image' | 'video' | 'youtube' | 'mathblock'
 
 type MediaProps = { block:ContentBlock }
-let Media = (editable:boolean) => (props:MediaProps) => {
-  let entity = Entity.get(props.block.getEntityAt(0))
+let Media = (contentState: Draft.ContentState) => (editable:boolean) => (props:MediaProps) => {
+  let entity = contentState.getEntity(props.block.getEntityAt(0))
   const {src} = entity.getData()
   const type = entity.getType()
 
@@ -262,9 +262,9 @@ class SlideEditorButtonsBar extends React.Component<
             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
                     onClick={() => this.props.toggle_block_type('blockquote')}>
             </button>
-             {/* <button className={`text-editor__menu-button text-editor__menu-button--code`}
+            {/* <button className={`text-editor__menu-button text-editor__menu-button--code`}
                     onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
-            </button> */}
+            </button> */} 
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>
             </button>
