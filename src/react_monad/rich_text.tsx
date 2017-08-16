@@ -5,7 +5,8 @@ import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, C
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 import * as katex from "katex";
-// import * as ReactKaTeX from 'react-katex';
+
+'use strict'
 
 type DraftEditorCommand =
     "undo" |
@@ -147,7 +148,7 @@ function mediaBlockRenderer(contentState: Draft.ContentState ,editable:boolean) 
   return (block:ContentBlock) => {
     if (block.getType() === 'atomic') {
       return {
-        component: Media(contentState)(editable),
+        component: Media(editable),
         editable: false,
       };
     }
@@ -156,20 +157,46 @@ function mediaBlockRenderer(contentState: Draft.ContentState ,editable:boolean) 
   }
 }
 
-type MathProps = {src:string, editable:boolean}
-type MathState = {}
+type MathProps = { src:string, editable:boolean }
+type MathState = { editMode: boolean }
 class Math extends React.Component<MathProps, MathState> {
-
-  constructor(props:MathProps, context:any) {
-    super(props, context)
-    this.state = {}
+  constructor(props) {
+    super(props)
   }
+
+  _timer = null;
+  _container: HTMLElement = null;
+
+  _update() {
+    if (this._timer) {
+      clearTimeout(this._timer); 
+    }
+    this._timer = setTimeout(() => {
+      katex.render(
+        this.props.src,
+        this._container,
+        { displayMode: true }
+      )
+    }, 0);
+  }
+
+  componentDidMount() {
+    this._update()
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.src !== this.props.src) {
+      this._update();
+    }
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._timer)
+    this._timer = null
+  }
+
   render() {
-    return <span dangerouslySetInnerHTML={{__html: this.generateHTML() }}></span>
-  }
-
-  generateHTML() {
-    return katex.renderToString(this.props.src);
+    return <span ref={(c) => this._container = c} />
   }
 }
 
@@ -189,9 +216,9 @@ const YouTube = (props:{src:string}) => {
 
 export type MediaType = 'image' | 'video' | 'youtube' | 'mathblock'
 
-type MediaProps = { block:ContentBlock }
-let Media = (contentState: Draft.ContentState) => (editable:boolean) => (props:MediaProps) => {
-  let entity = contentState.getEntity(props.block.getEntityAt(0))
+type MediaProps = { contentState: Draft.ContentState, block:ContentBlock }
+let Media = (editable:boolean) => (props:MediaProps) => {
+  let entity = props.contentState.getEntity(props.block.getEntityAt(0))
   const {src} = entity.getData()
   const type = entity.getType()
 
@@ -202,7 +229,10 @@ let Media = (contentState: Draft.ContentState) => (editable:boolean) => (props:M
   } else if (type === 'youtube') {
     return <YouTube src={src} />
   } else if (type === 'mathblock') {
-    return <Math src={src} editable={editable} />
+    return <Math 
+      src={src} 
+      editable={editable}
+    />
   }
 
   return null
@@ -262,9 +292,9 @@ class SlideEditorButtonsBar extends React.Component<
             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
                     onClick={() => this.props.toggle_block_type('blockquote')}>
             </button>
-            {/* <button className={`text-editor__menu-button text-editor__menu-button--code`}
+            <button className={`text-editor__menu-button text-editor__menu-button--code`}
                     onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
-            </button> */} 
+            </button> 
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>
             </button>
