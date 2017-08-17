@@ -5,7 +5,7 @@
 
 
 ## various improvements
-- [ ] add "p" tag
+- [x] add "p" tag
 - [ ] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] routing and back button do not agree (yet)
 - [ ] only hide tab arrows if less than maximum
