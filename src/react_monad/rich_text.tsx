@@ -6,8 +6,6 @@ import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 import * as katex from "katex";
 
-'use strict'
-
 type DraftEditorCommand =
     "undo" |
     "redo" |
@@ -42,7 +40,6 @@ type DraftBlockType =
     "code-block" |
     "atomic"
 
-
 type DraftState = {
   editor_state: EditorState
 }
@@ -76,10 +73,12 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
   }
 
   onChange(new_editor_state:EditorState, on_success?: () => void) {
-    this.setState({...this.state, editor_state: new_editor_state}, () => {
-      if (on_success) on_success()
-      this.props.set_state(new_editor_state)
-    })
+    if (this.props.editable) {
+      this.setState({...this.state, editor_state: new_editor_state}, () => {
+        if (on_success) on_success()
+        this.props.set_state(new_editor_state)
+      })
+    }
   }
 
   toggle_block_type(block_type:DraftBlockType) {
@@ -229,10 +228,7 @@ let Media = (editable:boolean) => (props:MediaProps) => {
   } else if (type === 'youtube') {
     return <YouTube src={src} />
   } else if (type === 'mathblock') {
-    return <Math 
-      src={src} 
-      editable={editable}
-    />
+    return <Math src={src} editable={editable} />
   }
 
   return null
