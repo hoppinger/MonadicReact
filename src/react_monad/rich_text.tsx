@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Immutable from 'immutable';
-import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock} from 'draft-js';
+import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock, ContentState} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 import * as katex from "katex";
@@ -156,9 +156,35 @@ function mediaBlockRenderer(contentState: Draft.ContentState ,editable:boolean) 
   }
 }
 
-type MathProps = { src:string, editable:boolean }
-type MathState = { editMode: boolean }
-class Math extends React.Component<MathProps, MathState> {
+type MathProps = { src: string, editable: boolean, contentState: ContentState, block: ContentBlock }
+class Math extends React.Component<MathProps, {}> {
+  constructor(props) {
+    super(props)
+  }
+
+  onClick() {
+    if (!this.props.editable) { return }
+
+    let block = this.props.block
+    let contentState = this.props.contentState
+
+    let newTex = prompt("Enter your tex here", this.props.src)
+    let entityKey = block.getEntityAt(0)
+    
+    contentState.mergeEntityData(entityKey, { src: newTex })
+  }
+
+  render() {
+    return (
+      <div>
+        <MathOutput content={this.props.src} onClick={() => this.onClick()} />
+      </div>
+    )
+  }
+}
+
+type  MathOutputProps = { content: string, onClick: () => void }
+class MathOutput extends React.Component<MathOutputProps, {}> {
   constructor(props) {
     super(props)
   }
@@ -172,7 +198,7 @@ class Math extends React.Component<MathProps, MathState> {
     }
     this._timer = setTimeout(() => {
       katex.render(
-        this.props.src,
+        this.props.content,
         this._container,
         { displayMode: true }
       )
@@ -184,7 +210,7 @@ class Math extends React.Component<MathProps, MathState> {
   }
 
   componentWillReceiveProps(props) {
-    if (props.src !== this.props.src) {
+    if (props.src !== this.props.content) {
       this._update();
     }
   }
@@ -195,7 +221,7 @@ class Math extends React.Component<MathProps, MathState> {
   }
 
   render() {
-    return <span ref={(c) => this._container = c} />
+    return <span ref={(c) => this._container = c} onClick={this.props.onClick}/>
   }
 }
 
@@ -218,8 +244,8 @@ export type MediaType = 'image' | 'video' | 'youtube' | 'mathblock'
 type MediaProps = { contentState: Draft.ContentState, block:ContentBlock }
 let Media = (editable:boolean) => (props:MediaProps) => {
   let entity = props.contentState.getEntity(props.block.getEntityAt(0))
-  const {src} = entity.getData()
-  const type = entity.getType()
+  let {src} = entity.getData()
+  let type = entity.getType()
 
   if (type === 'image') {
     return <Image src={src} />
@@ -228,7 +254,7 @@ let Media = (editable:boolean) => (props:MediaProps) => {
   } else if (type === 'youtube') {
     return <YouTube src={src} />
   } else if (type === 'mathblock') {
-    return <Math src={src} editable={editable} />
+    return <Math src={src} editable={editable} contentState={props.contentState} block={props.block}/>
   }
 
   return null
