@@ -14,8 +14,9 @@
     "css": "./node_modules/.bin/gulp"
   },
   "dependencies": {
-    "@types/draft-js": "0.9.1",
+    "@types/draft-js": "^0.10.10",
     "@types/i18next": "2.3.35",
+    "@types/katex": "^0.5.0",
     "@types/react": "16.0.2",
     "@types/react-dom": "15.5.2",
     "draft-js": "0.10.0",
@@ -23,6 +24,7 @@
     "immutable": "3.8.1",
     "jquery": "2.2.2",
     "jquery-ujs": "1.2.1",
+    "katex": "^0.8.1",
     "moment": "2.18.1",
     "react": "15.5.2",
     "react-dom": "15.5.2",
