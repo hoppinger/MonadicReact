@@ -200,7 +200,7 @@ class MathOutput extends React.Component<MathOutputProps, {}> {
       katex.render(
         this.props.content,
         this._container,
-        { displayMode: true }
+        { displayMode: false }
       )
     }, 0);
   }
