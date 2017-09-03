@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Immutable from 'immutable';
-import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock, ContentState} from 'draft-js';
+import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock, ContentState, Modifier} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 import * as katex from "katex";
@@ -106,12 +106,22 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
   }
 
   insert_media(contentState: Draft.ContentState, url:string, url_type:MediaType) {
+    let selectionState = this.state.editor_state.getSelection()
     let new_content_state = contentState.createEntity(url_type, 'IMMUTABLE', {src: url})
-    let entity_key = new_content_state.getLastCreatedEntityKey() 
+    let entity_key = new_content_state.getLastCreatedEntityKey()
+    let new_editor_state = AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
 
-    let new_editor_state =
-      AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
-    this.setState({...this.state, editor_state: new_editor_state}, () => {
+    new_content_state = new_editor_state.getCurrentContent()
+    var anchorKey = selectionState.getAnchorKey();
+    var currentContentBlock = new_content_state.getBlockForKey(anchorKey)
+    let blockMap = new_content_state.getBlockMap()
+
+    let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap
+    const newContentState = contentState.set('blockMap', newBlockMap) as ContentState;
+
+    let newEditorState = EditorState.createWithContent(newContentState)
+
+    this.setState({...this.state, editor_state: newEditorState}, () => {
       this.props.set_state(new_editor_state)
     })
   }
@@ -123,7 +133,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
           {this.props.editable ?
           <SlideEditorButtonsBar toggle_style={(s:DraftEditorCommand) => this.toggle_style(s)}
                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
-                                 insert_media={(url:string, url_type:MediaType) => 
+                                 insert_media={(url:string, url_type:MediaType) =>
                                    this.insert_media(this.state.editor_state.getCurrentContent() ,url, url_type)}
                                   />
            :
@@ -170,16 +180,14 @@ class Math extends React.Component<MathProps, {}> {
 
     let newTex = prompt("Enter your tex here", this.props.src)
     let entityKey = block.getEntityAt(0)
-    
+
     contentState.mergeEntityData(entityKey, { src: newTex })
   }
 
   render() {
-    return (
-      <div>
+    return <div>
         <MathOutput content={this.props.src} onClick={() => this.onClick()} />
       </div>
-    )
   }
 }
 
@@ -194,7 +202,7 @@ class MathOutput extends React.Component<MathOutputProps, {}> {
 
   _update() {
     if (this._timer) {
-      clearTimeout(this._timer); 
+      clearTimeout(this._timer);
     }
     this._timer = setTimeout(() => {
       katex.render(
@@ -316,7 +324,7 @@ class SlideEditorButtonsBar extends React.Component<
             </button>
             <button className={`text-editor__menu-button text-editor__menu-button--code`}
                     onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
-            </button> 
+            </button>
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>
             </button>

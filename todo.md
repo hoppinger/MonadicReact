@@ -6,9 +6,12 @@
 
 ## various improvements
 - [x] add "p" tag
-- [ ] deploy on https://monadic_react.productie.hoppinger.com/
+- [ ] add semantic tags
 - [ ] routing and back button do not agree (yet)
+- [ ] bind should be map + join
+- [ ] almost all html components should be derived from `custom`
 - [ ] only hide tab arrows if less than maximum
+- [ ] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] use never instead of filter(_ => false) in samples
 - [ ] pagination should be refactored with the regular combinators
 - [ ] screenshots/colored variant of various combinators
