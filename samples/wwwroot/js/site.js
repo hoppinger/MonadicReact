@@ -49819,13 +49819,14 @@ class DraftEditor extends React.Component {
         let new_content_state = contentState.createEntity(url_type, 'IMMUTABLE', { src: url });
         let entity_key = new_content_state.getLastCreatedEntityKey();
         let new_editor_state = draft_js_1.AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ');
-        new_content_state = new_editor_state.getCurrentContent();
-        var anchorKey = selectionState.getAnchorKey();
-        var currentContentBlock = new_content_state.getBlockForKey(anchorKey);
-        let blockMap = new_content_state.getBlockMap();
-        let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap;
-        const newContentState = contentState.set('blockMap', newBlockMap);
-        let newEditorState = draft_js_1.EditorState.createWithContent(newContentState);
+        // new_content_state = new_editor_state.getCurrentContent()
+        // var anchorKey = selectionState.getAnchorKey();
+        // var currentContentBlock = new_content_state.getBlockForKey(anchorKey)
+        // let blockMap = new_content_state.getBlockMap()
+        // let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap
+        // const newContentState = contentState.set('blockMap', newBlockMap) as ContentState;
+        // let newEditorState = EditorState.createWithContent(newContentState)
+        let newEditorState = new_editor_state;
         this.setState(Object.assign({}, this.state, { editor_state: newEditorState }), () => {
             this.props.set_state(new_editor_state);
         });
@@ -49947,7 +49948,7 @@ class SlideEditorButtonsBar extends React.Component {
             React.createElement("div", { className: "text-editor__menu-group" },
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--code`, onClick: () => this.props.toggle_block_type('code-block') }),
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--blockquote`, onClick: () => this.props.toggle_block_type('blockquote') }),
-                React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--code`, onClick: () => this.props.insert_media(prompt("Insert your latex code here"), "mathblock") }),
+                React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--latex`, onClick: () => this.props.insert_media(prompt("Insert your latex code here"), "mathblock") }),
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--image`, onClick: () => this.file_input.click() })),
             React.createElement("input", { type: "file", onChange: (e) => {
                     let file = e.target.files[0];
