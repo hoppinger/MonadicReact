@@ -324,7 +324,7 @@ class SlideEditorButtonsBar extends React.Component<
             <button className={`text-editor__menu-button text-editor__menu-button--blockquote`}
                     onClick={() => this.props.toggle_block_type('blockquote')}>
             </button>
-            <button className={`text-editor__menu-button text-editor__menu-button--code`}
+            <button className={`text-editor__menu-button text-editor__menu-button--latex`}
                     onClick={() => this.props.insert_media(prompt("Insert your latex code here"), "mathblock")}>
             </button>
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
