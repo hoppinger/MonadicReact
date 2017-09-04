@@ -111,15 +111,17 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
     let entity_key = new_content_state.getLastCreatedEntityKey()
     let new_editor_state = AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ')
 
-    new_content_state = new_editor_state.getCurrentContent()
-    var anchorKey = selectionState.getAnchorKey();
-    var currentContentBlock = new_content_state.getBlockForKey(anchorKey)
-    let blockMap = new_content_state.getBlockMap()
+    // new_content_state = new_editor_state.getCurrentContent()
+    // var anchorKey = selectionState.getAnchorKey();
+    // var currentContentBlock = new_content_state.getBlockForKey(anchorKey)
+    // let blockMap = new_content_state.getBlockMap()
 
-    let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap
-    const newContentState = contentState.set('blockMap', newBlockMap) as ContentState;
+    // let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap
+    // const newContentState = contentState.set('blockMap', newBlockMap) as ContentState;
 
-    let newEditorState = EditorState.createWithContent(newContentState)
+    // let newEditorState = EditorState.createWithContent(newContentState)
+
+    let newEditorState = new_editor_state
 
     this.setState({...this.state, editor_state: newEditorState}, () => {
       this.props.set_state(new_editor_state)
