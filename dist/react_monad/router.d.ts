@@ -38,6 +38,7 @@ export declare class Application extends React.Component<ApplicationProps, Appli
     constructor(props: ApplicationProps, context: any);
     load(): void;
     componentDidMount(): void;
+    history: Immutable.Stack<string>;
     context_from_props(props: ApplicationProps, p: C<void>): Context;
     render(): JSX.Element;
 }
