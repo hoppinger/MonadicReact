@@ -50,6 +50,13 @@ export declare type C<A> = {
 };
 export declare function make_C<A>(comp: (ctxt: () => Context) => (cont: Cont<A>) => JSX.Element): C<A>;
 export declare let unit: <A>(x: A, key?: string, dbg?: () => string) => C<A>;
+export declare type JoinProps<A> = {
+    p: C<C<A>>;
+} & CmdCommon<A>;
+export declare type JoinState<A> = {
+    p_inner: "waiting" | JSX.Element;
+    p_outer: JSX.Element;
+};
 export declare let bind: <A, B>(key: string, p: C<A>, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
 export declare let map: <A, B>(key?: string, dbg?: () => string) => (_: (_: A) => B) => (_: C<A>) => C<B>;
 export declare let filter: <A>(key?: string, dbg?: () => string) => (_: (_: A) => boolean) => (_: C<A>) => C<A>;
