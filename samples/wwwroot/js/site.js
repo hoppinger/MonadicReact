@@ -49939,7 +49939,7 @@ class SlideEditorButtonsBar extends React.Component {
             React.createElement("div", { className: "text-editor__menu-group" },
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--code`, onClick: () => this.props.toggle_block_type('code-block') }),
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--blockquote`, onClick: () => this.props.toggle_block_type('blockquote') }),
-                React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--code`, onClick: () => this.props.insert_media(prompt("Insert your latex code here"), "mathblock") }),
+                React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--latex`, onClick: () => this.props.insert_media(prompt("Insert your latex code here"), "mathblock") }),
                 React.createElement("button", { className: `text-editor__menu-button text-editor__menu-button--image`, onClick: () => this.file_input.click() })),
             React.createElement("input", { type: "file", onChange: (e) => {
                     let file = e.target.files[0];
