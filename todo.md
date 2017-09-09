@@ -1,10 +1,7 @@
 ## doing
 
-## GO (7 days)
-- [ ] test SEO
-
-
 ## various improvements
+- [ ] primitives should not show cache
 - [x] add "p" tag
 - [ ] add semantic tags
 - [ ] routing and back button do not agree (yet)

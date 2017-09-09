@@ -10663,19 +10663,6 @@ module.exports = ReactDOMComponentTree;
 
 "use strict";
 
-
-// 7.1.13 ToObject(argument)
-var defined = __webpack_require__(43);
-module.exports = function (it) {
-  return Object(defined(it));
-};
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -10693,6 +10680,19 @@ __export(__webpack_require__(431));
 __export(__webpack_require__(432));
 __export(__webpack_require__(433));
 
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(43);
+module.exports = function (it) {
+  return Object(defined(it));
+};
 
 /***/ }),
 /* 20 */
@@ -11426,7 +11426,7 @@ exports.f = __webpack_require__(14) ? gOPD : function getOwnPropertyDescriptor(O
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(25);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var IE_PROTO = __webpack_require__(150)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
@@ -11552,6 +11552,25 @@ class Unit extends React.Component {
 exports.unit = function (x, key, dbg) {
     return make_C(ctxt => cont => (React.createElement(Unit, { kind: "unit", debug_info: dbg, value: x, context: ctxt, cont: cont, key: key })));
 };
+class Join extends React.Component {
+    constructor(props, context) {
+        super();
+        this.state = { p_inner: "waiting", p_outer: props.p.comp(props.context)(cont => p_inner => this.setState(Object.assign({}, this.state, { p_inner: p_inner.comp(this.props.context)(cb => x => this.props.cont(cb)(x)) }))) };
+    }
+    componentWillReceiveProps(new_props) {
+        new_props.debug_info && console.log("New join props:", new_props.debug_info());
+        this.setState({ p_inner: "waiting", p_outer: new_props.p.comp(new_props.context)(cont => p_inner => this.setState(Object.assign({}, this.state, { p_inner: p_inner.comp(new_props.context)(cb => x => new_props.cont(cb)(x)) }))) });
+    }
+    render() {
+        return React.createElement("div", null,
+            this.state.p_outer,
+            this.state.p_inner == "waiting" ? null
+                : this.state.p_inner);
+    }
+}
+let join = function (p, key, dbg) {
+    return make_C(ctxt => cont => React.createElement(Join, { p: p, context: ctxt, cont: cont, debug_info: dbg, key: key }));
+};
 class Bind extends React.Component {
     constructor(props, context) {
         super();
@@ -11581,6 +11600,8 @@ class Bind extends React.Component {
     }
 }
 exports.bind = function (key, p, k, className, dbg) {
+    // let q = p.map<C<B>>(k, key, dbg)
+    // return join<B>(q, key, dbg)
     return make_C(ctxt => cont => (React.createElement(Bind, { kind: "bind", debug_info: dbg, p: p, k: k, once: false, cont: cont, context: ctxt, key: key, className: className })));
 };
 class Map extends React.Component {
@@ -11982,7 +12003,7 @@ module.exports = {
 // 6 -> Array#findIndex
 var ctx = __webpack_require__(37);
 var IObject = __webpack_require__(89);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toLength = __webpack_require__(16);
 var asc = __webpack_require__(135);
 module.exports = function (TYPE, $create) {
@@ -12870,7 +12891,7 @@ if (__webpack_require__(14)) {
   var has = __webpack_require__(25);
   var classof = __webpack_require__(88);
   var isObject = __webpack_require__(10);
-  var toObject = __webpack_require__(18);
+  var toObject = __webpack_require__(19);
   var isArrayIter = __webpack_require__(142);
   var create = __webpack_require__(65);
   var getPrototypeOf = __webpack_require__(32);
@@ -22631,7 +22652,7 @@ class Number extends React.Component {
                     let new_value = isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber;
                     if (new_value == this.state.value)
                         return;
-                    this.setState(Object.assign({}, this.state, { value: new_value }), () => this.props.cont(() => null)(this.state.value));
+                    this.props.cont(() => null)(new_value);
                 } })
             :
                 React.createElement("span", null, this.state.value);
@@ -22659,7 +22680,7 @@ class String extends React.Component {
         return this.props.mode == "edit" ? React.createElement("input", { type: this.props.type, value: this.state.value, onChange: e => {
                 if (this.state.value == e.currentTarget.value)
                     return;
-                this.setState(Object.assign({}, this.state, { value: e.currentTarget.value }), () => this.call_cont(this.state.value));
+                this.call_cont(e.currentTarget.value);
             } })
             :
                 this.props.type == "text" ?
@@ -22696,11 +22717,11 @@ class Bool extends React.Component {
     }
     render() {
         return this.props.style == "fancy toggle" ?
-            React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--switch", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
+            React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--switch", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.props.cont(() => null)(e.currentTarget.checked) })
             : this.props.style == "plus/minus" ?
-                React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--toggle", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) })
+                React.createElement("input", { type: "checkbox", className: "monadic-input-choices monadic-input-choices--toggle", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.props.cont(() => null)(e.currentTarget.checked) })
                 :
-                    React.createElement("input", { type: this.props.style, className: "monadic-input-choices monadic-input-choices--checkbox", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.setState(Object.assign({}, this.state, { value: e.currentTarget.checked }), () => this.props.cont(() => null)(this.state.value)) });
+                    React.createElement("input", { type: this.props.style, className: "monadic-input-choices monadic-input-choices--checkbox", disabled: this.props.mode == "view", checked: this.state.value, onChange: e => this.props.cont(() => null)(e.currentTarget.checked) });
     }
 }
 exports.bool = (mode, style, key, dbg) => function (value) {
@@ -22726,7 +22747,7 @@ class DateTime extends React.Component {
         let default_value = `${format_int(item.year(), 4)}-${format_int(item.month() + 1, 2)}-${format_int(item.date(), 2)}T${format_int(item.hours(), 2)}:${format_int(item.minutes(), 2)}`;
         return this.props.mode == "view" ?
             React.createElement("div", null, `${format_int(item.date(), 2)}/${format_int(item.month() + 1, 2)}/${format_int(item.year(), 4)}  ${format_int(item.hours(), 2)}:${format_int(item.minutes(), 2)}`)
-            : React.createElement("input", { type: "datetime-local", value: default_value, onChange: (e) => this.setState(Object.assign({}, this.state, { value: Moment.utc(e.currentTarget.value) }), () => this.call_cont(this.state.value)) });
+            : React.createElement("input", { type: "datetime-local", value: default_value, onChange: (e) => this.call_cont(Moment.utc(e.currentTarget.value)) });
     }
 }
 exports.date_time = (mode, key, dbg) => function (value) {
@@ -22752,7 +22773,7 @@ class DateOnly extends React.Component {
         let default_value = `${format_int(item.year(), 4)}-${format_int(item.month() + 1, 2)}-${format_int(item.date(), 2)}`;
         return this.props.mode == "view" ?
             React.createElement("div", null, `${format_int(item.date(), 2)}/${format_int(item.month() + 1, 2)}/${format_int(item.year(), 4)}`)
-            : React.createElement("input", { type: "date", value: default_value, onChange: (e) => this.setState(Object.assign({}, this.state, { value: Moment.utc(new Date(e.currentTarget.value)).startOf('d').add(12, 'h') }), () => this.call_cont(this.state.value)) });
+            : React.createElement("input", { type: "date", value: default_value, onChange: (e) => this.call_cont(Moment.utc(new Date(e.currentTarget.value)).startOf('d').add(12, 'h')) });
     }
 }
 exports.date = (mode, key, dbg) => function (value) {
@@ -22778,7 +22799,7 @@ class Time extends React.Component {
         let default_value = `${format_int(item.hours(), 2)}:${format_int(item.minutes(), 2)}`;
         return this.props.mode == "view" ?
             React.createElement("div", null, default_value)
-            : React.createElement("input", { type: "time", value: default_value, onChange: (e) => this.setState(Object.assign({}, this.state, { value: Moment.utc(new Date(e.currentTarget.valueAsDate)) }), () => this.call_cont(this.state.value)) });
+            : React.createElement("input", { type: "time", value: default_value, onChange: (e) => this.call_cont(Moment.utc(new Date(e.currentTarget.valueAsDate))) });
     }
 }
 exports.time = (mode, key, dbg) => function (value) {
@@ -26053,7 +26074,7 @@ module.exports = canDefineProperty;
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toAbsoluteIndex = __webpack_require__(70);
 var toLength = __webpack_require__(16);
 module.exports = function fill(value /* , start = 0, end = @length */) {
@@ -29996,7 +30017,7 @@ module.exports = function (it, msg) {
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
 
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toAbsoluteIndex = __webpack_require__(70);
 var toLength = __webpack_require__(16);
 
@@ -30043,7 +30064,7 @@ module.exports = function (iter, ITERATOR) {
 
 
 var aFunction = __webpack_require__(22);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var IObject = __webpack_require__(89);
 var toLength = __webpack_require__(16);
 
@@ -30548,7 +30569,7 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 var getKeys = __webpack_require__(58);
 var gOPS = __webpack_require__(112);
 var pIE = __webpack_require__(90);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var IObject = __webpack_require__(89);
 var $assign = Object.assign;
 
@@ -49144,7 +49165,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(21);
 const ReactDOM = __webpack_require__(82);
 const i18next = __webpack_require__(259);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 const button_1 = __webpack_require__(412);
 const label_1 = __webpack_require__(416);
 const selector_and_custom_class_1 = __webpack_require__(425);
@@ -49166,17 +49187,6 @@ exports.sample_toggleable_minipage = s => monadic_react_1.repeat()(monadic_react
     :
         s.sample.then(`visible ${s.description}`, _ => monadic_react_1.unit(null)));
 let sample_minipage = e => s => monadic_react_1.get_context().then(s.description, c => c.set_url({}, monadic_react_1.make_url([e.label.replace(/\s/g, "_"), s.description.replace(/\s/g, "_")])).then(`${s.description}_set_url`, _ => monadic_react_1.h2(s.description, "", s.description)(_ => s.sample)(null)));
-let validate = ld => ld.showing && ld.username.length > 0 && ld.email.length > 0 && ld.password.length > 0;
-let login_form = ld => monadic_react_1.repeat()(monadic_react_1.any()([
-    monadic_react_1.retract()(ld => ld.username, ld => v => (Object.assign({}, ld, { username: v })), monadic_react_1.string("edit")),
-    monadic_react_1.retract()(ld => ld.email, ld => v => (Object.assign({}, ld, { email: v })), monadic_react_1.string("edit")),
-    monadic_react_1.retract()(ld => ld.password, ld => v => (Object.assign({}, ld, { password: v })), monadic_react_1.string("edit"))
-]))(ld).then(undefined, ld => monadic_react_1.button("Login as admin", !validate(ld))(ld));
-let login_test = monadic_react_1.div(``, `login sample`)(_ => (monadic_react_1.repeat()(ld => ld.showing ?
-    login_form(ld)
-    :
-        monadic_react_1.button("login")(Object.assign({}, ld, { showing: true })))({ username: "", email: "", password: "", showing: false })).then(undefined, ld => console.log("new login data", ld) ||
-    monadic_react_1.string("view")(JSON.stringify(ld)).ignore()))(null);
 function HomePage(slug) {
     let all_samples = [
         monadic_react_1.mk_submenu_entry("controls", [
@@ -49208,28 +49218,12 @@ function HomePage(slug) {
             monadic_react_1.mk_menu_entry({ sample: overlay_1.overlay_sample, description: "overlay" }),
         ]),
     ];
-    let login = () => ({
-        url: monadic_react_1.make_url(["login"]),
-        page: _ => login_test
-    });
-    let xxx = () => ({
-        url: monadic_react_1.make_url(["x x x"]),
-        page: _ => monadic_react_1.any(`xxx`)([
-            _ => monadic_react_1.string("view")("xxx").never(),
-            _ => monadic_react_1.link_to_route("YYY", {}, yyy())
-        ])(null)
-    });
-    let yyy = () => ({
-        url: monadic_react_1.make_url(["yyy"]),
-        page: _ => monadic_react_1.string("view")("yyy").ignore()
-    });
-    let zzz = () => ({
-        url: monadic_react_1.make_url(["zzz", { kind: "int", name: "x" }, { kind: "int", name: "y" }]),
-        page: (x) => monadic_react_1.string("view")(`zzz ${(x.x + x.y).toString()}`).ignore()
-    });
-    let zzz_xxx = () => ({
-        url: monadic_react_1.make_url(["zzz", { kind: "int", name: "x" }, "xxx"]),
-        page: (x) => monadic_react_1.string("view")(`zzz ${x.x} xxx`).ignore()
+    let edit_toggle = () => ({
+        url: monadic_react_1.make_url(["edit_toggle_sample"]),
+        page: _ => monadic_react_1.repeat("edit toggle sample")(monadic_react_1.any()([
+            monadic_react_1.retract()(s => s.mode, s => m => (Object.assign({}, s, { mode: m })), mode => monadic_react_1.button("Toggle editing")(mode == "view" ? "edit" : "view")),
+            state => monadic_react_1.retract()(s => s.text, s => t => (Object.assign({}, s, { text: t })), monadic_react_1.rich_text(state.mode))(state)
+        ]))({ mode: "edit", text: "" }).ignore()
     });
     let menu_page = () => ({
         url: monadic_react_1.fallback_url(),
@@ -49250,11 +49244,7 @@ function HomePage(slug) {
         .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
         .concat(all_samples.map(s => submenu_route(s)));
     return React.createElement("div", null, React.createElement("div", { className: "component" }, monadic_react_1.application("edit", window.location.href.replace(slug, ""), slug, () => Promise.resolve(all_menu_routes.concat([
-        login(),
-        xxx(),
-        yyy(),
-        zzz(),
-        zzz_xxx(),
+        edit_toggle(),
         menu_page()
     ])))));
 }
@@ -49360,7 +49350,7 @@ exports.update_Course = update_Course;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert an even number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, n => monadic_react_1.button(`Send ${n.toString()} further`, n % 2 != 0)(n).filter(n => n % 2 == 0).map(n => `Your selection is ${n.toString()}`).then(`button to string`, s => monadic_react_1.string("view")(s).ignore()));
 
 
@@ -49371,7 +49361,7 @@ exports.button_sample = monadic_react_1.repeat(`input number`)(n => monadic_reac
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.context_sample = monadic_react_1.any()([
     _ => monadic_react_1.button(`Force reload`)(null).then(undefined, _ => monadic_react_1.get_context().then(undefined, ctxt => ctxt.force_reload())),
 ])(null).then(`context sample`, _ => monadic_react_1.get_context().then(undefined, ctxt => monadic_react_1.string("view")(`Context: ${JSON.stringify(ctxt)}`).ignore()));
@@ -49385,7 +49375,7 @@ exports.context_sample = monadic_react_1.any()([
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(60);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-list`, monadic_react_1.unit(immutable_1.Range(1, 5).toList()), s => monadic_react_1.button(`+`)(s.items.max() + 1)).then(`editable number list container`, s => monadic_react_1.string("view")(`The selected item is ${s.items.get(s.selected_index)}`).ignore());
 
 
@@ -49397,14 +49387,15 @@ exports.editable_list_sample = monadic_react_1.editable_list(`editable-number-li
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const Api = __webpack_require__(411);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 // Utils: these will be scaffolded at a later time
 //let download_course_with_logo : (_:number) => C<Models.Course> = c_id => lift_promise<void, Models.Course>(x => Api.get_Course_with_pictures(c_id).then(c => c.Item), "semi exponential", `course_downloader_lift_${c_id}`)(null)
 //let upload_course_with_logo : (_:Models.Course) => C<Models.Course> = c =>
 //  lift_promise<Models.Course, Models.Course>(c => Api.update_Course_with_pictures(c).then(_ => c),
 //  "semi exponential", `course_uploader_lift_${c.Id}`)(c)
 let download_course = c_id => monadic_react_1.lift_promise(x => Api.get_Course(c_id).then(c => c.Item), "semi exponential", `course_downloader_lift_${c_id}`)(null);
-let upload_course = c => monadic_react_1.lift_promise(c => Api.update_Course(c).then(_ => c), "semi exponential", `course_uploader_lift_${c.Id}`)(c);
+let upload_course = c => console.log("Uploading") ||
+    monadic_react_1.lift_promise(c => Api.update_Course(c).then(_ => c), "semi exponential", `course_uploader_lift_${c.Id}`)(c);
 exports.course_form_with_autosave_sample = monadic_react_1.simple_form_with_autosave("edit", c => `course_${c.Id}`, [
     { kind: "string", field_name: "Name", in: c => c.Name || "", out: c => (n) => (Object.assign({}, c, { Name: n })), get_errors: c => c.Name.length < 3 ? ["The name cannot be shorter than three characters."] : [] },
     { kind: "number", field_name: "Points", in: c => c.Points || 0, out: c => (p) => (Object.assign({}, c, { Points: p })), get_errors: c => c.Points < 1 ? ["The course must be worth at least one point."] : [] },
@@ -49422,7 +49413,7 @@ exports.course_form_sample = monadic_react_1.simple_form_with_save_button("edit"
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
 
 
@@ -49433,7 +49424,7 @@ exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.link_sample = monadic_react_1.any(`link sample`)([
     _ => monadic_react_1.link(`Google`, "https://www.google.com"),
     _ => monadic_react_1.link(`Facebook`, "https://www.facebook.com"),
@@ -49449,7 +49440,7 @@ exports.link_sample = monadic_react_1.any(`link sample`)([
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(60);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view")(`This is item ${n}`).ignore());
 
 
@@ -49460,7 +49451,7 @@ exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `l
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.menu_sample = monadic_react_1.simple_menu("side menu", p => p.title, `fictional pages menu`)([
     { title: "About", content: "This page talks about us" },
     { title: "Content", content: "This page is full of interesting content" }
@@ -49475,7 +49466,7 @@ exports.menu_sample = monadic_react_1.simple_menu("side menu", p => p.title, `fi
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const Moment = __webpack_require__(0);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input number`)([
     c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).then(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
     c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).then(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
@@ -49490,7 +49481,7 @@ exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input num
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x.toString())([1, 3, 5], [1, 5]).then(`multi_selector`, n => monadic_react_1.string("view")(JSON.stringify(n)).ignore());
 
 
@@ -49501,7 +49492,7 @@ exports.multiselector_sample = monadic_react_1.multi_selector("checkbox", x => x
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.overlay_sample = monadic_react_1.repeat(`overlay sample`)(visible => monadic_react_1.any()([
     monadic_react_1.any()([
         _ => monadic_react_1.string("view")("The overlay is hidden").never(),
@@ -49524,7 +49515,7 @@ exports.overlay_sample = monadic_react_1.repeat(`overlay sample`)(visible => mon
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.pagination_sample = monadic_react_1.div(undefined, `pagination sample`)(_ => monadic_react_1.paginate(10, (cp, ipp) => monadic_react_1.unit(({ num_pages: 10, page_index: cp, items: cp })), `pagination sample`)(n => monadic_react_1.string("view")(`The current page is ${n + 1}`).ignore()))(null);
 
 
@@ -49535,7 +49526,7 @@ exports.pagination_sample = monadic_react_1.div(undefined, `pagination sample`)(
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.rich_text_sample = monadic_react_1.repeat()(monadic_react_1.rich_text("edit"))(null).map(s => s.substr(0, 1000)).then(`rich text sample`, monadic_react_1.delay(2000, `rich text delayer`)(monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view")))).ignore();
 
 
@@ -49547,7 +49538,7 @@ exports.rich_text_sample = monadic_react_1.repeat()(monadic_react_1.rich_text("e
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(21);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 class Counter extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -49574,7 +49565,7 @@ exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString()
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(60);
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.tabbed_menu_sample = monadic_react_1.simple_menu({ kind: "tabs", max_tabs: 5 }, p => p.title, `tabbed menu`)(immutable_1.Range(1, 10).map(i => ({ title: `Tab ${i}`, content: `This is the content of the tab ${i}.` })).map(s => ({ kind: "item", value: s })).toArray(), p => monadic_react_1.string("view")(p.content)).ignore();
 
 
@@ -49585,7 +49576,7 @@ exports.tabbed_menu_sample = monadic_react_1.simple_menu({ kind: "tabs", max_tab
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const monadic_react_1 = __webpack_require__(19);
+const monadic_react_1 = __webpack_require__(18);
 exports.toggles_sample = monadic_react_1.repeat()(b => monadic_react_1.any(`toggles`)([
     monadic_react_1.label("my toggle.")(b => monadic_react_1.bool("edit", "checkbox", `basic toggle`)(b)),
     monadic_react_1.label("my fancy toggle.")(b => monadic_react_1.bool("edit", "fancy toggle", `fancy toggle`)(b)),
@@ -49819,13 +49810,14 @@ class DraftEditor extends React.Component {
         let new_content_state = contentState.createEntity(url_type, 'IMMUTABLE', { src: url });
         let entity_key = new_content_state.getLastCreatedEntityKey();
         let new_editor_state = draft_js_1.AtomicBlockUtils.insertAtomicBlock(this.state.editor_state, entity_key, ' ');
-        new_content_state = new_editor_state.getCurrentContent();
-        var anchorKey = selectionState.getAnchorKey();
-        var currentContentBlock = new_content_state.getBlockForKey(anchorKey);
-        let blockMap = new_content_state.getBlockMap();
-        let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap;
-        const newContentState = contentState.set('blockMap', newBlockMap);
-        let newEditorState = draft_js_1.EditorState.createWithContent(newContentState);
+        // new_content_state = new_editor_state.getCurrentContent()
+        // var anchorKey = selectionState.getAnchorKey();
+        // var currentContentBlock = new_content_state.getBlockForKey(anchorKey)
+        // let blockMap = new_content_state.getBlockMap()
+        // let newBlockMap = currentContentBlock.getText() == "" ? blockMap.remove(currentContentBlock.getKey()) : blockMap
+        // const newContentState = contentState.set('blockMap', newBlockMap) as ContentState;
+        // let newEditorState = EditorState.createWithContent(newContentState)
+        let newEditorState = new_editor_state;
         this.setState(Object.assign({}, this.state, { editor_state: newEditorState }), () => {
             this.props.set_state(new_editor_state);
         });
@@ -50504,7 +50496,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 
 var ctx = __webpack_require__(37);
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var call = __webpack_require__(206);
 var isArrayIter = __webpack_require__(142);
 var toLength = __webpack_require__(16);
@@ -50761,7 +50753,7 @@ $export($export.P + $export.F * !__webpack_require__(38)([].some, true), 'Array'
 
 var $export = __webpack_require__(1);
 var aFunction = __webpack_require__(22);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var fails = __webpack_require__(7);
 var $sort = [].sort;
 var test = [1, 2, 3];
@@ -50827,7 +50819,7 @@ $export($export.P + $export.F * (Date.prototype.toISOString !== toISOString), 'D
 
 
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toPrimitive = __webpack_require__(46);
 
 $export($export.P + $export.F * __webpack_require__(7)(function () {
@@ -51680,7 +51672,7 @@ __webpack_require__(44)('getOwnPropertyNames', function () {
 
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var $getPrototypeOf = __webpack_require__(32);
 
 __webpack_require__(44)('getPrototypeOf', function () {
@@ -51756,7 +51748,7 @@ $export($export.S, 'Object', { is: __webpack_require__(443) });
 
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var $keys = __webpack_require__(58);
 
 __webpack_require__(44)('keys', function () {
@@ -53557,7 +53549,7 @@ __webpack_require__(104)(WEAK_SET, function (get) {
 
 var $export = __webpack_require__(1);
 var flattenIntoArray = __webpack_require__(203);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toLength = __webpack_require__(16);
 var aFunction = __webpack_require__(22);
 var arraySpeciesCreate = __webpack_require__(135);
@@ -53586,7 +53578,7 @@ __webpack_require__(56)('flatMap');
 
 var $export = __webpack_require__(1);
 var flattenIntoArray = __webpack_require__(203);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toLength = __webpack_require__(16);
 var toInteger = __webpack_require__(45);
 var arraySpeciesCreate = __webpack_require__(135);
@@ -53917,7 +53909,7 @@ $export($export.S, 'Math', {
 
 
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var aFunction = __webpack_require__(22);
 var $defineProperty = __webpack_require__(15);
 
@@ -53936,7 +53928,7 @@ __webpack_require__(14) && $export($export.P + __webpack_require__(111), 'Object
 
 
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var aFunction = __webpack_require__(22);
 var $defineProperty = __webpack_require__(15);
 
@@ -54002,7 +53994,7 @@ $export($export.S, 'Object', {
 
 
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toPrimitive = __webpack_require__(46);
 var getPrototypeOf = __webpack_require__(32);
 var getOwnPropertyDescriptor = __webpack_require__(31).f;
@@ -54027,7 +54019,7 @@ __webpack_require__(14) && $export($export.P + __webpack_require__(111), 'Object
 
 
 var $export = __webpack_require__(1);
-var toObject = __webpack_require__(18);
+var toObject = __webpack_require__(19);
 var toPrimitive = __webpack_require__(46);
 var getPrototypeOf = __webpack_require__(32);
 var getOwnPropertyDescriptor = __webpack_require__(31).f;

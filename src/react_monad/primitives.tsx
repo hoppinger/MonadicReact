@@ -17,8 +17,8 @@ export type DateProps = { kind:"date", value:Moment.Moment, mode:Mode } & CmdCom
 export type DateTimeProps = { kind:"date time", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
 export type TimeProps = { kind:"time", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
 
-type IntState = { value:number }
-class Number extends React.Component<NumberProps,IntState> {
+type NumberState = { value:number }
+class Number extends React.Component<NumberProps,NumberState> {
   constructor(props:NumberProps,context:any) {
     super()
     this.state = { value:props.value }
@@ -40,8 +40,7 @@ class Number extends React.Component<NumberProps,IntState> {
           onChange={e => {
             let new_value = isNaN(e.currentTarget.valueAsNumber) ? 0 : e.currentTarget.valueAsNumber
             if (new_value == this.state.value) return
-            this.setState({...this.state, value:new_value},
-              () => this.props.cont(()=>null)(this.state.value))}
+            this.props.cont(()=>null)(new_value)}
         }/>
       :
         <span>{this.state.value}</span>
@@ -75,9 +74,7 @@ class String extends React.Component<StringProps,StringState> {
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
-                    this.setState({...this.state,
-                      value:e.currentTarget.value},
-                      () => this.call_cont(this.state.value))}
+                    this.call_cont(e.currentTarget.value)}
                   } />
             :
               this.props.type == "text" ?
@@ -125,28 +122,22 @@ class Bool extends React.Component<BoolProps,BoolState> {
               disabled={this.props.mode == "view"}
               checked={this.state.value}
               onChange={e =>
-                this.setState({...this.state,
-                  value:e.currentTarget.checked },
-                  () => this.props.cont(()=>null)(this.state.value))} />
+                this.props.cont(()=>null)(e.currentTarget.checked)} />
             : this.props.style == "plus/minus" ?
               <input type="checkbox"
                 className="monadic-input-choices monadic-input-choices--toggle"
                 disabled={this.props.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
-                  this.setState({...this.state,
-                    value:e.currentTarget.checked },
-                    () => this.props.cont(()=>null)(this.state.value))} />
-            :
+                  this.props.cont(()=>null)(e.currentTarget.checked)} />
+              :
               <input type={this.props.style}
                 className="monadic-input-choices monadic-input-choices--checkbox"
                 disabled={this.props.mode == "view"}
                 checked={this.state.value}
                 onChange={e =>
-                  this.setState({...this.state,
-                    value:e.currentTarget.checked },
-                    () => this.props.cont(()=>null)(this.state.value))} />
-  }
+                  this.props.cont(()=>null)(e.currentTarget.checked)} />
+    }
 }
 
 export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string) => function(value:boolean) : C<boolean> {
@@ -179,8 +170,7 @@ class DateTime extends React.Component<DateTimeProps,DateTimeState> {
     : <input type="datetime-local"
       value={default_value}
       onChange={(e) =>
-        this.setState({...this.state, value: Moment.utc(e.currentTarget.value)}, () =>
-        this.call_cont(this.state.value)) }
+        this.call_cont(Moment.utc(e.currentTarget.value)) }
     />
   }
 }
@@ -215,8 +205,7 @@ class DateOnly extends React.Component<DateProps,DateState> {
     : <input type="date"
       value={default_value}
       onChange={(e) =>
-        this.setState({...this.state, value: Moment.utc(new Date(e.currentTarget.value)).startOf('d').add(12, 'h')}, () =>
-        this.call_cont(this.state.value)) }
+        this.call_cont(Moment.utc(new Date(e.currentTarget.value)).startOf('d').add(12, 'h')) }
     />
   }
 }
@@ -250,8 +239,7 @@ class Time extends React.Component<TimeProps,TimeState> {
     : <input type="time"
       value={default_value}
       onChange={(e) =>
-        this.setState({...this.state, value: Moment.utc(new Date(e.currentTarget.valueAsDate))}, () =>
-        this.call_cont(this.state.value)) }
+        this.call_cont(Moment.utc(new Date(e.currentTarget.valueAsDate))) }
     />
   }
 }
