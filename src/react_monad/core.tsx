@@ -98,7 +98,7 @@ class Join<A> extends React.Component<JoinProps<A>,JoinState<A>> {
   }
   componentWillReceiveProps(new_props:JoinProps<A>) {
     new_props.debug_info && console.log("New join props:", new_props.debug_info())
-    this.setState({ p_inner:"waiting", p_outer:new_props.p.comp(new_props.context)(cont => p_inner =>
+    this.setState({ p_outer:new_props.p.comp(new_props.context)(cont => p_inner =>
       this.setState({...this.state,
         p_inner:p_inner.comp(new_props.context)(cb => x => new_props.cont(cb)(x))})) })
   }
@@ -161,11 +161,11 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
 }
 
 export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:string, dbg?:() => string) : C<B> {
-  // let q = p.map<C<B>>(k, key, dbg)
-  // return join<B>(q, key, dbg)
-  return make_C<B>(ctxt => cont =>
-    (React.createElement<BindProps<A,B>>(Bind,
-      { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key, className:className })))
+  let q = p.map<C<B>>(k, key, dbg)
+  return join<B>(q, key, dbg)
+  // return make_C<B>(ctxt => cont =>
+  //   (React.createElement<BindProps<A,B>>(Bind,
+  //     { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key, className:className })))
 }
 
 type MapState<A,B> = { p:"creating"|JSX.Element }

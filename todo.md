@@ -1,20 +1,20 @@
-## doing
-
 ## various improvements
-- [ ] primitives should not show cache
-- [x] add "p" tag
 - [ ] add semantic tags
-- [ ] routing and back button do not agree (yet)
-- [ ] bind should be map + join
 - [ ] almost all html components should be derived from `custom`
-- [ ] only hide tab arrows if less than maximum
-- [ ] deploy on https://monadic_react.productie.hoppinger.com/
 - [ ] use never instead of filter(_ => false) in samples
+- [ ] deploy on https://monadic_react.productie.hoppinger.com/
+- [ ] only hide tab arrows if less than maximum
+- [ ] callback might be useless: remove it from `Cont<A>` and from all samples
 - [ ] pagination should be refactored with the regular combinators
+- [x] routing and back button do not agree (yet)
+- [x] bind should be map + join
+- [x] primitives should not show cache
 - [ ] screenshots/colored variant of various combinators
 - [ ] cleanup dependencies in imports (samples and monad definition)
 
 ## samples (3 days)
+- [ ] login with role selection
+  - [ ] test in GrandeOmega, then move to scaffolder
 - [ ] basic API
 - [ ] basic API file dowload/upload
 - [ ] API form

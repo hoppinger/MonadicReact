@@ -85,7 +85,43 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
 
   componentDidMount() {
     this.load()
+    let self = this
+    let load = () => {
+      if (self.state.kind != "running") return
+      if (self.history.count() == 1) {
+        let slug = self.history.peek()
+        window.history.pushState(`${self.props.base_url}${slug}`, `${self.props.base_url}${slug}`, `${self.props.base_url}${slug}`)
+        return
+      }
+      self.history = self.history.pop()
+      let slug = self.history.peek()
+
+      // console.log("back to", slug, old_history.toArray(), self.history.toArray())
+      let routes = self.state.routes
+
+      let new_page:C<void> = undefined
+      routes.forEach(r => {
+        let p = r.url.in(slug).map(r.page)
+        if (p.kind == "some") {
+          new_page = p.value
+          return false
+        }
+        return true
+      })
+
+      window.history.pushState(`${self.props.base_url}${slug}`, `${self.props.base_url}${slug}`, `${self.props.base_url}${slug}`)
+
+      let new_context:Context = {...self.state.context, current_page:new_page, logic_frame:self.state.context.logic_frame + 1}
+      let new_state:ApplicationState = {...self.state, context:new_context}
+      self.setState(new_state)
+    }
+
+    window.onpopstate = function(e) {
+      load()
+    }
   }
+
+  history = Immutable.Stack<string>()
 
   context_from_props(props:ApplicationProps, p:C<void>) : Context {
     let self = this
@@ -102,7 +138,11 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           return null
         }),
       set_page:function<T>(x:T, new_page:Route<T>, callback?:()=>void) {
-        window.history.pushState("", "", `${self.props.base_url}${new_page.url.out(x)}`)
+        let out = new_page.url.out(x)
+        window.history.pushState(`${self.props.base_url}${out}`, `${self.props.base_url}${out}`, `${self.props.base_url}${out}`)
+        if (self.history.isEmpty() || self.history.peek() != out)
+          self.history = self.history.push(out)
+        // console.log("set page", self.history.toArray())
         return make_C<void>(ctxt => inner_callback => {
           if (self.state.kind == "loading routes") return undefined
           let new_context:Context = {...self.state.context, current_page:new_page.page(x)}
@@ -113,8 +153,12 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
         })
       },
       set_url:function<T>(x:T, new_url:Url<T>, callback?:()=>void) {
-        // console.log(self.props.base_url, new_url.out(x))
-        window.history.pushState("", "", `${self.props.base_url}${new_url.out(x)}`)
+        let out = new_url.out(x)
+        // console.log("set page", self.props.base_url, out, new_url)
+        window.history.pushState(`${self.props.base_url}${out}`, `${self.props.base_url}${out}`, `${self.props.base_url}${out}`)
+        if (self.history.isEmpty() || self.history.peek() != out)
+          self.history = self.history.push(out)
+        // console.log("set url", self.history.toArray())
         return unit<void>(null)
       },
       push_route:(new_route, callback) =>
