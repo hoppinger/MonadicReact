@@ -71,22 +71,22 @@ export function HomePage(slug:string) : JSX.Element {
       // ])
     ]
 
-type Mode = "edit" | "view"
-type EditToggleState = { mode:Mode, text:string }
+  type Mode = "edit" | "view"
+  type EditToggleState = { mode:Mode, text:string }
   let edit_toggle = () : Route<{}> => ({
     url: make_url<{}, never>(["edit_toggle_sample"]),
     page:_ =>
-repeat<EditToggleState>("edit toggle sample")(
-  any<EditToggleState, EditToggleState>()([
-  retract<EditToggleState, Mode>()(s => s.mode, s => m => ({...s, mode:m}),
-    mode => button<Mode>("Toggle editing")(mode == "view" ? "edit" : "view")
-  ),
-  state =>
-    retract<EditToggleState, string>()(s => s.text, s => t => ({...s, text:t}),
-      rich_text(state.mode)
-    )(state)
-  ])
-)({ mode:"edit", text:"" }).ignore()
+      repeat<EditToggleState>("edit toggle sample")(
+        any<EditToggleState, EditToggleState>()([
+          retract<EditToggleState, Mode>()(s => s.mode, s => m => ({...s, mode:m}),
+            mode => button<Mode>("Toggle editing")(mode == "view" ? "edit" : "view")
+          ),
+          state =>
+            retract<EditToggleState, string>()(s => s.text, s => t => ({...s, text:t}),
+              rich_text(state.mode)
+            )(state)
+        ])
+      )({ mode:"edit", text:"" }).ignore()
     })
 
   let sample_minipage : ((_:Sample) => C<void>) = s =>
