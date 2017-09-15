@@ -11600,8 +11600,8 @@ class Bind extends React.Component {
     }
 }
 exports.bind = function (key, p, k, className, dbg) {
-    let q = p.map(k, key, dbg);
-    return join(q, key, dbg);
+    let q = p.map(k, `${key}_map`, dbg);
+    return join(q, `${key}_join`, dbg);
     // return make_C<B>(ctxt => cont =>
     //   (React.createElement<BindProps<A,B>>(Bind,
     //     { kind:"bind", debug_info:dbg, p:p, k:k, once:false, cont:cont, context:ctxt, key:key, className:className })))
@@ -49852,7 +49852,7 @@ class Math extends React.Component {
         }
         let block = this.props.block;
         let contentState = this.props.contentState;
-        let newTex = prompt("Enter your tex here", this.props.src);
+        let newTex = prompt("Enter your tex here", this.props.src) || this.props.src;
         let entityKey = block.getEntityAt(0);
         contentState.mergeEntityData(entityKey, { src: newTex });
     }

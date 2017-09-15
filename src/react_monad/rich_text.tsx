@@ -180,7 +180,7 @@ class Math extends React.Component<MathProps, {}> {
     let block = this.props.block
     let contentState = this.props.contentState
 
-    let newTex = prompt("Enter your tex here", this.props.src)
+    let newTex = prompt("Enter your tex here", this.props.src) || this.props.src
     let entityKey = block.getEntityAt(0)
 
     contentState.mergeEntityData(entityKey, { src: newTex })
