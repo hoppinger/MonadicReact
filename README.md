@@ -500,7 +500,7 @@ React.createElement<KProps>(K,
 The definition of class `K` should be quite careful when it comes to invoking `cont`. Too many accidental invocations can lead to loops, especially in the presence of `repeat` (very common when building forms). On the other hand, `K` is expected to invoke `cont` upon `componentWill/DidMount` and `componentWillReceiveProps`. `componentWillReceiveProps` should only (re)invoke `cont` if the output has changed though.
 
 # Samples
-To see the library in action in a simple application and to get inspiration on how to use it, you can jump to [the samples](../master/samples).
+To see the library in action in a simple application and to get inspiration on how to use it, you can jump to [the samples](https://raw.githubusercontent.com/giuseppemag/MonadicReact/master/samples).
 
 
 # About the authors
