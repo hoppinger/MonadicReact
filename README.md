@@ -4,9 +4,9 @@ This project makes it easier to create, compose, and re-use React controllers an
 It does so by defining a monadic interface around React components. This interface is then used to support construction of a series of useful combinators. The library is written in TypeScript, and is provided with definition files: it can be used from both plain JavaScript and TypeScript.
 
 The net result is a painless React development experience. Complex concurrency, state machines, and intricate data flow relations between components can be modelled explicitly and easily. For example, with monadic react, the following become much simpler to define:
-- [data flows](../master/samples/Client/samples/multiselector.tsx)
-- [forms](../master/samples/Client/samples/form.ts)
-- [concurrency](../master/samples/Client/samples/toggles.tsx)
+- [data flows](https://raw.githubusercontent.com/giuseppemag/MonadicReact//master/samples/Client/samples/multiselector.tsx)
+- [forms](https://raw.githubusercontent.com/giuseppemag/MonadicReact//master/samples/Client/samples/form.ts)
+- [concurrency](https://raw.githubusercontent.com/giuseppemag/MonadicReact//master/samples/Client/samples/toggles.tsx)
 
 and much more.
 

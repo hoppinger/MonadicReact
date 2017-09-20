@@ -49550,7 +49550,7 @@ class Counter extends React.Component {
                 this.state.current,
                 "/",
                 this.props.target),
-            React.createElement("button", { onClick: () => this.setState(Object.assign({}, this.state, { current: this.state.current + 1 }), () => this.state.current >= this.props.target + 1 && this.setState(Object.assign({}, this.state, { current: 0 }), () => this.props.cont(() => this.setState(Object.assign({}, this.state, { signals_sent: this.state.signals_sent + 1 })))(this.state.signals_sent + 1))) }, "+1"));
+            React.createElement("button", { onClick: () => this.setState(Object.assign({}, this.state, { current: this.state.current + 1 }), () => this.state.current >= this.props.target + 1 && this.setState(Object.assign({}, this.state, { current: 0, signals_sent: this.state.signals_sent + 1 }), () => this.props.cont(() => { })(this.state.signals_sent))) }, "+1"));
     }
 }
 exports.selector_sample = monadic_react_1.selector("dropdown", x => x.toString())([1, 3, 5]).then(`target_selector`, n => monadic_react_1.custom()(ctxt => cont => React.createElement(Counter, { target: n, context: ctxt, cont: cont })).then(`counter`, s => monadic_react_1.string("view")(`The component has ticked ${s} times.`).ignore()));

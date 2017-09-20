@@ -21,10 +21,8 @@ class Counter extends React.Component<CounterProps, CounterState> {
     return <div>
       <label style={{margin:"10px"}}>Progress: {this.state.current}/{this.props.target}</label>
       <button onClick={() => this.setState({...this.state, current: this.state.current+1}, () =>
-        this.state.current >= this.props.target + 1 && this.setState({...this.state, current: 0}, () =>
-        this.props.cont(() =>
-          this.setState({...this.state, signals_sent:this.state.signals_sent+1}))
-          (this.state.signals_sent + 1)))}>+1</button>
+        this.state.current >= this.props.target + 1 && this.setState({...this.state, current: 0, signals_sent:this.state.signals_sent+1}, () =>
+        this.props.cont(() => {})(this.state.signals_sent)))}>+1</button>
     </div>
   }
 }
@@ -32,4 +30,4 @@ class Counter extends React.Component<CounterProps, CounterState> {
 export let selector_sample : C<void> =
   selector<number>("dropdown", x => x.toString())([1, 3, 5]).then(`target_selector`, n =>
   custom<number>()(ctxt => cont => <Counter target={n} context={ctxt} cont={cont} />).then<void>(`counter`, s =>
-  string("view")(`The component has ticked ${s} times.`).ignore()))
+  string("view", )(`The component has ticked ${s} times.`).ignore()))
