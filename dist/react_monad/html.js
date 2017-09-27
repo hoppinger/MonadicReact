@@ -42,7 +42,7 @@ var Label = (function (_super) {
     };
     Label.prototype.render = function () {
         var content = this.state.p == "creating" ? null : this.state.p;
-        var span = React.createElement("span", null, this.props.text);
+        var span = React.createElement("span", { key: "label_span" }, this.props.text);
         return React.createElement("label", { className: this.props.className }, this.props.span_before_content ? [span, content] : [content, span]);
     };
     return Label;

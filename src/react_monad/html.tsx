@@ -36,7 +36,7 @@ class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
 
   render() {
     let content : JSX.Element = this.state.p == "creating" ? null : this.state.p
-    let span = <span>{this.props.text}</span>
+    let span = <span key="label_span">{this.props.text}</span>
     return <label className={this.props.className}>
              {this.props.span_before_content ? [span,content] : [content,span]}
            </label>
