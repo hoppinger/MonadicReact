@@ -184,22 +184,30 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
   wait_time:number = 500
   load(props:LiftPromiseProps<A,B>) {
+    if (this.stopped) return
     this.setState({...this.state, result:"busy"}, () =>
     props.p(this.state.input).then(x => {
       this.wait_time = 500
       if (this.props.debug_info) console.log("Promise done:", this.props.debug_info())
+      if (this.stopped) return
       this.setState({...this.state, result:x}, () => props.cont(() => null)(x))
     })
     .catch(() => {
-      if (props.retry_strategy == "never")
+      if (props.retry_strategy == "never") {
+        if (this.stopped) return
         this.setState({...this.state, result:"error"})
-      else {
+      } else {
         this.wait_time = Math.floor(Math.max(this.wait_time * 1.5, 2500))
         setTimeout(() => this.load(props), this.wait_time)
       }
     }))
   }
+  stopped:boolean = false
+  componentWillUnmount() {
+    this.stopped = true
+  }
   componentWillMount() {
+    this.stopped = false
     this.props.debug_info && console.log("Mount:", this.props.debug_info())
     this.load(this.props)
   }
@@ -234,6 +242,7 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
       // console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
         // console.log("delay is submitting the data to save")
+        if (!this.running) return
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
           // console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
