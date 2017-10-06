@@ -23,11 +23,23 @@ class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
     super()
     this.state = { current_value: props.value, frame_index:1 }
   }
+  stopped:boolean = false
+
+  componentWillUnmount() {
+    this.stopped = true
+  }
+  
+  componentWillMount() {
+    this.stopped = false
+  }
+
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info(), this.state.current_value)
-    return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value =>
-      this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
-        this.props.cont(callback)(new_value)))
+    return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value => {
+      if (this.stopped) return
+      return this.setState({...this.state, frame_index:this.state.frame_index+1, current_value:new_value}, () =>
+        this.props.cont(callback)(new_value))
+    })
   }
 }
 
@@ -183,6 +195,7 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
     this.load(new_props))
   }
   wait_time:number = 500
+  stopped:boolean = false
   load(props:LiftPromiseProps<A,B>) {
     if (this.stopped) return
     this.setState({...this.state, result:"busy"}, () =>
@@ -202,7 +215,6 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
       }
     }))
   }
-  stopped:boolean = false
   componentWillUnmount() {
     this.stopped = true
   }
