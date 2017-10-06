@@ -129,7 +129,7 @@ class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
                              this.props.cont(callback)(x))})
   }
   render() {
-    return <div className={this.props.className}>
+    return <div className={this.props.className} key={this.props.key}>
         { this.state.p  != "creating" ? this.state.p  : null }
       </div>
   }
