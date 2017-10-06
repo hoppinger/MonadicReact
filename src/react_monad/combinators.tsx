@@ -183,6 +183,7 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
     this.load(new_props))
   }
   wait_time:number = 500
+  stopped:boolean = false
   load(props:LiftPromiseProps<A,B>) {
     if (this.stopped) return
     this.setState({...this.state, result:"busy"}, () =>
@@ -202,7 +203,6 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
       }
     }))
   }
-  stopped:boolean = false
   componentWillUnmount() {
     this.stopped = true
   }
