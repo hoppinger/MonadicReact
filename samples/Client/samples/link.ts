@@ -11,7 +11,7 @@ rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react
 
 export let link_sample : C<void> =
   any<void, void>(`link sample`)([
-    _ => link(`Google`, "https://www.google.com"),
-    _ => link(`Facebook`, "https://www.facebook.com"),
-    _ => link(`Hoppinger`, "https://www.hoppinger.com")
+    _ => link(`Google`, "https://www.google.com", false, "google"),
+    _ => link(`Facebook`, "https://www.facebook.com", false, "facebook"),
+    _ => link(`Hoppinger`, "https://www.hoppinger.com", false, "hoppinger")
   ])(null)

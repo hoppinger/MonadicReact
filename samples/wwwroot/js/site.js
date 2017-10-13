@@ -20590,11 +20590,22 @@ const primitives_1 = __webpack_require__(102);
 class Repeat extends React.Component {
     constructor(props, context) {
         super();
+        this.stopped = false;
         this.state = { current_value: props.value, frame_index: 1 };
+    }
+    componentWillUnmount() {
+        this.stopped = true;
+    }
+    componentWillMount() {
+        this.stopped = false;
     }
     render() {
         this.props.debug_info && console.log("Render:", this.props.debug_info(), this.state.current_value);
-        return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value => this.setState(Object.assign({}, this.state, { frame_index: this.state.frame_index + 1, current_value: new_value }), () => this.props.cont(callback)(new_value)));
+        return this.props.p(this.state.current_value).comp(this.props.context)(callback => new_value => {
+            if (this.stopped)
+                return;
+            return this.setState(Object.assign({}, this.state, { frame_index: this.state.frame_index + 1, current_value: new_value }), () => this.props.cont(callback)(new_value));
+        });
     }
 }
 exports.repeat = function (key, dbg) {
@@ -20692,6 +20703,7 @@ class LiftPromise extends React.Component {
     constructor(props, context) {
         super();
         this.wait_time = 500;
+        this.stopped = false;
         this.state = { result: "busy", input: props.value };
     }
     componentWillReceiveProps(new_props) {
@@ -20703,22 +20715,33 @@ class LiftPromise extends React.Component {
         this.setState(Object.assign({}, this.state, { input: new_props.value }), () => this.load(new_props));
     }
     load(props) {
+        if (this.stopped)
+            return;
         this.setState(Object.assign({}, this.state, { result: "busy" }), () => props.p(this.state.input).then(x => {
             this.wait_time = 500;
             if (this.props.debug_info)
                 console.log("Promise done:", this.props.debug_info());
+            if (this.stopped)
+                return;
             this.setState(Object.assign({}, this.state, { result: x }), () => props.cont(() => null)(x));
         })
             .catch(() => {
-            if (props.retry_strategy == "never")
+            if (props.retry_strategy == "never") {
+                if (this.stopped)
+                    return;
                 this.setState(Object.assign({}, this.state, { result: "error" }));
+            }
             else {
                 this.wait_time = Math.floor(Math.max(this.wait_time * 1.5, 2500));
                 setTimeout(() => this.load(props), this.wait_time);
             }
         }));
     }
+    componentWillUnmount() {
+        this.stopped = true;
+    }
     componentWillMount() {
+        this.stopped = false;
         this.props.debug_info && console.log("Mount:", this.props.debug_info());
         this.load(this.props);
     }
@@ -20748,6 +20771,8 @@ class Delay extends React.Component {
             // console.log("delay is ticking", self.state.status, self.state.value)
             if (self.state.status == "dirty") {
                 // console.log("delay is submitting the data to save")
+                if (!this.running)
+                    return;
                 self.setState(Object.assign({}, self.state, { status: "waiting", last_command: self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
                         // console.log("calling the continuation of dirty", self.state.value)
                         self.props.cont(callback)(new_value);
@@ -20803,13 +20828,13 @@ exports.simple_menu = function (type, to_string, key, dbg) {
             :
                 []).concat(items.map((item, i) => {
             return (s) => item.kind == "item" ?
-                html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(html_1.a(to_string(item.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
+                html_1.div(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`, to_string(item.value))(html_1.a(to_string(item.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: { kind: "nothing" }, selected: item, last_action: { kind: "selection" } }))
                 :
-                    exports.any()([
-                        (s) => html_1.div(`${entry_class} `)(html_1.a(item.label, undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
+                    exports.any(item.label)([
+                        (s) => html_1.div(`${entry_class} `, item.label)(html_1.a(item.label, undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, last_action: { kind: "selection" } }))
                     ].concat((s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
                         (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
-                        item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(html_1.a(to_string(c.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
+                        item.children.map(c => (s) => html_1.div(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`, to_string(c.value))(html_1.a(to_string(c.value), undefined, undefined, false, undefined))(Object.assign({}, s, { sub_selected: item, selected: c, last_action: { kind: "selection" } })))
                         :
                             []))(s);
         }).filter((i, i_i) => type == "side menu" || i_i >= s.shown_range.first && (i_i - s.shown_range.first) < s.shown_range.amount)
@@ -20819,8 +20844,8 @@ exports.simple_menu = function (type, to_string, key, dbg) {
                 [])
             .toArray());
         return exports.repeat()(html_1.div()(exports.any(undefined, content_menu_class)([
-            html_1.div(menu_class)(s => exports.any(undefined, entries_class)(entries(s))(s)),
-            html_1.div(content_class)((s) => s.selected.kind == "item" ?
+            html_1.div(menu_class, menu_class)(s => exports.any(undefined, entries_class)(entries(s))(s)),
+            html_1.div(content_class, content_class)((s) => s.selected.kind == "item" ?
                 p(s.selected.value).then(undefined, (p_res) => core_1.unit(Object.assign({}, s, { last_action: { kind: "p", p_res: p_res } })))
                 :
                     core_1.unit(s).never())
@@ -20865,7 +20890,7 @@ class Label extends React.Component {
     }
     render() {
         let content = this.state.p == "creating" ? null : this.state.p;
-        let span = React.createElement("span", null, this.props.text);
+        let span = React.createElement("span", { key: "label_span" }, this.props.text);
         return React.createElement("label", { className: this.props.className }, this.props.span_before_content ? [span, content] : [content, span]);
     }
 }
@@ -29956,7 +29981,6 @@ class List extends React.Component {
         this.state = { ps: "creating" };
     }
     componentWillReceiveProps(new_props) {
-        console.log(`Received new list props`, new_props.items.map((item, index) => [item, index]).toArray());
         this.setState(Object.assign({}, this.state, { ps: new_props.items.map((item, index) => new_props.renderer(index)(item).comp(new_props.context)(callback => new_value => new_props.cont(callback)(new_value))).toList() }));
     }
     componentWillMount() {
@@ -49413,7 +49437,7 @@ exports.course_form_sample = monadic_react_1.simple_form_with_save_button("edit"
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(19);
-exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`).ignore());
+exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react_1.label("Insert a number: ", true)(n => monadic_react_1.number("edit", "number")(n))(n))(0).then(`input number bind`, c => monadic_react_1.string("view", "text", "view")(`Your selection is ${c.toString()}`).ignore());
 
 
 /***/ }),
@@ -49425,9 +49449,9 @@ exports.label_sample = monadic_react_1.repeat(`input number`)(n => monadic_react
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(19);
 exports.link_sample = monadic_react_1.any(`link sample`)([
-    _ => monadic_react_1.link(`Google`, "https://www.google.com"),
-    _ => monadic_react_1.link(`Facebook`, "https://www.facebook.com"),
-    _ => monadic_react_1.link(`Hoppinger`, "https://www.hoppinger.com")
+    _ => monadic_react_1.link(`Google`, "https://www.google.com", false, "google"),
+    _ => monadic_react_1.link(`Facebook`, "https://www.facebook.com", false, "facebook"),
+    _ => monadic_react_1.link(`Hoppinger`, "https://www.hoppinger.com", false, "hoppinger")
 ])(null);
 
 
@@ -49440,7 +49464,7 @@ exports.link_sample = monadic_react_1.any(`link sample`)([
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(60);
 const monadic_react_1 = __webpack_require__(19);
-exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view")(`This is item ${n}`).ignore());
+exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view", "text", "view")(`This is item ${n}`).ignore('ignore'));
 
 
 /***/ }),
@@ -49467,9 +49491,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Moment = __webpack_require__(0);
 const monadic_react_1 = __webpack_require__(19);
 exports.moments_sample = monadic_react_1.repeat()(monadic_react_1.any(`input number`)([
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).then(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).then(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
-    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).then(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a time: ", true)(monadic_react_1.time("edit", "time")))(c).then(`time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'time_filter'),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date: ", true)(monadic_react_1.date("edit", "date")))(c).then(`date bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'date_filter'),
+    c => monadic_react_1.repeat()(monadic_react_1.label("Insert a date with time: ", true)(monadic_react_1.date_time("edit", "date-time")))(c).then(`date-time bind`, c => monadic_react_1.string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'date_time_filter')
 ]))(Moment(Moment.now())).ignore();
 
 
@@ -49526,7 +49550,7 @@ exports.pagination_sample = monadic_react_1.div(undefined, `pagination sample`)(
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const monadic_react_1 = __webpack_require__(19);
-exports.rich_text_sample = monadic_react_1.repeat()(monadic_react_1.rich_text("edit"))(null).map(s => s.substr(0, 1000)).then(`rich text sample`, monadic_react_1.delay(2000, `rich text delayer`)(monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view")))).ignore();
+exports.rich_text_sample = monadic_react_1.repeat()(monadic_react_1.rich_text("edit"))(null).map(s => s.substr(0, 1000)).then(`rich text sample`, monadic_react_1.delay(2000, `rich text delayer`)(monadic_react_1.label(`Raw content:`, true)(monadic_react_1.string("view", "text", "view")))).ignore();
 
 
 /***/ }),
@@ -49601,7 +49625,7 @@ let perform = function (s, op) {
 exports.editable_list = function (list_name, initial_items, create_new_form) {
     return initial_items.then(list_name, items => combinators_1.repeat(`monadic-list ${list_name}`)(html_1.form(`monadic-list-form`)(combinators_1.any()([
         s => list_1.list(s.items, undefined, `monadic-list-items`)(i => n => combinators_1.any(`item_${n}`, `monadic-list-item`)([
-            html_1.div(`monadic-list-cell`)(_ => html_1.label("")(primitives_1.bool("edit", "radio"))(s.selected_index == i).then(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
+            html_1.div(`monadic-list-cell`)(_ => html_1.label("")(primitives_1.bool("edit", "radio", "radio-bool"))(s.selected_index == i).then(undefined, selected => core_1.unit({ kind: "toggle", value: n, index: i, selected: selected }).filter(_ => selected != (s.selected_index == i)))),
             html_1.div(`monadic-list-cell`)(op => primitives_1.string("view")(`This is item ${n}, with index ${i}`).filter(_ => false).ignore_with(op)),
             html_1.div(`monadic-list-cell monadic-list-lastcell`)(_ => html_1.button(`X`)({ kind: "remove", value: n, index: i }))
         ])(undefined)).then(`inner list`, op => core_1.unit(perform(s, op))),

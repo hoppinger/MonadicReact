@@ -15,15 +15,15 @@ export let moments_sample : C<void> =
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a time: ", true)(time("edit", "time"))
       )(c).then(`time bind`, c =>
-      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'time_filter'),
 
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date: ", true)(date("edit", "date"))
       )(c).then(`date bind`, c =>
-      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false),
+      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'date_filter'),
 
       c => repeat<Moment.Moment>()(
         label<Moment.Moment, Moment.Moment>("Insert a date with time: ", true)(date_time("edit", "date-time"))
       )(c).then(`date-time bind`, c =>
-      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false)
+      string("view")(`Your selection is ${c.toString()}`)).map(_ => c).filter(_ => false, 'date_time_filter')
     ]))(Moment(Moment.now())).ignore()

@@ -11,5 +11,5 @@ rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react
 
 export let list_sample : C<void> =
   list<number, void>(Range(1,10).toList(), `list sample`)(
-    i => n => string("view")(`This is item ${n}`).ignore()
+    i => n => string("view", "text", "view")(`This is item ${n}`).ignore('ignore')
   )

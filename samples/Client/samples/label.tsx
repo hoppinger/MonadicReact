@@ -12,4 +12,4 @@ export let label_sample : C<void> =
   repeat<number>(`input number`)(n =>
       label<number, number>("Insert a number: ", true)(n =>
         number("edit", "number")(n))(n))(0).then(`input number bind`, c =>
-  string("view")(`Your selection is ${c.toString()}`).ignore())
+  string("view", "text", "view")(`Your selection is ${c.toString()}`).ignore())
