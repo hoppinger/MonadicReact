@@ -29,7 +29,7 @@ export let editable_list = function<A>(list_name:string, initial_items:C<List<A>
         s => list<A, ListOperation<A>>(s.items, undefined, `monadic-list-items`)(i => n =>
           any<ListOperation<A>, ListOperation<A>>(`item_${n}`, `monadic-list-item`)([
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell`)(_ =>
-              label<boolean, boolean>("")(bool("edit", "radio"))(s.selected_index == i).then(undefined, selected =>
+              label<boolean, boolean>("")(bool("edit", "radio", "radio-bool"))(s.selected_index == i).then(undefined, selected =>
                 unit<ListOperation<A>>({ kind:"toggle", value:n, index:i, selected:selected }).filter(_ =>
                   selected != (s.selected_index == i)))),
             div<ListOperation<A>,ListOperation<A>>(`monadic-list-cell`)(op =>

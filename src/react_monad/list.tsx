@@ -19,7 +19,6 @@ class List<A,B> extends React.Component<ListProps<A,B>,ListState<A,B>> {
     this.state = { ps:"creating" }
   }
   componentWillReceiveProps(new_props:ListProps<A,B>) {
-    console.log(`Received new list props`, new_props.items.map((item, index) => [item,index]).toArray())
     this.setState({...this.state,
       ps:new_props.items.map((item, index) =>
           new_props.renderer(index)(item).comp(new_props.context)(callback => new_value =>

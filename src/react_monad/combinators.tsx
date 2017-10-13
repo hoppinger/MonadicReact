@@ -329,19 +329,19 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
                 return (s:MenuState) =>
 
                   item.kind == "item" ?
-                    div<MenuState, MenuState>(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`)(
+                    div<MenuState, MenuState>(`${entry_class} ${s.selected.kind == "item" && item.value == s.selected.value ? ` ${entry_class}--active` : ""}`, to_string(item.value))(
                       a<MenuState>(to_string(item.value), undefined, undefined, false, undefined)
                     )({...s, sub_selected:{ kind:"nothing" }, selected:item, last_action:{kind:"selection"} })
                   :
-                    any<MenuState, MenuState>()([
-                      (s:MenuState) => div<MenuState, MenuState>(`${entry_class} `)(
+                    any<MenuState, MenuState>(item.label)([
+                      (s:MenuState) => div<MenuState, MenuState>(`${entry_class} `, item.label)(
                         a<MenuState>(item.label, undefined, undefined, false, undefined)
                       )({...s, sub_selected:item, last_action:{kind:"selection"} })
                     ].concat(
                       (s.sub_selected.kind == "sub menu" && item.label == s.sub_selected.label) ||
                       (s.selected.kind == "item" && item.children.some(c => s.selected.kind == "item" && c.value == s.selected.value)) ?
                         item.children.map(c =>
-                          (s:MenuState) => div<MenuState, MenuState>(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`)(
+                          (s:MenuState) => div<MenuState, MenuState>(`${sub_entry_class} ${s.selected.kind == "item" && c.value == s.selected.value ? ` ${sub_entry_class}--active` : ""}`, to_string(c.value))(
                             a<MenuState>(to_string(c.value), undefined, undefined, false, undefined)
                           )({...s, sub_selected:item, selected:c, last_action:{kind:"selection"} })
                         )
@@ -361,9 +361,9 @@ export let simple_menu = function<A,B>(type:SimpleMenuType, to_string:(_:A)=>str
       div<MenuState, MenuState>()(
       any<MenuState, MenuState>(undefined, content_menu_class)(
         [
-          div<MenuState, MenuState>(menu_class)(
+          div<MenuState, MenuState>(menu_class, menu_class)(
             s => any<MenuState, MenuState>(undefined, entries_class)(entries(s))(s)),
-          div<MenuState, MenuState>(content_class)(
+          div<MenuState, MenuState>(content_class, content_class)(
           (s:MenuState) => s.selected.kind == "item" ?
             p(s.selected.value).then<MenuState>(undefined, (p_res:B) => unit<MenuState>({...s, last_action:{ kind:"p", p_res:p_res }}))
           :
