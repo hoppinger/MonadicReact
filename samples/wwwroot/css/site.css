@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'icomoon';
-	src: url("../fonts/icomoon/fonts/icomoon.woff2") format("woff2"), url("../fonts/icomoon/fonts/icomoon.woff") format("woff"), url("../fonts/icomoon/fonts/icomoon.svg#icomoon") format("svg");
+	src: url("../fonts/icomoon/fonts/icomoon.woff") format("woff"), url("../fonts/icomoon/fonts/icomoon.svg#icomoon") format("svg");
 	font-weight: normal;
 	font-style: normal;
 }
@@ -3810,6 +3810,10 @@ th {
 
 .text-editor__menu-button--image:before {
 	content: "";
+}
+
+.text-editor__menu-button--latex:before {
+	content: "";
 }
 
 .cards {

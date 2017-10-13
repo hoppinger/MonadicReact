@@ -3,10 +3,9 @@
 @font-face {
   font-family: 'icomoon';
   src:
-    url('#{$icomoon-font-path}/icomoon.woff2?xe9c87') format('woff2'),
-    url('#{$icomoon-font-path}/icomoon.ttf?xe9c87') format('truetype'),
-    url('#{$icomoon-font-path}/icomoon.woff?xe9c87') format('woff'),
-    url('#{$icomoon-font-path}/icomoon.svg?xe9c87#icomoon') format('svg');
+    url('#{$icomoon-font-path}/icomoon.ttf?ltax5l') format('truetype'),
+    url('#{$icomoon-font-path}/icomoon.woff?ltax5l') format('woff'),
+    url('#{$icomoon-font-path}/icomoon.svg?ltax5l#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -36,26 +35,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-h1 {
-  &:before {
-    content: $icon-h1;
-  }
-}
-.icon-h2 {
-  &:before {
-    content: $icon-h2;
-  }
-}
-.icon-h3 {
-  &:before {
-    content: $icon-h3;
-  }
-}
-.icon-quote {
-  &:before {
-    content: $icon-quote;
-  }
-}
 .icon-code {
   &:before {
     content: $icon-code;
@@ -339,6 +318,36 @@
 .icon-settings {
   &:before {
     content: $icon-settings;
+  }
+}
+.icon-sigma {
+  &:before {
+    content: $icon-sigma;
+  }
+}
+.icon-latex {
+  &:before {
+    content: $icon-latex;
+  }
+}
+.icon-h1 {
+  &:before {
+    content: $icon-h1;
+  }
+}
+.icon-h2 {
+  &:before {
+    content: $icon-h2;
+  }
+}
+.icon-h3 {
+  &:before {
+    content: $icon-h3;
+  }
+}
+.icon-quote {
+  &:before {
+    content: $icon-quote;
   }
 }
 

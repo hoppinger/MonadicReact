@@ -100,3 +100,9 @@
     content: $icon-picture;
   }
 }
+
+.text-editor__menu-button--latex {
+  &:before {
+    content: $icon-latex;
+  }
+}
