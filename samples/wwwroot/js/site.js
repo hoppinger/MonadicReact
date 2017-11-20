@@ -22665,7 +22665,7 @@ class Number extends React.Component {
     }
     componentWillReceiveProps(new_props) {
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(this.state.value))
     }
     componentWillMount() {
         this.call_cont(this.state.value);
@@ -22694,16 +22694,24 @@ class String extends React.Component {
         this.state = { value: props.value };
     }
     componentWillReceiveProps(new_props) {
+        if (this.props.debug_info != undefined)
+            console.log(`receiving props`, this.props.debug_info());
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(new_props.value))
     }
     componentWillMount() {
+        if (this.props.debug_info != undefined)
+            console.log(`mounting`, this.props.debug_info());
         this.call_cont(this.state.value);
     }
     call_cont(value) {
+        if (this.props.debug_info != undefined)
+            console.log(`calling continuation`, this.props.debug_info());
         this.props.cont(() => null)(value);
     }
     render() {
+        if (this.props.debug_info != undefined)
+            console.log(`render`, this.props.debug_info());
         return this.props.mode == "edit" ? React.createElement("input", { type: this.props.type, value: this.state.value, onChange: e => {
                 if (this.state.value == e.currentTarget.value)
                     return;
@@ -22734,7 +22742,7 @@ class Bool extends React.Component {
     }
     componentWillReceiveProps(new_props) {
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(this.state.value))
     }
     componentWillMount() {
         this.call_cont(this.state.value);
@@ -22761,7 +22769,7 @@ class DateTime extends React.Component {
     }
     componentWillReceiveProps(new_props) {
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(this.state.value))
     }
     componentWillMount() {
         this.call_cont(this.state.value);
@@ -22787,7 +22795,7 @@ class DateOnly extends React.Component {
     }
     componentWillReceiveProps(new_props) {
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(this.state.value))
     }
     componentWillMount() {
         this.call_cont(this.state.value);
@@ -22813,7 +22821,7 @@ class Time extends React.Component {
     }
     componentWillReceiveProps(new_props) {
         if (new_props.value != this.state.value)
-            this.setState(Object.assign({}, this.state, { value: new_props.value }), () => this.call_cont(this.state.value));
+            this.setState(Object.assign({}, this.state, { value: new_props.value })); //, () => this.call_cont(this.state.value))
     }
     componentWillMount() {
         this.call_cont(this.state.value);
@@ -49267,10 +49275,16 @@ function HomePage(slug) {
     let all_menu_routes = Array()
         .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
         .concat(all_samples.map(s => submenu_route(s)));
+    // let test =
+    //   repeat<string>("repeat", () => "repeat")(
+    //     string("edit", "text", "string", () => "string")
+    //   )("Hello world!")
     return React.createElement("div", null, React.createElement("div", { className: "component" }, monadic_react_1.application("edit", window.location.href.replace(slug, ""), slug, () => Promise.resolve(all_menu_routes.concat([
         edit_toggle(),
         menu_page()
-    ])))));
+    ])))
+    // simple_application(test, x => console.log("test broadcasts", JSON.stringify(x)))
+    ));
 }
 exports.HomePage = HomePage;
 exports.HomePage_to = (slug, target_element_id) => {
@@ -49464,7 +49478,7 @@ exports.link_sample = monadic_react_1.any(`link sample`)([
 Object.defineProperty(exports, "__esModule", { value: true });
 const immutable_1 = __webpack_require__(60);
 const monadic_react_1 = __webpack_require__(19);
-exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view", "text", "view")(`This is item ${n}`).ignore('ignore'));
+exports.list_sample = monadic_react_1.list(immutable_1.Range(1, 10).toList(), `list sample`)(i => n => monadic_react_1.string("view", "text", `item-${i}-${n}`)(`This is item ${i}/${n}`).ignore(`ignore-${i}-${n}`));
 
 
 /***/ }),

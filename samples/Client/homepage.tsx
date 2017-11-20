@@ -5,7 +5,7 @@ import * as Immutable from "immutable"
 import * as Moment from 'moment'
 import * as i18next from 'i18next'
 
-import {UrlTemplate, application, get_context, Route, Url, make_url, fallback_url, link_to_route,
+import {UrlTemplate, application, simple_application, get_context, Route, Url, make_url, fallback_url, link_to_route,
 Option, C, Mode, unit, bind, string, number, bool, button, selector, multi_selector, label, h1, h2, div, form, image, link, file, overlay,
 custom, repeat, all, any, lift_promise, retract, delay,
 simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEntrySubMenu,
@@ -119,6 +119,11 @@ export function HomePage(slug:string) : JSX.Element {
     .concat(...all_samples.map(s => s.children.map(c => sample_route(s, c.value))))
     .concat(all_samples.map(s => submenu_route(s)))
 
+  // let test =
+  //   repeat<string>("repeat", () => "repeat")(
+  //     string("edit", "text", "string", () => "string")
+  //   )("Hello world!")
+
   return <div>
       {
         <div className="component">
@@ -129,6 +134,7 @@ export function HomePage(slug:string) : JSX.Element {
                 edit_toggle(),
                 menu_page()
               ])))
+            // simple_application(test, x => console.log("test broadcasts", JSON.stringify(x)))
           }
         </div>
       }

@@ -25,7 +25,7 @@ class Number extends React.Component<NumberProps,NumberState> {
   }
   componentWillReceiveProps(new_props:NumberProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -60,16 +60,20 @@ class String extends React.Component<StringProps,StringState> {
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:StringProps) {
+    if (this.props.debug_info != undefined) console.log(`receiving props`, this.props.debug_info())
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(new_props.value))
   }
   componentWillMount() {
+    if (this.props.debug_info != undefined) console.log(`mounting`, this.props.debug_info())
     this.call_cont(this.state.value)
   }
   call_cont(value:string) {
+    if (this.props.debug_info != undefined) console.log(`calling continuation`, this.props.debug_info())
     this.props.cont(()=>null)(value)
   }
   render() {
+    if (this.props.debug_info != undefined) console.log(`render`, this.props.debug_info())
     return this.props.mode == "edit" ? <input type={this.props.type}
                   value={this.state.value}
                   onChange={e => {
@@ -107,7 +111,7 @@ class Bool extends React.Component<BoolProps,BoolState> {
   }
   componentWillReceiveProps(new_props:BoolProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -154,7 +158,7 @@ class DateTime extends React.Component<DateTimeProps,DateTimeState> {
   }
   componentWillReceiveProps(new_props:DateTimeProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -189,7 +193,7 @@ class DateOnly extends React.Component<DateProps,DateState> {
   }
   componentWillReceiveProps(new_props:DateProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -223,7 +227,7 @@ class Time extends React.Component<TimeProps,TimeState> {
   }
   componentWillReceiveProps(new_props:TimeProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)

@@ -2,5 +2,6 @@
   "files.associations": {
     "dockerfile.*": "dockerfile"
   },
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
