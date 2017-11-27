@@ -20,7 +20,7 @@ export type SimpleMenuType = "side menu" | { kind:"tabs", max_tabs:number }
 type RepeatState<A> = { current_value:A, frame_index:number }
 class Repeat<A> extends React.Component<RepeatProps<A>,RepeatState<A>> {
   constructor(props:RepeatProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { current_value: props.value, frame_index:1 }
   }
   stopped:boolean = false
@@ -52,7 +52,7 @@ export let repeat = function<A>(key?:string, dbg?:() => string) : ((p:(_:A)=>C<A
 type AnyState<A,B> = { ps:"creating"|Array<JSX.Element> }
 class Any<A,B> extends React.Component<AnyProps<A,B>,AnyState<A,B>> {
   constructor(props:AnyProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { ps:"creating" }
   }
   componentWillReceiveProps(new_props:AnyProps<A,B>) {
@@ -81,7 +81,7 @@ export let any = function<A,B>(key?:string, className?:string, dbg?:() => string
 type NeverState<A,B> = { p:"loading"|JSX.Element }
 class Never<A,B> extends React.Component<NeverProps<A,B>,NeverState<A,B>> {
   constructor(props:NeverProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"loading" }
   }
   componentWillReceiveProps(new_props:NeverProps<A,B>) {
@@ -106,7 +106,7 @@ export let never = function<A,B>(p:C<A>, key?:string) : C<B> {
 type AllState<A> = { results:Immutable.Map<number,A>, ps:"creating"|Array<JSX.Element> }
 class All<A> extends React.Component<AllProps<A>,AllState<A>> {
   constructor(props:AllProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { results:Immutable.Map<number,A>(), ps:"creating" }
   }
 
@@ -150,7 +150,7 @@ export let all = function<A>(ps:Array<C<A>>, key?:string, dbg?:() => string) : C
 type RetractState<A,B> = { p:"creating"|JSX.Element }
 class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> {
   constructor(props:RetractProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:RetractProps<A,B>) {
@@ -182,7 +182,7 @@ export let retract = function<A,B>(key?:string, dbg?:() => string) : ((inb:(_:A)
 type LiftPromiseState<A,B> = { result:"busy"|"error"|A, input:any }
 class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromiseState<A,B>> {
   constructor(props:LiftPromiseProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { result:"busy", input:props.value }
   }
   componentWillReceiveProps(new_props:LiftPromiseProps<A,B>) {
@@ -241,7 +241,7 @@ export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:Re
 type DelayState<A> = { status:"dirty"|"waiting", value:A, last_command:JSX.Element }
 class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   constructor(props:DelayProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { status:"dirty", value:props.value, last_command:props.p(props.value).comp(props.context)(props.cont) }
   }
   running:boolean = false

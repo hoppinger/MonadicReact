@@ -20,7 +20,7 @@ type PaginateProps<A,B> = {
 
 class Paginate<A,B> extends React.Component<PaginateProps<A,B>,PaginateState<A,B>> {
   constructor(props:PaginateProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { page_index:0, get_page_cache:"loading", current_page:"loading", page_cache:"loading" }
   }
   componentWillReceiveProps(new_props:PaginateProps<A,B>) {

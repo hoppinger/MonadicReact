@@ -20,7 +20,7 @@ export type TimeProps = { kind:"time", value:Moment.Moment, mode:Mode } & CmdCom
 type NumberState = { value:number }
 class Number extends React.Component<NumberProps,NumberState> {
   constructor(props:NumberProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:NumberProps) {
@@ -56,7 +56,7 @@ export let number = (mode:Mode, key?:string, dbg?:() => string) => function(valu
 type StringState = { value:string }
 class String extends React.Component<StringProps,StringState> {
   constructor(props:StringProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:StringProps) {
@@ -106,7 +106,7 @@ export let string = (mode:Mode, type?:StringType, key?:string, dbg?:() => string
 type BoolState = { value:boolean }
 class Bool extends React.Component<BoolProps,BoolState> {
   constructor(props:BoolProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:BoolProps) {
@@ -153,7 +153,7 @@ export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string
 type DateTimeState = { value:Moment.Moment }
 class DateTime extends React.Component<DateTimeProps,DateTimeState> {
   constructor(props:DateTimeProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:DateTimeProps) {
@@ -188,7 +188,7 @@ export let date_time = (mode:Mode, key?:string, dbg?:() => string) => function(v
 type DateState = { value:Moment.Moment }
 class DateOnly extends React.Component<DateProps,DateState> {
   constructor(props:DateProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:DateProps) {
@@ -222,7 +222,7 @@ export let date = (mode:Mode, key?:string, dbg?:() => string) => function(value:
 type TimeState = { value:Moment.Moment }
 class Time extends React.Component<TimeProps,TimeState> {
   constructor(props:TimeProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:TimeProps) {

@@ -21,7 +21,7 @@ export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disa
 type LabelState<A,B> = { p:"creating"|JSX.Element }
 class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
   constructor(props:LabelProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:LabelProps<A,B>) {
@@ -52,7 +52,7 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
 type H1State<A,B> = { p:"creating"|JSX.Element }
 class H1<A,B> extends React.Component<H1Props<A,B>,H1State<A,B>> {
   constructor(props:H1Props<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:H1Props<A,B>) {
@@ -84,7 +84,7 @@ export function h1<A,B>(text:string, className?:string, key?:string, dbg?:() => 
 type H2State<A,B> = { p:"creating"|JSX.Element }
 class H2<A,B> extends React.Component<H2Props<A,B>,H2State<A,B>> {
   constructor(props:H2Props<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:H2Props<A,B>) {
@@ -116,7 +116,7 @@ export function h2<A,B>(text:string, className?:string, key?:string, dbg?:() => 
 type DivState<A,B> = { p:"creating"|JSX.Element }
 class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   constructor(props:DivProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:DivProps<A,B>) {
@@ -148,7 +148,7 @@ export function overlay<A,B>(key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) =
 type FormState<A,B> = { p:"creating"|JSX.Element }
 class Form<A,B> extends React.Component<FormProps<A,B>,FormState<A,B>> {
   constructor(props:FormProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:FormProps<A,B>) {
@@ -176,7 +176,7 @@ export function form<A,B>(className?:string, key?:string, dbg?:() => string) : (
 type SelectorState<A> = { selected:undefined|number }
 class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
   constructor(props:SelectorProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { selected:props.selected_item != undefined ? props.items.findIndex(i => props.to_string(i) == props.to_string(props.selected_item)) : undefined }
   }
   componentWillMount() {
@@ -236,7 +236,7 @@ export let selector = function<A>(type:SelectorType, to_string:(_:A)=>string, ke
 type MultiSelectorState<A> = { selected:Immutable.Set<number> }
 class MultiSelector<A> extends React.Component<MultiSelectorProps<A>,MultiSelectorState<A>> {
   constructor(props:MultiSelectorProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { selected:Immutable.Set<number>(
       props.selected_items != undefined ?
         props.items.map((i,i_index) : [string, number] => [props.to_string(i), i_index])
@@ -316,7 +316,7 @@ export let multi_selector = function<A>(type:MultiSelectorType, to_string:(_:A)=
 type ImageState = { src:string }
 class Image extends React.Component<ImageProps,ImageState> {
   constructor(props:ImageProps,context:any) {
-    super()
+    super(props, context)
     this.state = { src:props.src }
   }
   componentWillReceiveProps(new_props:ImageProps) {
@@ -369,7 +369,7 @@ export let image = (mode:Mode, key?:string, dbg?:() => string) => function(src:s
 type ButtonState<A> = { x:A }
 class Button<A> extends React.Component<ButtonProps<A>, ButtonState<A>> {
   constructor(props:ButtonProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { x:props.x }
   }
   componentWillReceiveProps(new_props:ButtonProps<A>) {
@@ -406,7 +406,7 @@ export let button = function<A>(label:string, disabled?:boolean, key?:string, cl
 type LinkState = {  }
 class Link extends React.Component<LinkProps, LinkState> {
   constructor(props:LinkProps, context:any) {
-    super()
+    super(props, context)
     this.state = {}
   }
   render() {
@@ -423,7 +423,7 @@ export let link = function<A>(label:string, url:string, disabled?:boolean, key?:
 type FileState = {}
 class FileComponent extends React.Component<FileProps, FileState> {
   constructor(props:FileProps, context:any) {
-    super()
+    super(props, context)
     this.state = {}
   }
   render() {
