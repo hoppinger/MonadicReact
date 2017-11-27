@@ -243,7 +243,7 @@ class Time extends React.Component<TimeProps,TimeState> {
     : <input type="time"
       value={default_value}
       onChange={(e) =>
-        this.call_cont(Moment.utc(new Date(e.currentTarget.valueAsDate))) }
+        this.call_cont(Moment.utc(e.currentTarget.valueAsDate)) }
     />
   }
 }
