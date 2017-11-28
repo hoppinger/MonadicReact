@@ -29,6 +29,7 @@ import {link_sample} from './samples/link'
 import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
 import {course_form_with_autosave_sample} from './samples/form'
+import {empty_div_sample} from './samples/empty_div'
 
 type Sample = { sample:C<void>, description:string }
 
@@ -40,6 +41,7 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: label_sample, description:"label" }),
         mk_menu_entry({ sample: button_sample, description:"button" }),
         mk_menu_entry({ sample: rich_text_sample, description:"rich text" }),
+        mk_menu_entry({ sample: empty_div_sample, description:"empty div" }),
       ]),
       mk_submenu_entry("dataflows", [
         mk_menu_entry({ sample: selector_sample, description:"selector" }),
