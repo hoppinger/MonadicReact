@@ -30,6 +30,7 @@ import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
 import {course_form_with_autosave_sample} from './samples/form'
 import {empty_div_sample} from './samples/empty_div'
+import {dynamic_array_sample} from './samples/dynamic_array'
 
 type Sample = { sample:C<void>, description:string }
 
@@ -48,6 +49,7 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: multiselector_sample, description:"multi-selector" }),
         mk_menu_entry({ sample: moments_sample, description:"dates and times" }),
         mk_menu_entry({ sample: toggles_sample, description:"coordinated toggles" }),
+        mk_menu_entry({ sample: dynamic_array_sample, description:"dynamic array" }),
       ]),
       mk_submenu_entry("forms", [
         mk_menu_entry({ sample: course_form_with_autosave_sample, description:"simple form" })
