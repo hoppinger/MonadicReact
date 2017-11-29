@@ -10,11 +10,10 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list} from '../../../src/monadic_react'
 
 type Strings = {
-  length: number
   string_array: string[]
 }
 
-const default_state: Strings = { length: 2, string_array :["a","b"] }
+const default_state: Strings = { string_array :["a","b"] }
 
 let set_value_in_array = function <A>(a: A[], i: number, v: A): A[] {
   let b = a.slice(0);
@@ -35,6 +34,6 @@ let dynamic_array = function (key?: string, dbg?: () => string): (_: Strings) =>
 }
 
 export let dynamic_array_sample : C<void> =
-repeat<Strings>()(dynamic_array("edit"))(default_state).map(s => s.string_array[0] + s.string_array[1] ).then(`rich text sample`,
+repeat<Strings>()(dynamic_array("edit"))(default_state).map(s => s.string_array.toString() ).then(`rich text sample`,
     label<string,string>(`Raw content:`, true)(
       string("view", "text", "view"))).ignore()
