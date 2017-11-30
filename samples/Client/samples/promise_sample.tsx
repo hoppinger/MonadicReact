@@ -16,22 +16,20 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
     number("edit", "number")(n)
   )(n)
 )(0).then(`input number bind`, n =>
-  button<number>(`Send ${n.toString()} further`, false, "button_key")
-    (/*lift_promise<Request, Response> (getResponse, "never")({nReq:n}).then("response_offer", (r: Response) => {
-            return unit({ response: "" });
-        }
-      */n)
+  button<number>(`Send ${n.toString()} further`, false, "button_key")(n).then("key",
+    (n:number) => lift_promise<Request, Response> (getResponse, "never")({nReq:n}).then("response_offer", (r: Response) => {
+        console.log("then in response")
+        return unit (n);
+    })
+  )
     .map<string>(n => `Your selection is ${n.toString()}`)
     .then(`button to string`, s => string("view")(s).ignore())
 );
 
-//lift_promise<Request, Response>> (getResponse, "never")({ n: 1 }).then("response_offer", (r: Response) => {
-      //
-  //    return unit({ ...s, offer: r });
-  //  });
-
-const getResponse = (request: Request): Promise<Response> =>
-  new Promise<Response>((resolve, reject) => {
+const getResponse = (request: Request): Promise<Response> =>{
+  console.log("getResponse")
+  return new Promise<Response>((resolve, reject) => {
+    
     /*request({})
       .then(response => {
         return resolve({ response: "OK" });
@@ -39,5 +37,11 @@ const getResponse = (request: Request): Promise<Response> =>
       .catch(_ => {
         resolve({ response: "ERROR" });
       });*/
-  });
+
+      setTimeout(function() {
+        console.log('EanSearchRequest');
+        //resolve();    
+        reject();
+      }, 2500);
+  });}
   
