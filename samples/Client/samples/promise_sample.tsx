@@ -17,7 +17,7 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
   )(n)
 )(0).then(`input number bind`, n =>
   button<number>(`Send ${n.toString()} further`, false, "button_key")(n).then("key",
-    (n:number) => lift_promise_new<Request, Response> (getResponse, "retry then show failure")({nReq:n}).then("response_offer", (r: Response) => {
+    (n:number) => lift_promise_new<Request, Response> (getResponse, "retry then show failure",3,unit({nReq:99999999}),"new promise", () => {return this})({nReq:n}).then("response_offer", (r: Response) => {
         console.log("then in response")
         return unit (n);
     })
@@ -29,19 +29,10 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
 const getResponse = (request: Request): Promise<Response> =>{
   console.log("getResponse")
   return new Promise<Response>((resolve, reject) => {
-    
-    /*request({})
-      .then(response => {
-        return resolve({ response: "OK" });
-      })
-      .catch(_ => {
-        resolve({ response: "ERROR" });
-      });*/
-
-      setTimeout(function() {
-        console.log('EanSearchRequest');
+       setTimeout(function() {
+        console.log('Request');
         //resolve();    
         reject();
-      }, 2500);
+      }, 1000);
   });}
   
