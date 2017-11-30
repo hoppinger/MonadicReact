@@ -93,5 +93,3 @@ export let lift_promise_new = function<A,B>(p:(_:A) => Promise<B>, retry_strateg
     React.createElement<LiftPromiseProps<B,A>>(LiftPromise,
       { kind:"lift promise", debug_info:dbg, value:x, retry_strategy:retry_strategy, times:times, p:p, on_failure: on_failure, context:ctxt, cont:cont, key:key }))
 }
-
-

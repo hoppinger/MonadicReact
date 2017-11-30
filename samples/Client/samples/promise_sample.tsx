@@ -17,18 +17,19 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
   )(n)
 )(0).then(`input number bind`, n =>
   button<number>(`Send ${n.toString()} further`, false, "button_key")(n).then("key",
-    (n:number) => lift_promise_new<Request, Response> (getResponse, "retry then show failure",3,unit({nReq:99999999}),"new promise", () => {return this})({nReq:n}).then("response_offer", (r: Response) => {
+    (n:number) => lift_promise_new<number, number> (getResponse, "retry then show failure",3,unit(99999999),"new promise", () => {return this})(n)
+    .then("response_offer", (r: number) => {
         console.log("then in response")
-        return unit (n);
+        return unit ((n+5)*5);
     })
   )
     .map<string>(n => `Your selection is ${n.toString()}`)
     .then(`button to string`, s => string("view")(s).ignore())
 );
 
-const getResponse = (request: Request): Promise<Response> =>{
+const getResponse = (request: number): Promise<number> =>{
   console.log("getResponse")
-  return new Promise<Response>((resolve, reject) => {
+  return new Promise<number>((resolve, reject) => {
        setTimeout(function() {
         console.log('Request');
         //resolve();    
