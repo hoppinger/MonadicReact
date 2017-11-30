@@ -13,8 +13,8 @@ export type AnyProps<A,B> = { kind:"any", value:A, ps:Array<(_:A)=>C<B>>, classN
 export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
-export type RetryStrategy = "never" | "semi exponential" | "retry then show failure"
-export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B } & CmdCommon<A>
+type RetryStrategy = "never" | "semi exponential" | "retry then show failure"
+type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B } & CmdCommon<A>
 export type SimpleMenuType = "side menu" | { kind:"tabs", max_tabs:number }
 
 type RepeatState<A> = { current_value:A, frame_index:number }
