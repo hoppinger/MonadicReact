@@ -22,7 +22,7 @@ export type RetryStrategy = "never" | "semi exponential" | "retry then show fail
 
 
 type LiftPromiseState<A,B> = { 
-  result:"busy"|"error"|A, 
+  result:"busy"|"error"|A|C<B>, 
   input:any,
   retry_count: number 
 }
@@ -67,8 +67,7 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
         }
         else
         {
-          this.setState({...this.state, result:"error"})
-          //this.props.on_failure
+          this.setState({...this.state, result:this.props.on_failure})
         }
       } 
     }))
