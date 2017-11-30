@@ -13,7 +13,7 @@ export type AnyProps<A,B> = { kind:"any", value:A, ps:Array<(_:A)=>C<B>>, classN
 export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
-export type RetryStrategy = "never" | "semi exponential"
+export type RetryStrategy = "never" | "semi exponential" | "retry then show failure"
 export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B } & CmdCommon<A>
 export type SimpleMenuType = "side menu" | { kind:"tabs", max_tabs:number }
 
@@ -178,7 +178,7 @@ export let retract = function<A,B>(key?:string, dbg?:() => string) : ((inb:(_:A)
       { kind:"retract", debug_info:dbg, inb:inb as (_:A)=>any, out:out as (_:A)=>(_:any)=>A, p:p, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
-
+//  { kind:"retry then show failure", times:number, on_failure:C<B> }
 type LiftPromiseState<A,B> = { result:"busy"|"error"|A, input:any }
 class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromiseState<A,B>> {
   constructor(props:LiftPromiseProps<A,B>,context:any) {
@@ -209,10 +209,13 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
       if (props.retry_strategy == "never") {
         if (this.stopped) return
         this.setState({...this.state, result:"error"})
-      } else {
+      } else if (props.retry_strategy == "semi exponential") {
         this.wait_time = Math.floor(Math.max(this.wait_time * 1.5, 2500))
         setTimeout(() => this.load(props), this.wait_time)
-      }
+      } else if (props.retry_strategy == "retry then show failure") {
+        this.wait_time = Math.floor(Math.max(this.wait_time * 1.5, 2500))
+        setTimeout(() => this.load(props), this.wait_time)
+      } 
     }))
   }
   componentWillUnmount() {
