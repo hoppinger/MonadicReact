@@ -17,7 +17,8 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
   )(n)
 )(0).then(`input number bind`, n =>
   button<number>(`Send ${n.toString()} further`, false, "button_key")(n).then("key",
-    (n:number) => lift_promise_new<number, number> (getResponse, "retry then show failure",3,unit(99999999),"new promise", () => {return this})(n)
+    (n:number) => lift_promise_new<number, number> (getResponse, /*"never"*/{kind: "retry then show failure", times: 3},
+        string("view")("99999").map<number>(a => undefined),"new promise", () => {return this})(n)
     .then("response_offer", (r: number) => {
         console.log("then in response")
         return unit ((n+5)*5);
