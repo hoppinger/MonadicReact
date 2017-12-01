@@ -20,12 +20,12 @@ export type TimeProps = { kind:"time", value:Moment.Moment, mode:Mode } & CmdCom
 type NumberState = { value:number }
 class Number extends React.Component<NumberProps,NumberState> {
   constructor(props:NumberProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:NumberProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -56,20 +56,24 @@ export let number = (mode:Mode, key?:string, dbg?:() => string) => function(valu
 type StringState = { value:string }
 class String extends React.Component<StringProps,StringState> {
   constructor(props:StringProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:StringProps) {
+    if (this.props.debug_info != undefined) console.log(`receiving props`, this.props.debug_info())
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(new_props.value))
   }
   componentWillMount() {
+    if (this.props.debug_info != undefined) console.log(`mounting`, this.props.debug_info())
     this.call_cont(this.state.value)
   }
   call_cont(value:string) {
+    if (this.props.debug_info != undefined) console.log(`calling continuation`, this.props.debug_info())
     this.props.cont(()=>null)(value)
   }
   render() {
+    if (this.props.debug_info != undefined) console.log(`render`, this.props.debug_info())
     return this.props.mode == "edit" ? <input type={this.props.type}
                   value={this.state.value}
                   onChange={e => {
@@ -102,12 +106,12 @@ export let string = (mode:Mode, type?:StringType, key?:string, dbg?:() => string
 type BoolState = { value:boolean }
 class Bool extends React.Component<BoolProps,BoolState> {
   constructor(props:BoolProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:BoolProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -149,12 +153,12 @@ export let bool = (mode:Mode, style:BooleanStyle, key?:string, dbg?:() => string
 type DateTimeState = { value:Moment.Moment }
 class DateTime extends React.Component<DateTimeProps,DateTimeState> {
   constructor(props:DateTimeProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:DateTimeProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -184,12 +188,12 @@ export let date_time = (mode:Mode, key?:string, dbg?:() => string) => function(v
 type DateState = { value:Moment.Moment }
 class DateOnly extends React.Component<DateProps,DateState> {
   constructor(props:DateProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:DateProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -218,12 +222,12 @@ export let date = (mode:Mode, key?:string, dbg?:() => string) => function(value:
 type TimeState = { value:Moment.Moment }
 class Time extends React.Component<TimeProps,TimeState> {
   constructor(props:TimeProps,context:any) {
-    super()
+    super(props, context)
     this.state = { value:props.value }
   }
   componentWillReceiveProps(new_props:TimeProps) {
     if (new_props.value != this.state.value)
-      this.setState({...this.state, value: new_props.value}, () => this.call_cont(this.state.value))
+      this.setState({...this.state, value: new_props.value}) //, () => this.call_cont(this.state.value))
   }
   componentWillMount() {
     this.call_cont(this.state.value)
@@ -239,7 +243,7 @@ class Time extends React.Component<TimeProps,TimeState> {
     : <input type="time"
       value={default_value}
       onChange={(e) =>
-        this.call_cont(Moment.utc(new Date(e.currentTarget.valueAsDate))) }
+        this.call_cont(Moment.utc(e.currentTarget.valueAsDate)) }
     />
   }
 }

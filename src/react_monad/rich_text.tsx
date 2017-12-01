@@ -352,7 +352,7 @@ type RichTextProps = { kind:"rich text", mode:Mode, json_state:string } & CmdCom
 type RichTextState = { current_state:string }
 class RichText extends React.Component<RichTextProps,RichTextState> {
   constructor(props:RichTextProps,context:any) {
-    super()
+    super(props, context)
     this.state = { current_state:props.json_state }
   }
   componentWillReceiveProps(new_props:RichTextProps) {

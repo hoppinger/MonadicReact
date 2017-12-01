@@ -67,7 +67,7 @@ export function make_C<A>(comp:(ctxt:()=>Context) => (cont:Cont<A>) => JSX.Eleme
 type UnitState<A> = {}
 class Unit<A> extends React.Component<UnitProps<A>,UnitState<A>> {
   constructor(props:UnitProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = {}
   }
   componentWillReceiveProps(new_props:UnitProps<A>) {
@@ -91,7 +91,7 @@ export type JoinProps<A> = { p:C<C<A>> } & CmdCommon<A>
 export type JoinState<A> = { p_inner:"waiting"|JSX.Element, p_outer:JSX.Element }
 class Join<A> extends React.Component<JoinProps<A>,JoinState<A>> {
   constructor(props:JoinProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { p_inner:"waiting", p_outer:props.p.comp(props.context)(cont => p_inner =>
       this.setState({...this.state,
         p_inner:p_inner.comp(this.props.context)(cb => x => this.props.cont(cb)(x))})) }
@@ -120,7 +120,7 @@ let join = function<A>(p:C<C<A>>, key?:string, dbg?:() => string) : C<A> {
 type BindState<B,A> = { k:"waiting for p"|JSX.Element, p:"creating"|JSX.Element }
 class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
   constructor(props:BindProps<B,A>,context:any) {
-    super()
+    super(props, context)
     this.state = { k:"waiting for p", p:"creating" }
   }
   componentWillReceiveProps(new_props:BindProps<B,A>) {
@@ -171,7 +171,7 @@ export let bind = function<A,B>(key:string, p:C<A>, k:((_:A)=>C<B>), className?:
 type MapState<A,B> = { p:"creating"|JSX.Element }
 class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
   constructor(props:MapProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:MapProps<A,B>) {
@@ -197,7 +197,7 @@ export let map = function<A,B>(key?:string, dbg?:() => string) : ((_:(_:A) => B)
 type FilterState<A> = { p:"creating"|JSX.Element }
 class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
   constructor(props:FilterProps<A>,context:any) {
-    super()
+    super(props, context)
     this.state = { p:"creating" }
   }
   componentWillReceiveProps(new_props:FilterProps<A>) {

@@ -15,7 +15,7 @@ type ListProps<A,B> = {
 type ListState<A,B> = { ps:"creating"|Immutable.List<JSX.Element> }
 class List<A,B> extends React.Component<ListProps<A,B>,ListState<A,B>> {
   constructor(props:ListProps<A,B>,context:any) {
-    super()
+    super(props, context)
     this.state = { ps:"creating" }
   }
   componentWillReceiveProps(new_props:ListProps<A,B>) {
