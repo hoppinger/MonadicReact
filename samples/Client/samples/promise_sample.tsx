@@ -39,4 +39,4 @@ const getResponse = (request: number): Promise<number> =>{
         reject();
       }, 1000);
   });}
-  
+   
