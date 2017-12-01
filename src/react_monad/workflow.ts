@@ -6,7 +6,7 @@ import * as Moment from 'moment'
 import {C, unit, bind} from '../react_monad/core'
 import {string, number, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image} from '../react_monad/html'
-import {custom, repeat, any, retract, delay, simple_menu} from '../react_monad/combinators'
+import {custom, repeat, any, lift_promise, retract, delay, simple_menu} from '../react_monad/combinators'
 import * as Form from '../react_monad/forms'
 
 export type WorkflowData<S,M> = { model:M, step:S }
