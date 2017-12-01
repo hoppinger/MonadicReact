@@ -65,7 +65,7 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
         else
         {
           let failedJSX : JSX.Element = props.on_failure.comp(props.context)(props.cont)
-          this.setState({...this.state, result:{ kind:"failing", failure_renderer:failedJSX } })
+          this.setState({...this.state, retry_count:0, result:{ kind:"failing", failure_renderer:failedJSX } })
         }
       } 
     }))
