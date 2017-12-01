@@ -19,7 +19,7 @@ export let promise_sample: C<void> = repeat<number>(`input number`)(n =>
   button<number>(`Send ${n.toString()} further`, false, "button_key")(n).then("key",
     (n:number) => lift_promise<number, number> (getResponse, 
     //  "never",
-    {kind: "retry then show failure", times: 3},"new promise",
+    {kind: "retry then show failure", times: 3},"new promise",undefined, 
         string("view")("99999").map<number>(a => undefined))(n)
     .then("response_offer", (r: number) => {
         console.log("then in response")

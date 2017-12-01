@@ -247,7 +247,7 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
 }
 
-export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:RetryStrategy, key?:string, on_failure?:C<B>, dbg?:() => string) : ((_:A)=>C<B>) {
+export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:RetryStrategy, key?:string, dbg?:() => string, on_failure?:C<B>) : ((_:A)=>C<B>) {
 return x => make_C<B>(ctxt => cont =>
   React.createElement<LiftPromiseProps<B,A>>(LiftPromise, 
     { kind:"lift promise", debug_info:dbg, value:x, retry_strategy:retry_strategy, p:p, on_failure: on_failure, context:ctxt, cont:cont, key:key }))
