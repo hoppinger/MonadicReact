@@ -9,8 +9,8 @@ import {custom, repeat, any, lift_promise, retract, delay, simple_menu, hide} fr
 
 type MemoizerProps<A,B> = {
   kind:"memoizer",
-  input: () => C<B>,
-  time: Moment.Moment
+  input: (any) => C<B>,
+  time: number
 } & CmdCommon<B>
 
 type MemoizerState<A,B> = {  }
@@ -31,7 +31,7 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
   }
 }
 
-export let memoizer = function<A,B>(input:() => C<B>, time?:Moment.Moment, key?:string, dbg?:() => string) :C<B> {
+export let memoizer = function<A,B>(input:(any) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
   return make_C<B>(context => cont =>
         React.createElement<MemoizerProps<A,B>>(Memoizer,
           { kind:"memoizer", input:input, time: time,  cont:cont, context:context, key:key,  debug_info:dbg }))
