@@ -20,7 +20,10 @@ export let memoizer_sample : C<void> =
       label<number, number>("Insert an even number: ", true)(n =>
         number("edit", "number")(n))(n))(0).then(`input number bind`, n =>
   button<number>(`Send ${n.toString()} further`, false)(n)
-  .then("",memoizer<number, number>(func))
+  .then("",
+  //undefined
+  n => memoizer<number, number>(func)
+)
   .map<string>(n =>
   `Your selection is ${n.toString()}`).then(`button to string`, s =>
-  string("view")(s).ignore()))
+  string("view")(s).ignore()))    
