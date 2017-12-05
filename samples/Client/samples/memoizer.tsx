@@ -21,7 +21,12 @@ export let memoizer_sample : C<void> =
         string("edit", )(n))(n))("0").then(`input number bind`, n =>
   button<string>(`Send ${n.toString()} further`, false)(n)
   .then("",
-  n => memoizer<string, string>(n,test_element(""),10, "key")
+  n => any<string,string>()([
+  n => memoizer<string, string>(n, test_element(""), 500, "key"),
+  n => memoizer<string, string>(n, test_element(""), 500, "key"),
+  n => memoizer<string, string>(n, test_element(""), 500, "key"),
+  n => memoizer<string, string>(n, test_element(""), 500, "key")
+])(n)
 )
   .map<string>(n =>
   `Your selection is ${n.toString()}`).then(`button to string`, s =>
@@ -34,5 +39,5 @@ export const test_element = function (key?: string, dbg?: () => string): (s:stri
                 x => string("view","text","text1")(x),
                 x => string("view","text","text2")(x),
                 x => string("view","text","text3")(x),
-            ])(s)            
+            ])(s)         
 }
