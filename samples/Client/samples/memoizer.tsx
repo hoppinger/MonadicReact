@@ -17,10 +17,10 @@ export let memoizer_sample: C<void> =
                 button<string>(`Send ${n} further`, false, "button_key")(n)
                     .then("then_memoize_key",
                     n => any<string, string>("any_key3")([
-                        n => memoizer<string, string>(n, test_element("k1"), 500, "key1"),
-                        n => memoizer<string, string>(n, test_element("k2"), 500, "key2"),
-                        n => memoizer<string, string>(n, test_element("k3"), 500, "key3"),
-                        n => memoizer<string, string>(n, test_element("k4"), 500, "key4")
+                        n => memoizer<string, string>(n, test_element("k1"), 500, "key1", () => {console.log(this); return "mem1"}),
+                        n => memoizer<string, string>(n, test_element("k2"), 500, "key2", () => {console.log(this); return "mem2"}),
+                        n => memoizer<string, string>(n, test_element("k3"), 500, "key3", () => {console.log(this); return "mem3"}),
+                        n => memoizer<string, string>(n, test_element("k4"), 500, "key4", () => {console.log(this); return "mem4"})
                     ])(n)
                     )
                     .map<string>(n =>
