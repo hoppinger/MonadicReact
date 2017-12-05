@@ -9,30 +9,36 @@ import {custom, repeat, any, lift_promise, retract, delay, simple_menu, hide} fr
 
 type MemoizerProps<A,B> = {
   kind:"memoizer",
-  input: (any) => C<B>,
+  value: A,
+  input: (_:A) => C<B>,
   time: number
 } & CmdCommon<B>
 
-type MemoizerState<A,B> = {  }
+type MemoizerState<A,B> = {  
+  value: A
+  last_command:JSX.Element 
+}
 
 class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B>> {
   constructor(props:MemoizerProps<A,B>,context:any) {
     super(props, context)
-    
+    this.state = {value:props.value, last_command:props.input(props.value).comp(props.context)(props.cont) }
+
   }
   componentWillReceiveProps(new_props:MemoizerProps<A,B>) {
-    
+    new_props.debug_info && console.log("New props:", new_props.debug_info()) 
   }
   componentWillMount() {
-    
+    this.props.debug_info && console.log("Component will mount:", this.props.debug_info())
   }
   render() {
-    return undefined
+    this.props.debug_info && console.log("Render:", this.props.debug_info())
+    return this.state.last_command
   }
 }
 
-export let memoizer = function<A,B>(input:(any) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
+export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
   return make_C<B>(context => cont =>
         React.createElement<MemoizerProps<A,B>>(Memoizer,
-          { kind:"memoizer", input:input, time: time,  cont:cont, context:context, key:key,  debug_info:dbg }))
+          { kind:"memoizer",value: value, input:input, time: time,  cont:cont, context:context, key:key,  debug_info:dbg }))
 }

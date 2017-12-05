@@ -9,21 +9,30 @@ simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEnt
 rich_text, paginate, Page, list, editable_list, memoizer} from '../../../src/monadic_react'
 
 
-const func = function(a: any): C<number> 
-{
-  return unit<number>(a*a)
-}
+// const func = function(): C<number> 
+// {
+//   return unit<number>(10)
+// }
 
 
 export let memoizer_sample : C<void> =
-  repeat<number>(`input number`)(n =>
-      label<number, number>("Insert an even number: ", true)(n =>
-        number("edit", "number")(n))(n))(0).then(`input number bind`, n =>
-  button<number>(`Send ${n.toString()} further`, false)(n)
+  repeat<string>(`input number`)(n =>
+      label<string, string>("Insert an even number: ", true)(n =>
+        string("edit", )(n))(n))("0").then(`input number bind`, n =>
+  button<string>(`Send ${n.toString()} further`, false)(n)
   .then("",
-  //undefined
-  n => memoizer<number, number>(func)
+  n => memoizer<string, string>(n,test_element(""),10, "key")
 )
   .map<string>(n =>
   `Your selection is ${n.toString()}`).then(`button to string`, s =>
   string("view")(s).ignore()))    
+
+
+export const test_element = function (key?: string, dbg?: () => string): (s:string) => C<string> {
+    return (s: string) =>        
+            any<string, string>('selector')([
+                x => string("view","text","text1")(x),
+                x => string("view","text","text2")(x),
+                x => string("view","text","text3")(x),
+            ])(s)            
+}
