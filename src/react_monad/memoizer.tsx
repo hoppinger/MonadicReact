@@ -6,7 +6,7 @@ import {C, unit, bind, Mode, make_C, CmdCommon} from '../react_monad/core'
 import {string, number, bool} from '../react_monad/primitives'
 import {button, selector, multi_selector, label, image} from '../react_monad/html'
 import {custom, repeat, any, lift_promise, retract, delay, simple_menu, hide} from '../react_monad/combinators'
-import TupleMap from "tuplemap"
+import TupleMap from "../react_monad/tuplemap"
 
 type MemoizerProps<A,B> = {
   kind:"memoizer",
@@ -34,10 +34,10 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
   componentWillMount() {
     this.props.debug_info && console.log("Memoizer: Component will mount:", this.props.debug_info())
     //create cache
-    if (!Memoizer.mem_cache.has(/*this.props.value,*/ this.props.input.toString()))
+    if (!Memoizer.mem_cache.has([this.props.value, this.props.input.toString()]))
     {
       console.log("Add component to cache ", this.props.input.toString() )
-      Memoizer.mem_cache = Memoizer.mem_cache.set(/*this.props.value,*/ this.props.input.toString(), this.props.input(this.props.value).comp(this.props.context)(this.props.cont) ) 
+      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont) ) 
     }
   }//
 
@@ -45,14 +45,15 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
     this.props.debug_info && console.log("Memoizer: Render:", this.props.debug_info())
     console.log("in cache ", Memoizer.mem_cache.count())
     //return this.state.last_command
-    return Memoizer.mem_cache.get(/*this.props.value,*/ this.props.input.toString(),null)
+    return Memoizer.mem_cache.get([this.props.value, this.props.input.toString()],null)
   }
 
   componentWillUnmount() {
     this.props.debug_info && console.log("Memoizer: Component will unmount:", this.props.debug_info())
   }
-  static mem_cache: Immutable.Map<any,JSX.Element> = Immutable.Map<any,JSX.Element>();
-  //static mem_cache: TupleMap<any,JSX.Element> = TupleMap<any,JSX.Element>();
+  //static mem_cache: Immutable.Map<any,JSX.Element> = Immutable.Map<any,JSX.Element>();
+  static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>();
+  //static mem_cache: Map<any,JSX.Element> = new Map<any,JSX.Element>();
 }
 
 export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
