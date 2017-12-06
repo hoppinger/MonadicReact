@@ -103,7 +103,7 @@ class TupleMap<K,V> {
         this._cache = this._cache.set( hash, value );
         if (timeout !== undefined && timeout != 0)
         {
-          console.log("setTimeout hash = ", key, " ", hash)
+          console.log("setTimeout hash = ", key, " ", hash, "timeout =", timeout)
           this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, timeout, this, key, hash))
         }
         
