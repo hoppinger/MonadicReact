@@ -9,10 +9,8 @@ class TupleMap<K,V> {
     private _lastTuple: any
     private _lastHash: string
     private _limit?: number
-    private _timeout?: number
 
-    public constructor(timeout?: number, limit?: number) {
-        this._timeout = timeout
+    public constructor(limit?: number) {
         this._limit = limit       
         this.clear()
     }
@@ -93,7 +91,7 @@ class TupleMap<K,V> {
         return ret != undefined ? ret : default_val
     }
 
-    public set(key: K, value: V): TupleMap<K,V>
+    public set(key: K, value: V, timeout?: number): TupleMap<K,V>
     {
         const hash = this._hash( key );
         console.log("set hash = ", hash)
@@ -103,10 +101,10 @@ class TupleMap<K,V> {
         }
         
         this._cache = this._cache.set( hash, value );
-        if (this._timeout !== undefined && this._timeout != 0)
+        if (timeout !== undefined && timeout != 0)
         {
           console.log("setTimeout hash = ", key, " ", hash)
-          this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, this._timeout, this, key, hash))
+          this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, timeout, this, key, hash))
         }
         
         if ( this._limit !== undefined && this._cache.size > this._limit ) {

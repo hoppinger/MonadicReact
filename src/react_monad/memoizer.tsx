@@ -12,7 +12,7 @@ type MemoizerProps<A,B> = {
   kind:"memoizer",
   value: A,
   input: (_:A) => C<B>,
-  time: number
+  timeout: number
 } & CmdCommon<B>
 
 type MemoizerState<A,B> = {  
@@ -34,7 +34,7 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
     if (!Memoizer.mem_cache.has([this.props.value, this.props.input.toString()]))
     {
       console.log("Add component to cache ", this.props.input.toString())
-      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont)) 
+      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont), this.props.timeout) 
       //console.log("After add component count = ", Memoizer.mem_cache.count())
     }    
   }
@@ -45,7 +45,7 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
     if (!Memoizer.mem_cache.has([this.props.value, this.props.input.toString()]))
     {
       console.log("Add component to cache ", this.props.input.toString())
-      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont)) 
+      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont), this.props.timeout) 
       //console.log("After add component count = ", Memoizer.mem_cache.count())
     }
   }
@@ -60,11 +60,11 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
   componentWillUnmount() {
     this.props.debug_info && console.log("Memoizer: Component will unmount:", this.props.debug_info())
   }  
-  static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>(2000, 2000);
+  static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>();
 }
 
-export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
+export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, timeout?:number, key?:string, dbg?:() => string) :C<B> {
   return make_C<B>(context => cont =>
         React.createElement<MemoizerProps<A,B>>(Memoizer,
-          { kind:"memoizer",value: value, input:input, time: time,  cont:cont, context:context, key:key,  debug_info:dbg }))
+          { kind:"memoizer",value: value, input:input, timeout: timeout,  cont:cont, context:context, key:key,  debug_info:dbg }))
 }
