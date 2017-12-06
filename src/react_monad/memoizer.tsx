@@ -16,14 +16,14 @@ type MemoizerProps<A,B> = {
 } & CmdCommon<B>
 
 type MemoizerState<A,B> = {  
-  value: A
+  //value: A
   //last_command:JSX.Element 
 }
 
 class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B>> {
   constructor(props:MemoizerProps<A,B>,context:any) {
     super(props, context)
-    this.state = {value:props.value,/* last_command:props.input(props.value).comp(props.context)(props.cont) */}
+    this.state = {}
     console.log("Memoizer: ctor", Memoizer.mem_cache)
   }
 
@@ -36,25 +36,23 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
     //create cache
     if (!Memoizer.mem_cache.has([this.props.value, this.props.input.toString()]))
     {
-      console.log("Add component to cache ", this.props.input.toString() )
-      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont) ) 
-      console.log("After add component count = ", Memoizer.mem_cache.count() )
+      console.log("Add component to cache ", this.props.input.toString())
+      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont)) 
+      //console.log("After add component count = ", Memoizer.mem_cache.count())
     }
   }
 
   render() {
     this.props.debug_info && console.log("Memoizer: Render:", this.props.debug_info())
     console.log("in cache ", Memoizer.mem_cache.count())
-    //return this.state.last_command
+    
     return Memoizer.mem_cache.get([this.props.value, this.props.input.toString()],null)
   }
 
   componentWillUnmount() {
     this.props.debug_info && console.log("Memoizer: Component will unmount:", this.props.debug_info())
-  }
-  //static mem_cache: Immutable.Map<any,JSX.Element> = Immutable.Map<any,JSX.Element>();
+  }  
   static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>();
-  //static mem_cache: Map<any,JSX.Element> = new Map<any,JSX.Element>();
 }
 
 export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {
