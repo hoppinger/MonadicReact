@@ -52,7 +52,7 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
   componentWillUnmount() {
     this.props.debug_info && console.log("Memoizer: Component will unmount:", this.props.debug_info())
   }  
-  static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>();
+  static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>(2000, 2000);
 }
 
 export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, time?:number, key?:string, dbg?:() => string) :C<B> {

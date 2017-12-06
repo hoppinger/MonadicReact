@@ -3,7 +3,7 @@ import * as Immutable from "immutable"
 class TupleMap<K,V> {
     private _cache: Immutable.Map<string, V>
     private _idMap: Immutable.Map<any, string>
-    private _cleanup: Immutable.Map<any, any>
+    private _cleanup: Immutable.Map<string, any>
 
     private _id: number
     private _lastTuple: any
@@ -59,15 +59,17 @@ class TupleMap<K,V> {
         return this._lastHash
     }
 
-    private cleanupCallback(key: K, hash: string) {
-      if (this._lastHash == hash)
+    private cleanupCallback(_this:TupleMap<K,V>, key: K, hash: string) {
+      console.log("cleanupCallback hash = ", key, " ", hash)
+      console.log("cleanupCallback this = ", _this)
+      _this._cache = _this._cache.delete(hash)
+      _this._idMap = _this._idMap.delete(key)
+      _this._cleanup = _this._cleanup.delete(hash)
+      if (_this._lastHash == hash)
       {
-        this._lastHash = ''
-        this._lastTuple = ''
+        _this._lastHash = ''
+        _this._lastTuple = ''
       }
-      this._cache = this._cache.delete(hash)
-      this._idMap = this._idMap.delete(key)
-      this._cleanup = this._cleanup.delete(hash)
     }
 
     public has(key: K): boolean {
@@ -94,7 +96,7 @@ class TupleMap<K,V> {
     public set(key: K, value: V): TupleMap<K,V>
     {
         const hash = this._hash( key );
-        //console.log("set hash = ", hash)
+        console.log("set hash = ", hash)
 
         if ( this._limit !== undefined ) {
             this._cache = this._cache.delete( hash );
@@ -103,7 +105,8 @@ class TupleMap<K,V> {
         this._cache = this._cache.set( hash, value );
         if (this._timeout !== undefined && this._timeout != 0)
         {
-          this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, this._timeout, key, hash))
+          console.log("setTimeout hash = ", key, " ", hash)
+          this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, this._timeout, this, key, hash))
         }
         
         if ( this._limit !== undefined && this._cache.size > this._limit ) {
@@ -125,102 +128,7 @@ class TupleMap<K,V> {
         //delete this._lastTuple;
         //delete this._lastHash;
     }
-
 }
 
-/*
-function TupleMap( opts ) {
-    if ( opts && 'limit' in opts ) {
-      this._limit = opts.limit;
-    }
-    this.clear();
-  }
-  
-  TupleMap.prototype = {
-    toString: function() {
-      return '[object TupleMap]';
-    },
-    _hash: function( tuple ) {
-      // Speed up hash generation for the folowing pattern:
-      // if ( !cache.has(t) ) { cache.set( t, slowFn(t) ); }
-      if ( tuple === this._lastTuple ) {
-        return this._lastHash;
-      }
-  
-      const l = tuple.length;
-      let hash = [];
-  
-      for ( let i = 0; i < l; i++ ) {
-        const arg = tuple[i];
-        const argType = typeof arg;
-  
-        // if the argument is not a primitive, get a unique (memoized?) id for it
-        // (typeof null is "object", but should be considered a primitive)
-        if ( arg !== null && ( argType === 'object' || argType === 'function' ) ) {
-          if ( this._idMap.has( arg ) ) {
-            hash.push( this._idMap.get(arg) );
-          } else {
-            const id = '#' + this._id++;
-            this._idMap.set( arg, id );
-            hash.push( id );
-          }
-  
-        // otherwise, add the argument and its type to the hash
-        } else {
-          hash.push( argType === 'string' ? '"' + arg + '"' : '' + arg );
-        }
-      }
-  
-      this._lastTuple = tuple;
-      // concatenate serialized arguments using a complex separator
-      // (to avoid key collisions)
-      this._lastHash = hash.join('/<[MI_SEP]>/');
-  
-      return this._lastHash;
-    },
-  
-    has: function( tuple ) {
-      const hash = this._hash( tuple );
-      return this._cache.has( hash );
-    },
-  
-    set: function( tuple, value ) {
-      const hash = this._hash( tuple );
-  
-      if ( this._limit !== undefined ) {
-        this._cache.delete( hash );
-      }
-  
-      this._cache.set( hash, value );
-  
-      if ( this._limit !== undefined && this._cache.size > this._limit ) {
-        this._cache.delete( this._cache.keys().next().value );
-      }
-  
-      return this;
-    },
-  
-    get: function( tuple ) {
-      const hash = this._hash( tuple );
-  
-      if ( this._limit !== undefined && this._cache.has( hash ) ) {
-        const value = this._cache.get( hash );
-        this._cache.delete( hash );
-        this._cache.set( hash, value );
-        return value;
-      }
-  
-      return this._cache.get( hash );
-    },
-  
-    clear: function() {
-      this._cache = new Immutable.Map();
-      this._idMap = new Immutable.Map();
-      this._id = 0;
-      delete this._lastTuple;
-      delete this._lastHash;
-    },
-  };
-  */
-  export default TupleMap;
+export default TupleMap;
   
