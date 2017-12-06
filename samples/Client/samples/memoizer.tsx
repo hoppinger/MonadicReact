@@ -17,10 +17,18 @@ export let memoizer_sample: C<void> =
                 button<string>(`Send ${n} further`, false, "button_key")(n)
                     .then("then_memoize_key",
                     n => any<string, string>("any_key3")([
-                        n => memoizer<string, string>(n, test_element("k1"), 500, "key1", () => {console.log(this); return "mem1"}),
-                        n => memoizer<string, string>(n, test_element("k2"), 500, "key2", () => {console.log(this); return "mem2"}),
-                        n => memoizer<string, string>(n, test_element("k3"), 500, "key3", () => {console.log(this); return "mem3"}),
-                        n => memoizer<string, string>(n, test_element("k4"), 500, "key4", () => {console.log(this); return "mem4"})
+                        n => memoizer<string, string>(n, test_element1("k1"), 500, "key1", () => {console.log(this); return "mem1"}),
+                        n => memoizer<string, string>(n, test_element1("k2"), 500, "key2", () => {console.log(this); return "mem2"}),
+                        n => memoizer<string, string>(n, test_element2("k3"), 500, "key3", () => {console.log(this); return "mem3"}),
+                        n => memoizer<string, string>(n, test_element2("k4"), 500, "key4", () => {console.log(this); return "mem4"}),
+                        n => memoizer<string, string>(n, test_element3("k5"), 500, "key5", () => {console.log(this); return "mem5"}),
+                        n => memoizer<string, string>(n, test_element1("k6"), 500, "key6", () => {console.log(this); return "mem6"}),
+                        n => memoizer<string, string>(n, test_element3("k7"), 500, "key7", () => {console.log(this); return "mem7"}),
+                        n => memoizer<string, string>(n, test_element2("k8"), 500, "key8", () => {console.log(this); return "mem8"}),
+                        n => memoizer<string, string>(n, test_element1("k9"), 500, "key9", () => {console.log(this); return "mem9"}),
+                        n => memoizer<string, string>(n, test_element3("k10"), 500, "key10", () => {console.log(this); return "mem10"}),
+                        n => memoizer<string, string>(n, test_element2("k11"), 500, "key11", () => {console.log(this); return "mem11"}),
+                        n => memoizer<string, string>(n, test_element2("k12"), 500, "key12", () => {console.log(this); return "mem12"})
                     ])(n)
                     )
                     .map<string>(n =>
@@ -28,11 +36,32 @@ export let memoizer_sample: C<void> =
                             string("view")(s).ignore()))
 
 
-export const test_element = function (key?: string, dbg?: () => string): (s: string) => C<string> {
+export const test_element1 = function (key?: string, dbg?: () => string): (s: string) => C<string> {
     return (s: string) =>
-        any<string, string>('selector')([
-            x => string("view", "text", "text1")(x),
-            x => string("view", "text", "text2")(x),
-            x => string("view", "text", "text3")(x),
+        any<string, string>('selector_test1')([
+            x => string("view", "text", "text1_1")(x),
+            x => string("view", "text", "text1_2")(x),
+            x => string("view", "text", "text1_3")(x),
+        ])(s)
+}
+
+export const test_element2 = function (key?: string, dbg?: () => string): (s: string) => C<string> {
+    return (s: string) =>
+        any<string, string>('selector_test2')([
+            x => string("view", "text", "text2_1")(x),
+            x => string("view", "text", "text2_2")(x),
+            x => string("view", "text", "text2_3")(x),
+            x => string("view", "text", "text2_4")(x),
+        ])(s)
+}
+
+export const test_element3 = function (key?: string, dbg?: () => string): (s: string) => C<string> {
+    return (s: string) =>
+        any<string, string>('selector_test3')([
+            x => string("view", "text", "text3_1")(x),
+            x => string("view", "text", "text3_2")(x),
+            x => string("view", "text", "text3_3")(x),
+            x => string("view", "text", "text3_4")(x),
+            x => string("view", "text", "text3_5")(x),
         ])(s)
 }
