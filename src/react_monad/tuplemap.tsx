@@ -51,20 +51,20 @@ class TupleMap<K,V> {
         // concatenate serialized arguments using a complex separator
         // (to avoid key collisions)
         this._lastHash = hash.join('/<[MI_SEP]>/');
-        console.log("_hash lastHash = ", this._lastHash)
+        //console.log("_hash lastHash = ", this._lastHash)
         return this._lastHash;
     }
 
     public has(key: K): boolean {
         const hash = this._hash( key );
-        console.log("has hash = ", hash)
+        //console.log("has hash = ", hash)
         return this._cache.has( hash );
     }
 
     public get(key: K, default_val: V): V
     {
         const hash = this._hash( key );
-        console.log("get hash = ", hash)
+        //console.log("get hash = ", hash)
         if ( this._limit !== undefined && this._cache.has( hash ) ) {
               const value = this._cache.get( hash );
               this._cache = this._cache.delete( hash );
@@ -72,14 +72,14 @@ class TupleMap<K,V> {
               return value;
         }
         let ret = this._cache.get( hash );
-        console.log("get ret = ", ret)        
+        //console.log("get ret = ", ret)        
         return ret != undefined ? ret : default_val
     }
 
     public set(key: K, value: V): TupleMap<K,V>
     {
         const hash = this._hash( key );
-        console.log("set hash = ", hash)
+        //console.log("set hash = ", hash)
 
         if ( this._limit !== undefined ) {
             this._cache = this._cache.delete( hash );
