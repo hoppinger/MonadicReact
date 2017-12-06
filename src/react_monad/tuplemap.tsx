@@ -58,8 +58,8 @@ class TupleMap<K,V> {
     }
 
     private cleanupCallback(_this:TupleMap<K,V>, key: K, hash: string) {
-      console.log("cleanupCallback hash = ", key, " ", hash)
-      console.log("cleanupCallback this = ", _this)
+      //console.log("cleanupCallback hash = ", key, " ", hash)
+      //console.log("cleanupCallback this = ", _this)
       _this._cache = _this._cache.delete(hash)
       _this._idMap = _this._idMap.delete(key)
       _this._cleanup = _this._cleanup.delete(hash)
@@ -94,7 +94,7 @@ class TupleMap<K,V> {
     public set(key: K, value: V, timeout?: number): TupleMap<K,V>
     {
         const hash = this._hash( key );
-        console.log("set hash = ", hash)
+        //console.log("set hash = ", hash)
 
         if ( this._limit !== undefined ) {
             this._cache = this._cache.delete( hash );
@@ -103,7 +103,7 @@ class TupleMap<K,V> {
         this._cache = this._cache.set( hash, value );
         if (timeout !== undefined && timeout != 0)
         {
-          console.log("setTimeout hash = ", key, " ", hash, "timeout =", timeout)
+          //console.log("setTimeout hash = ", key, " ", hash, "timeout =", timeout)
           this._cleanup = this._cleanup.set(hash, setTimeout(this.cleanupCallback, timeout, this, key, hash))
         }
         
