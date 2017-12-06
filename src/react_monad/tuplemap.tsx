@@ -37,7 +37,7 @@ class TupleMap<K,V> {
               hash.push( this._idMap.get(arg) );
             } else {
               const id = '#' + this._id++;
-              this._idMap.set( arg, id );
+              this._idMap = this._idMap.set( arg, id );
               hash.push( id );
             }
     
@@ -51,43 +51,47 @@ class TupleMap<K,V> {
         // concatenate serialized arguments using a complex separator
         // (to avoid key collisions)
         this._lastHash = hash.join('/<[MI_SEP]>/');
-    
+        console.log("_hash lastHash = ", this._lastHash)
         return this._lastHash;
     }
 
     public has(key: K): boolean {
         const hash = this._hash( key );
+        console.log("has hash = ", hash)
         return this._cache.has( hash );
     }
 
     public get(key: K, default_val: V): V
     {
         const hash = this._hash( key );
+        console.log("get hash = ", hash)
         if ( this._limit !== undefined && this._cache.has( hash ) ) {
               const value = this._cache.get( hash );
-              this._cache.delete( hash );
-              this._cache.set( hash, value );
+              this._cache = this._cache.delete( hash );
+              this._cache = this._cache.set( hash, value );
               return value;
         }
-        let ret = this._cache.get( hash );        
+        let ret = this._cache.get( hash );
+        console.log("get ret = ", ret)        
         return ret != undefined ? ret : default_val
     }
 
     public set(key: K, value: V): TupleMap<K,V>
     {
         const hash = this._hash( key );
+        console.log("set hash = ", hash)
+
+        if ( this._limit !== undefined ) {
+            this._cache = this._cache.delete( hash );
+        }
         
-            if ( this._limit !== undefined ) {
-              this._cache.delete( hash );
-            }
+        this._cache = this._cache.set( hash, value );
         
-            this._cache.set( hash, value );
+        if ( this._limit !== undefined && this._cache.size > this._limit ) {
+            this._cache = this._cache.delete( this._cache.keys().next().value );
+        }
         
-            if ( this._limit !== undefined && this._cache.size > this._limit ) {
-              this._cache.delete( this._cache.keys().next().value );
-            }
-        
-            return this;
+        return this;
     }
 
     public count():number {

@@ -38,8 +38,9 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
     {
       console.log("Add component to cache ", this.props.input.toString() )
       Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont) ) 
+      console.log("After add component count = ", Memoizer.mem_cache.count() )
     }
-  }//
+  }
 
   render() {
     this.props.debug_info && console.log("Memoizer: Render:", this.props.debug_info())
