@@ -29,12 +29,11 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
 
   componentWillReceiveProps(new_props:MemoizerProps<A,B>) {
     new_props.debug_info && console.log("Memoizer: New props:", new_props.debug_info()) 
-    this.props = new_props
-    
-    if (!Memoizer.mem_cache.has([this.props.value, this.props.input.toString()]))
+        
+    if (!Memoizer.mem_cache.has([new_props.value, new_props.input.toString()]))
     {
-      console.log("Add component to cache ", this.props.input.toString())
-      Memoizer.mem_cache = Memoizer.mem_cache.set([this.props.value, this.props.input.toString()], this.props.input(this.props.value).comp(this.props.context)(this.props.cont), this.props.timeout) 
+      console.log("Add component to cache ", new_props.input.toString())
+      Memoizer.mem_cache = Memoizer.mem_cache.set([new_props.value, new_props.input.toString()], new_props.input(new_props.value).comp(new_props.context)(new_props.cont), new_props.timeout) 
       //console.log("After add component count = ", Memoizer.mem_cache.count())
     }    
   }
