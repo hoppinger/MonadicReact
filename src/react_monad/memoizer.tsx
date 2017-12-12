@@ -62,8 +62,8 @@ class Memoizer<A,B> extends React.Component<MemoizerProps<A,B>,MemoizerState<A,B
   static mem_cache: TupleMap<any,JSX.Element> = new TupleMap<any,JSX.Element>();
 }
 
-export let memoizer = function<A,B>(value: A, input:(_:A) => C<B>, timeout?:number, key?:string, dbg?:() => string) :C<B> {
-  return make_C<B>(context => cont =>
-        React.createElement<MemoizerProps<A,B>>(Memoizer,
-          { kind:"memoizer",value: value, input:input, timeout: timeout,  cont:cont, context:context, key:key,  debug_info:dbg }))
+export function memoizer<A,B>(key?:string, timeout?:number, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<MemoizerProps<A,B>>(Memoizer,
+    { kind:"memoizer", debug_info:dbg, value:value, input:p, timeout: timeout,  context:ctxt, cont:cont, key:key })))
 }

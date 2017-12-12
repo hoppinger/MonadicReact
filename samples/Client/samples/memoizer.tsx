@@ -17,18 +17,18 @@ export let memoizer_sample: C<void> =
                 button<string>(`Send ${n} further`, false, "button_key")(n)
                     .then("then_memoize_key",
                     n => any<string, string>("any_key3")([
-                        n => memoizer<string, string>(n, test_element1("k1"), 500, "key1", () => {console.log(this); return "mem1"}),
-                        n => memoizer<string, string>(n, test_element1("k2"), 500, "key2", () => {console.log(this); return "mem2"}),
-                        n => memoizer<string, string>(n, test_element2("k3"), 500, "key3", () => {console.log(this); return "mem3"}),
-                        n => memoizer<string, string>(n, test_element2("k4"), 500, "key4", () => {console.log(this); return "mem4"}),
-                        n => memoizer<string, string>(n, test_element3("k5"), 500, "key5", () => {console.log(this); return "mem5"}),
-                        n => memoizer<string, string>(n, test_element1("k6"), 500, "key6", () => {console.log(this); return "mem6"}),
-                        n => memoizer<string, string>(n, test_element3("k7"), 500, "key7", () => {console.log(this); return "mem7"}),
-                        n => memoizer<string, string>(n, test_element2("k8"), 500, "key8", () => {console.log(this); return "mem8"}),
-                        n => memoizer<string, string>(n, test_element1("k9"), 500, "key9", () => {console.log(this); return "mem9"}),
-                        n => memoizer<string, string>(n, test_element3("k10"), 500, "key10", () => {console.log(this); return "mem10"}),
-                        n => memoizer<string, string>(n, test_element2("k11"), 500, "key11", () => {console.log(this); return "mem11"}),
-                        n => memoizer<string, string>(n, test_element2("k12"), 500, "key12", () => {console.log(this); return "mem12"})
+                        n => memoizer<string, string>("key1", 50000, () => {console.log(this); return "mem1"})(test_element1("k1"))(n),
+                        n => memoizer<string, string>("key2", 50000, () => {console.log(this); return "mem2"})(test_element2("k2"))(n),
+                        n => memoizer<string, string>("key3", 50000, () => {console.log(this); return "mem3"})(test_element3("k3"))(n),
+                        n => memoizer<string, string>("key4", 50000, () => {console.log(this); return "mem4"})(test_element1("k4"))(n),
+                        n => memoizer<string, string>("key5", 50000, () => {console.log(this); return "mem5"})(test_element2("k5"))(n),
+                        n => memoizer<string, string>("key6", 50000, () => {console.log(this); return "mem6"})(test_element3("k6"))(n),
+                        n => memoizer<string, string>("key7", 50000, () => {console.log(this); return "mem7"})(test_element1("k7"))(n),
+                        n => memoizer<string, string>("key8", 50000, () => {console.log(this); return "mem8"})(test_element1("k8"))(n),
+                        n => memoizer<string, string>("key9", 50000, () => {console.log(this); return "mem9"})(test_element2("k9"))(n),
+                        n => memoizer<string, string>("key10", 50000, () => {console.log(this); return "mem10"})(test_element2("k10"))(n),
+                        n => memoizer<string, string>("key11", 50000, () => {console.log(this); return "mem11"})(test_element3("k11"))(n),
+                        n => memoizer<string, string>("key12", 50000, () => {console.log(this); return "mem12"})(test_element3("k12"))(n)                     
                     ])(n)
                     )
                     .map<string>(n =>
