@@ -92,8 +92,8 @@ class Never<A,B> extends React.Component<NeverProps<A,B>,NeverState<A,B>> {
     this.setState({...this.state,
       p:this.props.p.comp(this.props.context)(callback => new_value => {})})
   }
-  render() {
-    return this.state.p != "loading" ? this.state.p : null
+  render(): JSX.Element | JSX.Element[] {
+    return this.state.p != "loading" ? this.state.p : []
   }
 }
 
@@ -167,8 +167,8 @@ class Retract<A,B> extends React.Component<RetractProps<A,B>,RetractState<A,B>> 
               this.props.cont(callback)
                 (this.props.out(this.props.value)(new_value)))})
   }
-  render() {
-    return this.state.p != "creating" ? this.state.p : null
+  render(): JSX.Element | JSX.Element[] {
+    return this.state.p != "creating" ? this.state.p : []
   }
 }
 
@@ -223,11 +223,11 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
     this.props.debug_info && console.log("Mount:", this.props.debug_info())
     this.load(this.props)
   }
-  render() {
+  render(): JSX.Element | JSX.Element[] {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
     return this.state.result == "busy" ? <div className="busy">{i18next.t("busy")}</div>
             : this.state.result == "error" ? <div className="error">{i18next.t("error")}</div>
-            : null // <div className="done">{i18next.t("done")}</div>
+            : [] // <div className="done">{i18next.t("done")}</div>
   }
 }
 

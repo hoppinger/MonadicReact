@@ -31,7 +31,7 @@ class List<A,B> extends React.Component<ListProps<A,B>,ListState<A,B>> {
             this.props.cont(callback)(new_value))).toList()})
   }
   render() {
-    return <div className={`monadic-list ${this.props.className || ""}`}> { this.state.ps != "creating" ? this.state.ps : null } </div>
+    return <div className={`monadic-list ${this.props.className || ""}`}> { this.state.ps != "creating" ? this.state.ps : [] } </div>
   }
 }
 

@@ -77,9 +77,7 @@ export class Application extends React.Component<ApplicationProps, ApplicationSt
           return true
       })
 
-      this.setState({...this.state, kind:"running",
-        context:this.context_from_props(this.props, initial_page),
-        routes:routes })
+      this.setState({...this.state, kind:"running", context: this.context_from_props(this.props, initial_page), routes:routes })
     }).catch(() => setTimeout(() => this.load(), 250))
   }
 

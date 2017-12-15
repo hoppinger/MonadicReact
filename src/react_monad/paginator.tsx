@@ -43,18 +43,18 @@ class Paginate<A,B> extends React.Component<PaginateProps<A,B>,PaginateState<A,B
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
     return <div className="monadic-paginated-content">
-      {this.state.get_page_cache != "loading" ? this.state.get_page_cache : null}
+      {this.state.get_page_cache != "loading" ? this.state.get_page_cache : []}
       { this.state.current_page != "loading" && this.state.current_page.num_pages > 1 ?
         <div className="monadic-paginator">
           { this.state.current_page.page_index > 0 && this.state.current_page.num_pages > 3 ?
             <a className="page first-page" style={{margin:"5px"}}
-              onClick={() => this.goto(0)}>{1}</a> : null}
+              onClick={() => this.goto(0)}>{1}</a> : []}
           {
-            this.state.current_page.page_index > 2 ? "..." : null
+            this.state.current_page.page_index > 2 ? "..." : []
           }
           {this.state.current_page.page_index > 0 ?
             <a className="page prev-page" style={{margin:"5px"}}
-            onClick={() => this.goto(this.state.current_page != "loading" && this.state.current_page.page_index - 1)}>{'<'}</a> : null}
+            onClick={() => this.goto(this.state.current_page != "loading" && this.state.current_page.page_index - 1)}>{'<'}</a> : []}
           {/*{this.state.current_page.page_index > 0 ?
             <a className="page" style={{margin:"5px"}} onClick={() => this.goto(this.state.current_page != "loading" && this.state.current_page.page_index - 1)}>{this.state.current_page.page_index}</a> : null}*/}
           { <span className="page current-page" style={{margin:"5px"}}>{this.state.current_page.page_index + 1}</span>}
@@ -62,16 +62,16 @@ class Paginate<A,B> extends React.Component<PaginateProps<A,B>,PaginateState<A,B
             <a className="page" style={{margin:"5px"}} onClick={() => this.state.current_page != "loading" && this.goto(this.state.current_page.page_index + 1)}>{this.state.current_page.page_index + 2}</a> : null}*/}
           {this.state.current_page.page_index < this.state.current_page.num_pages - 1 ?
             <a className="page next-page" style={{margin:"5px"}}
-               onClick={() => this.state.current_page != "loading" && this.goto(this.state.current_page.page_index + 1)}>{'>'}</a> : null}
+               onClick={() => this.state.current_page != "loading" && this.goto(this.state.current_page.page_index + 1)}>{'>'}</a> : []}
           {
-            this.state.current_page.page_index < this.state.current_page.num_pages - 2 ? "..." : null
+            this.state.current_page.page_index < this.state.current_page.num_pages - 2 ? "..." : []
           }
           { this.state.current_page.page_index < this.state.current_page.num_pages - 1 &&  this.state.current_page.num_pages > 3 ?
             <a className="page last-page" style={{margin:"5px"}} onClick={() => this.state.current_page != "loading" && this.goto(this.state.current_page.num_pages - 1)}>{this.state.current_page.num_pages}</a> : null}
         </div>
         :
-          null }
-      {this.state.page_cache != "loading" ? this.state.page_cache : null}
+          [] }
+      {this.state.page_cache != "loading" ? this.state.page_cache : []}
     </div>
   }
 }
