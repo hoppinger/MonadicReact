@@ -78,9 +78,9 @@ class Unit<A> extends React.Component<UnitProps<A>,UnitState<A>> {
     this.props.debug_info && console.log("Component will mount:", this.props.debug_info(), this.props.value)
     this.props.cont(() => {})(this.props.value)
   }
-  render() {
+  render(): JSX.Element[] {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return null
+    return []
   }
 }
 
@@ -105,8 +105,9 @@ class Join<A> extends React.Component<JoinProps<A>,JoinState<A>> {
   render() {
     return <div>
         { this.state.p_outer }
-        { this.state.p_inner == "waiting" ? null
-          : this.state.p_inner }
+        { this.state.p_inner == "waiting" 
+          ? [] 
+          : [this.state.p_inner] }
       </div>
   }
 }
@@ -145,16 +146,14 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
     return <div className={`bind ${this.props.className || ""}`}>
       {
-        (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating" ?
-          this.state.p
-        :
-          null
+        (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating" 
+          ? this.state.p
+          : []
       }
       {
-        this.state.k != "waiting for p" ?
-          this.state.k
-        :
-          null
+        this.state.k != "waiting for p" 
+          ? this.state.k
+          : []
       }
     </div>
   }
@@ -183,7 +182,9 @@ class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.p != "creating" ? this.state.p : null
+    return this.state.p != "creating" 
+      ? this.state.p 
+      : []
   }
 }
 
@@ -209,7 +210,9 @@ class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.p != "creating" ? this.state.p : null
+    return this.state.p != "creating" 
+      ? this.state.p 
+      : []
   }
 }
 

@@ -130,7 +130,7 @@ class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   }
   render() {
     return <div className={this.props.className}>
-        { this.state.p  != "creating" ? this.state.p  : null }
+        { this.state.p  != "creating" ? this.state.p  : [] }
       </div>
   }
 }
@@ -162,7 +162,7 @@ class Form<A,B> extends React.Component<FormProps<A,B>,FormState<A,B>> {
   }
   render() {
     return <form className={this.props.className}>
-        { this.state.p  != "creating" ? this.state.p  : null }
+        { this.state.p  != "creating" ? this.state.p  : [] }
       </form>
   }
 }
@@ -222,7 +222,7 @@ class Selector<A> extends React.Component<SelectorProps<A>,SelectorState<A>> {
         }
       </form>
     } else {
-      return null
+      return []
     }
   }
 }
@@ -354,7 +354,7 @@ class Image extends React.Component<ImageProps,ImageState> {
                     } />
                   </div>
                 :
-                  null
+                  []
               }
             </div>
 
@@ -430,10 +430,9 @@ class FileComponent extends React.Component<FileProps, FileState> {
     return <div>
       <span>
         <a href={this.props.url} >{this.props.label}</a></span>
-        {this.props.mode == "view" ?
-          null
-            :
-          <input disabled={this.props.disabled}
+        {this.props.mode == "view" 
+          ? []
+          : <input disabled={this.props.disabled}
               type="file"
               onChange={(e:any) => {
                   let files:FileList = (e.target as any).files
