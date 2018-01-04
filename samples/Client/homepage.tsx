@@ -143,7 +143,8 @@ export function HomePage(slug:string) : JSX.Element {
 
 export let HomePage_to = (slug:string, target_element_id:string, ) => {
   (async() => {
-    let res = await fetch(`/translations.json`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
+    let hdr: any = {'content-type': 'application/json'}
+    let res = await fetch(`/translations.json`, { method: 'get', credentials: 'include', headers:hdr })
     let resources = await res.json()
     i18next.init({
       lng:  "nl",
