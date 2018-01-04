@@ -130,7 +130,7 @@ export function h1<A,B>(text:string, className?:string, key?:string, dbg?:() => 
              </div>
       })}))) 
 }
-
+/*
 type H2State<A,B> = { p:"creating"|JSX.Element }
 class H2<A,B> extends React.Component<H2Props<A,B>,H2State<A,B>> {
   constructor(props:H2Props<A,B>,context:any) {
@@ -162,7 +162,20 @@ export function h2<A,B>(text:string, className?:string, key?:string, dbg?:() => 
     (React.createElement<H2Props<A,B>>(H2,
     { kind:"h2", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
-
+*/
+export function h2<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
+    { kind:"h2", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
+      let content : JSX.Element = state.p == "creating" ? null : state.p
+      let span = <span>{text}</span>
+      return <div className={className}>
+               <h2>{span}</h2>
+               {content}
+             </div>
+      })}))) 
+}
+/*
 type DivState<A,B> = { p:"creating"|JSX.Element }
 class Div<A,B> extends React.Component<DivProps<A,B>,DivState<A,B>> {
   constructor(props:DivProps<A,B>,context:any) {
@@ -190,11 +203,22 @@ export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p
     (React.createElement<DivProps<A,B>>(Div,
     { kind:"div", className:className, debug_info:dbg, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
+*/
+
+export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
+    { kind:"div", className:className, debug_info:dbg, text:"", value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
+      return <div className={this.props.className}>
+        { this.state.p  != "creating" ? this.state.p  : [] }
+      </div>
+    })}))) 
+}
 
 export function overlay<A,B>(key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
   return p => div<A,B>(`overlay`)(div<A,B>(`overlay__item`)(p))
 }
-
+/*
 type FormState<A,B> = { p:"creating"|JSX.Element }
 class Form<A,B> extends React.Component<FormProps<A,B>,FormState<A,B>> {
   constructor(props:FormProps<A,B>,context:any) {
@@ -221,6 +245,17 @@ export function form<A,B>(className?:string, key?:string, dbg?:() => string) : (
   return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<FormProps<A,B>>(Form,
     { kind:"form", className:className, debug_info:dbg, value:value, p:p, context:ctxt, cont:cont, key:key })))
+}
+*/
+
+export function form<A,B>(className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
+    { kind:"form", className:className, debug_info:dbg, text:"", value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
+      return <form className={className}>
+        { state.p  != "creating" ? state.p  : [] }
+      </form>  
+    })}))) 
 }
 
 type SelectorState<A> = { selected:undefined|number }
