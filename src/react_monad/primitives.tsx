@@ -9,7 +9,8 @@ function format_int(num:number, length:number) : string {
 }
 
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
-export type StringType = "email"|"tel"|"text"|"url"|"password"
+export type TextareaType = {kind: "textarea", rows: number, cols: number}
+export type StringType = "email"|"tel"|"text"|"url"|"password"|TextareaType
 export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
 export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"|"radio"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
@@ -74,7 +75,10 @@ class String extends React.Component<StringProps,StringState> {
   }
   render() {
     if (this.props.debug_info != undefined) console.log(`render`, this.props.debug_info())
-    return this.props.mode == "edit" ? <input type={this.props.type}
+    return this.props.mode == "edit" ? 
+        this.props.type != undefined && this.props.type.hasOwnProperty('kind') && (this.props.type as any).kind === "textarea" ? 
+        <textarea rows={(this.props.type as TextareaType).rows} cols={(this.props.type as TextareaType).cols}>{this.state.value}</ textarea> :
+        <input type={this.props.type as string}
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
