@@ -4,11 +4,11 @@ import * as Immutable from "immutable"
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind, Context} from './core'
 import {custom} from './combinators'
 
-export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
-export type FormProps<A,B> = { kind:"form", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+//export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+//export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+//export type LabelProps<A,B> = { kind:"label", className:string|undefined, text:string, span_before_content:boolean, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+//export type DivProps<A,B> = { kind:"div", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
+//export type FormProps<A,B> = { kind:"form", className:string|undefined, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type MultiSelectorType = "list"|"checkbox"
 export type MultiSelectorProps<A> = { kind:"multi selector", type:MultiSelectorType, to_string:(_:A)=>string, items:Immutable.List<A>,
           selected_items:undefined|Immutable.List<A> } & CmdCommon<Array<A>>
@@ -16,7 +16,7 @@ export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<str
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type ButtonProps<A> = { label:string, x:A, disabled:boolean, className:string } & CmdCommon<A> & ({ kind:"button" } | { kind:"a", href:string, rel?:"nofollow" })
-export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
+//export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
 type HTMLElementState<A,B> = { p:"creating"|JSX.Element }
 type HTMLElementProps<A,B> = { kind:string, className:string|undefined, text: string, value:A, p:(_:A)=>C<B>,
