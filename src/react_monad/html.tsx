@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
-import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
+import {C, Cont, CmdCommon, Mode, make_C, unit, bind, Context} from './core'
 import {custom} from './combinators'
 
 export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
@@ -18,6 +18,41 @@ export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(
 export type ButtonProps<A> = { label:string, x:A, disabled:boolean, className:string } & CmdCommon<A> & ({ kind:"button" } | { kind:"a", href:string, rel?:"nofollow" })
 export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
+type HTMLElementState<A,B> = { p:"creating"|JSX.Element }
+type HTMLElementProps<A,B> = { kind:string, className:string|undefined, text: string, value:A, p:(_:A)=>C<B>,
+   render: (ctxt:()=>Context) => (_:Cont<B>, __:any) => JSX.Element } & CmdCommon<B>
+
+class HTMLElement<A,B> extends React.Component< HTMLElementProps<A,B>, HTMLElementState<A,B> > {
+  constructor(props:HTMLElementProps<A,B>, context:any) {
+    super(props, context)
+    this.state = { p:"creating" }
+  }
+  componentWillReceiveProps(new_props:HTMLElementProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.setState({...this.state, p:new_props.p(new_props.value).comp(new_props.context)(callback => x =>
+                             new_props.cont(callback)(x))})
+  }
+  componentWillMount() {
+    this.setState({...this.state, p:this.props.p(this.props.value).comp(this.props.context)(callback => x =>
+                             this.props.cont(callback)(x))})
+  }
+  render() {
+      return this.props.render(this.props.context)(this.props.cont, this.state)
+  }
+}
+// export type CmdCommon<A> = { cont:Cont<A>, context:()=>Context, key:string, debug_info:() => string }
+export function label<A,B>(text:string, span_before_content?:boolean, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
+    { kind:"label", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
+      let content : JSX.Element = state.p == "creating" ? null : p(value).comp(ctxt)(callback => x => cont(callback)(x))
+      let span = <span key="label_span">{text}</span>
+      return <label className={className}>
+               {span_before_content ? [span,content] : [content,span]}
+             </label>  
+      })}))) 
+}
+/*
 type LabelState<A,B> = { p:"creating"|JSX.Element }
 class Label<A,B> extends React.Component<LabelProps<A,B>,LabelState<A,B>> {
   constructor(props:LabelProps<A,B>,context:any) {
@@ -48,7 +83,7 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
     (React.createElement<LabelProps<A,B>>(Label,
     { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
-
+*/
 type H1State<A,B> = { p:"creating"|JSX.Element }
 class H1<A,B> extends React.Component<H1Props<A,B>,H1State<A,B>> {
   constructor(props:H1Props<A,B>,context:any) {
