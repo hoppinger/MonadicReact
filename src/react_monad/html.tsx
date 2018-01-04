@@ -45,7 +45,7 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
   return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
     { kind:"label", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
-      let content : JSX.Element = state.p == "creating" ? null : p(value).comp(ctxt)(callback => x => cont(callback)(x))
+      let content : JSX.Element = state.p == "creating" ? null : state.p   //p(value).comp(ctxt)(callback => x => cont(callback)(x))
       let span = <span key="label_span">{text}</span>
       return <label className={className}>
                {span_before_content ? [span,content] : [content,span]}
@@ -84,6 +84,7 @@ export function label<A,B>(text:string, span_before_content?:boolean, className?
     { kind:"label", className:className, debug_info:dbg, text:text, span_before_content:span_before_content, value:value, p:p, context:ctxt, cont:cont, key:key })))
 }
 */
+/*
 type H1State<A,B> = { p:"creating"|JSX.Element }
 class H1<A,B> extends React.Component<H1Props<A,B>,H1State<A,B>> {
   constructor(props:H1Props<A,B>,context:any) {
@@ -114,6 +115,20 @@ export function h1<A,B>(text:string, className?:string, key?:string, dbg?:() => 
   return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<H1Props<A,B>>(H1,
     { kind:"h1", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key })))
+}
+*/
+
+export function h1<A,B>(text:string, className?:string, key?:string, dbg?:() => string) : (p:(_:A)=>C<B>) => ((_:A) => C<B>) {
+  return p => value => make_C<B>(ctxt => cont =>
+    (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
+    { kind:"h1", className:className, debug_info:dbg, text:text, value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
+      let content : JSX.Element = state.p == "creating" ? null : state.p
+      let span = <span>{text}</span>
+      return <div className={className}>
+               <h1>{span}</h1>
+               {content}
+             </div>
+      })}))) 
 }
 
 type H2State<A,B> = { p:"creating"|JSX.Element }
@@ -442,6 +457,25 @@ export let link = function<A>(label:string, url:string, disabled?:boolean, key?:
     <a href={url} className={`${className || ""} ${disabled ? "disabled" : ""}`}>{label}</a>)    
 }
 
+export let file = function<A>(mode:Mode, label:string, url:string, disabled?:boolean, key?:string, dbg?:() => string) : C<File> {
+  return custom<File>(key, dbg)(ctxt => cont => 
+    <div>
+    <span>
+      <a href={url} >{label}</a></span>
+      {mode == "view" 
+        ? []
+        : <input disabled={disabled}
+            type="file"
+            onChange={(e:any) => {
+                let files:FileList = (e.target as any).files
+                let f = files[0]
+                cont(() => {})(f)
+              }
+            } />
+      }
+  </div>)    
+}
+/*
 type FileState = {}
 class FileComponent extends React.Component<FileProps, FileState> {
   constructor(props:FileProps, context:any) {
@@ -472,3 +506,4 @@ export let file = function<A>(mode:Mode, label:string, url:string, disabled?:boo
     React.createElement<FileProps>(FileComponent,
       { kind:"file", mode:mode, debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key }))
 }
+*/
