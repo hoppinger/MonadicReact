@@ -2,6 +2,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as Immutable from "immutable"
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
+import {custom} from './combinators'
 
 export type H1Props<A,B> = { kind:"h1", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
 export type H2Props<A,B> = { kind:"h2", className:string|undefined, text:string, value:A, p:(_:A)=>C<B> } & CmdCommon<B>
@@ -15,7 +16,6 @@ export type ImageProps = { kind:"image", src:string, mode:Mode } & CmdCommon<str
 export type SelectorType = "dropdown"|"radio"
 export type SelectorProps<A> = { kind:"selector", type:SelectorType, to_string:(_:A)=>string, items:Immutable.List<A>, selected_item:undefined|A } & CmdCommon<A>
 export type ButtonProps<A> = { label:string, x:A, disabled:boolean, className:string } & CmdCommon<A> & ({ kind:"button" } | { kind:"a", href:string, rel?:"nofollow" })
-export type LinkProps = { kind:"link", label:string, url:string, disabled:boolean, className:string } & CmdCommon<void>
 export type FileProps = { kind:"file", label:string, url:string, mode:Mode, disabled:boolean } & CmdCommon<File>
 
 type LabelState<A,B> = { p:"creating"|JSX.Element }
@@ -402,22 +402,9 @@ export let button = function<A>(label:string, disabled?:boolean, key?:string, cl
       { kind:"button", debug_info:dbg, label:label, disabled:!!disabled, x:x, context:ctxt, cont:cont, key:key, className:className }))
 }
 
-
-type LinkState = {  }
-class Link extends React.Component<LinkProps, LinkState> {
-  constructor(props:LinkProps, context:any) {
-    super(props, context)
-    this.state = {}
-  }
-  render() {
-    return <a href={this.props.url} className={`${this.props.className || ""} ${this.props.disabled ? "disabled" : ""}`}>{this.props.label}</a>
-  }
-}
-
-export let link = function<A>(label:string, url:string, disabled?:boolean, key?:string, className?:string, dbg?:() => string) : C<void> {
-  return make_C<void>(ctxt => cont =>
-    React.createElement<LinkProps>(Link,
-      { kind:"link", debug_info:dbg, label:label, url:url, disabled:!!disabled, context:ctxt, cont:cont, key:key, className:className }))
+export let link = function<A>(label:string, url:string, disabled?:boolean, key?:string, className?:string, dbg?:() => string) {
+  return custom<void>(key, dbg)(ctxt => cont => 
+    <a href={url} className={`${className || ""} ${disabled ? "disabled" : ""}`}>{label}</a>)    
 }
 
 type FileState = {}
