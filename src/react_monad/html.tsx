@@ -209,8 +209,8 @@ export function div<A,B>(className?:string, key?:string, dbg?:() => string) : (p
   return p => value => make_C<B>(ctxt => cont =>
     (React.createElement<HTMLElementProps<A,B>>(HTMLElement,
     { kind:"div", className:className, debug_info:dbg, text:"", value:value, p:p, context:ctxt, cont:cont, key:key , render: (ctxt => (cont, state) => {
-      return <div className={this.props.className}>
-        { this.state.p  != "creating" ? this.state.p  : [] }
+      return <div className={className}>
+        { state.p  != "creating" ? state.p  : [] }
       </div>
     })}))) 
 }
