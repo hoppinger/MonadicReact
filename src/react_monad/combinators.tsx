@@ -13,8 +13,8 @@ export type AnyProps<A,B> = { kind:"any", value:A, ps:Array<(_:A)=>C<B>>, classN
 export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
-export type RetryStrategy = "never" | "semi exponential" | { kind:"retry then show failure", times:number }
-export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy, value:B, on_failure:C<A> } & CmdCommon<A>
+export type RetryStrategy<A> = "never" | "semi exponential" | { kind:"retry then show failure", times:number, on_failure: C<A> } | { kind : "never" , on_failure: C<A> }
+export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy<A>, value:B } & CmdCommon<A>
 export type SimpleMenuType = "side menu" | { kind:"tabs", max_tabs:number }
 
 type RepeatState<A> = { current_value:A, frame_index:number }
@@ -224,10 +224,14 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
         }
         else
         {
-          let failedJSX : JSX.Element = props.on_failure.comp(props.context)(props.cont)
+          let failedJSX : JSX.Element = props.retry_strategy.on_failure.comp(props.context)(props.cont)
           this.setState({...this.state, retry_count:0, result:{ kind:"failing", failure_renderer:failedJSX } })
         }
-      } 
+      } else if (props.retry_strategy.kind == "never") {
+        if (this.stopped) return
+        let failedJSX : JSX.Element = props.retry_strategy.on_failure.comp(props.context)(props.cont)
+        this.setState({...this.state, result:{ kind:"failing", failure_renderer:failedJSX } })
+      }
     }))
   }
   componentWillUnmount() {
@@ -247,10 +251,10 @@ class LiftPromise<A,B> extends React.Component<LiftPromiseProps<A,B>,LiftPromise
   }
 }
 
-export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:RetryStrategy, key?:string, dbg?:() => string, on_failure?:C<B>) : ((_:A)=>C<B>) {
+export let lift_promise = function<A,B>(p:(_:A) => Promise<B>, retry_strategy:RetryStrategy<B>, key?:string, dbg?:() => string) : ((_:A)=>C<B>) {
 return x => make_C<B>(ctxt => cont =>
   React.createElement<LiftPromiseProps<B,A>>(LiftPromise, 
-    { kind:"lift promise", debug_info:dbg, value:x, retry_strategy:retry_strategy, p:p, on_failure: on_failure, context:ctxt, cont:cont, key:key }))
+    { kind:"lift promise", debug_info:dbg, value:x, retry_strategy:retry_strategy, p:p, context:ctxt, cont:cont, key:key }))
 }
 
 
