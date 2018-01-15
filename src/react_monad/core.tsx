@@ -107,7 +107,7 @@ class Join<A> extends React.Component<JoinProps<A>,JoinState<A>> {
         { this.state.p_outer }
         { this.state.p_inner == "waiting" 
           ? [] 
-          : [this.state.p_inner] }
+          : this.state.p_inner }
       </div>
   }
 }
