@@ -28,6 +28,12 @@ export declare type FilterProps<A> = {
     p: C<A>;
     f: (_: A) => boolean;
 } & CmdCommon<A>;
+export declare type ShouldComponentUpdateProps<A, B> = {
+    kind: "should component update";
+    p: (_: A) => C<B>;
+    f: (_: A) => boolean;
+    v: A;
+} & CmdCommon<B>;
 export declare type Mode = "edit" | "view";
 export declare type Context = {
     logic_frame: number;
@@ -60,6 +66,7 @@ export declare type JoinState<A> = {
 export declare let bind: <A, B>(key: string, p: C<A>, k: (_: A) => C<B>, className?: string, dbg?: () => string) => C<B>;
 export declare let map: <A, B>(key?: string, dbg?: () => string) => (_: (_: A) => B) => (_: C<A>) => C<B>;
 export declare let filter: <A>(key?: string, dbg?: () => string) => (_: (_: A) => boolean) => (_: C<A>) => C<A>;
+export declare let should_component_update: <A, B>(key?: string, dbg?: () => string) => (_: (_: A) => boolean) => (_: (_: A) => C<B>) => (_: A) => C<B>;
 export declare type SimpleApplicationProps<A> = {
     p: C<A>;
     cont: (_: A) => void;

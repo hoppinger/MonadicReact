@@ -9,7 +9,7 @@ import {UrlTemplate, application, simple_application, get_context, Route, Url, m
 Option, C, Mode, unit, bind, string, number, bool, button, selector, multi_selector, label, h1, h2, div, form, image, link, file, overlay,
 custom, repeat, all, any, lift_promise, retract, delay,
 simple_menu, mk_menu_entry, mk_submenu_entry, MenuEntry, MenuEntryValue, MenuEntrySubMenu,
-rich_text, paginate, Page, list, editable_list} from '../../src/monadic_react'
+rich_text, paginate, Page, list, editable_list, should_component_update} from '../../src/monadic_react'
 
 import * as MonadicReact from '../../src/monadic_react'
 
@@ -28,7 +28,7 @@ import {editable_list_sample} from './samples/editable_list'
 import {link_sample} from './samples/link'
 import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
-import {course_form_with_autosave_sample} from './samples/form'
+import {course_form_with_autosave_sample, should_component_update_sample} from './samples/form'
 import {promise_sample} from './samples/promise_sample'
 
 type Sample = { sample:C<void>, description:string }
@@ -49,7 +49,8 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: toggles_sample, description:"coordinated toggles" }),
       ]),
       mk_submenu_entry("forms", [
-        mk_menu_entry({ sample: course_form_with_autosave_sample, description:"simple form" })
+        mk_menu_entry({ sample: course_form_with_autosave_sample, description:"simple form" }),
+        mk_menu_entry({ sample: should_component_update_sample, description:"form with update control" })
       ]),
       mk_submenu_entry("lists", [
         mk_menu_entry({ sample: list_sample, description:"list" }),
@@ -144,19 +145,8 @@ export function HomePage(slug:string) : JSX.Element {
 }
 
 export let HomePage_to = (slug:string, target_element_id:string, ) => {
-  (async() => {
-    let res = await fetch(`/translations.json`, { method: 'get', credentials: 'include', headers:{'content-type': 'application/json'} })
-    let resources = await res.json()
-    i18next.init({
-      lng:  "nl",
-      fallbackLng: "en",
-      ns: ["common","HomePage","Course","Lecture"],
-      resources: resources
-    }, (err, t) => {
-      ReactDOM.render(
-        HomePage(slug),
-        document.getElementById(target_element_id)
-      )
-    })
-  })()
+  ReactDOM.render(
+    HomePage(slug),
+    document.getElementById(target_element_id)
+  )
 }
