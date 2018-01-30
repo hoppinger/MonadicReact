@@ -10,6 +10,7 @@ export type UnitProps<A> = { kind:"unit", value:A } & CmdCommon<A>
 export type BindProps<B,A> = { kind:"bind", once:boolean, p:C<B>, k:(_:B) => C<A>, className:string } & CmdCommon<A>
 export type MapProps<A,B> = { kind:"map", p:C<A>, f:(_:A)=>B } & CmdCommon<B>
 export type FilterProps<A> = { kind:"filter", p:C<A>, f:(_:A)=>boolean } & CmdCommon<A>
+export type ShouldComponentUpdateProps<A,B> = { kind:"should component update", p:(_:A) => C<B>, f:(_:A)=>boolean, v:A } & CmdCommon<B>
 export type Mode = "edit"|"view"
 
 export type Context = {
@@ -105,8 +106,8 @@ class Join<A> extends React.Component<JoinProps<A>,JoinState<A>> {
   render() {
     return <div>
         { this.state.p_outer }
-        { this.state.p_inner == "waiting" 
-          ? [] 
+        { this.state.p_inner == "waiting"
+          ? []
           : this.state.p_inner }
       </div>
   }
@@ -146,12 +147,12 @@ class Bind<B,A> extends React.Component<BindProps<B,A>,BindState<B,A>> {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
     return <div className={`bind ${this.props.className || ""}`}>
       {
-        (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating" 
+        (this.state.k == "waiting for p" || !this.props.once) && this.state.p != "creating"
           ? this.state.p
           : []
       }
       {
-        this.state.k != "waiting for p" 
+        this.state.k != "waiting for p"
           ? this.state.k
           : []
       }
@@ -182,8 +183,8 @@ class Map<A,B> extends React.Component<MapProps<A,B>,MapState<A,B>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.p != "creating" 
-      ? this.state.p 
+    return this.state.p != "creating"
+      ? this.state.p
       : []
   }
 }
@@ -210,8 +211,8 @@ class Filter<A> extends React.Component<FilterProps<A>,FilterState<A>> {
   }
   render() {
     this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.p != "creating" 
-      ? this.state.p 
+    return this.state.p != "creating"
+      ? this.state.p
       : []
   }
 }
@@ -223,7 +224,32 @@ export let filter = function<A>(key?:string, dbg?:() => string) : ((_:(_:A) => b
         { kind:"filter", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
 }
 
+type ShouldComponentUpdateState<A,B> = { p:JSX.Element }
+class ShouldComponentUpdate<A,B> extends React.Component<ShouldComponentUpdateProps<A,B>,ShouldComponentUpdateState<A,B>> {
+  constructor(props:ShouldComponentUpdateProps<A,B>,context:any) {
+    super(props, context)
+    this.state = { p:props.p(props.v).comp(props.context)(cbk => y => props.cont(cbk)(y)) }
+  }
+  shouldComponentUpdate(next_props:ShouldComponentUpdateProps<A,B>) : boolean {
+    return next_props.f(next_props.v)
+  }
+  componentWillReceiveProps(next_props:ShouldComponentUpdateProps<A,B>) {
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
+    if (next_props.f(next_props.v))
+      this.setState({...this.state, p:next_props.p(next_props.v).comp(next_props.context)(callback => x => next_props.cont(callback)(x) )})
+  }
+  render() {
+    this.props.debug_info && console.log("Render:", this.props.debug_info())
+    return this.state.p
+  }
+}
 
+export let should_component_update = function<A,B>(key?:string, dbg?:() => string) : ((_:(_:A) => boolean) => (_:(_:A) => C<B>) => (_:A) => C<B>) {
+  return f => p => v =>
+    make_C<B>(ctxt => cont =>
+      React.createElement<ShouldComponentUpdateProps<A,B>>(ShouldComponentUpdate,
+        { kind:"should component update", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key, v:v }))
+}
 
 
 
