@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import * as Immutable from 'immutable';
-import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock, ContentState, Modifier} from 'draft-js';
+import {Editor, Entity, EditorState, RichUtils, AtomicBlockUtils, EditorBlock, ContentBlock, ContentState, CompositeDecorator, Modifier} from 'draft-js';
 import * as Draft from 'draft-js';
 import {C, Cont, CmdCommon, Mode, make_C, unit, bind} from './core'
 import * as katex from "katex";
@@ -17,6 +17,7 @@ type DraftEditorCommand =
     "bold" |
     "italic" |
     "underline" |
+    "link" |
     "code" |
     "split-block" |
     "transpose-characters" |
@@ -56,20 +57,40 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
     this.state = { editor_state: this.props.initial_state }
   }
 
+  static decorator = () => new CompositeDecorator([
+    {
+      strategy: DraftEditor.findLinkentities,
+      component: Link,
+    },
+  ]);
+
   static serialize_state(editor_state:EditorState) : string {
     return JSON.stringify(Draft.convertToRaw(editor_state.getCurrentContent()))
   }
 
   static deserialize_state(raw_content:any) : EditorState {
     try {
-      return EditorState.createWithContent(Draft.convertFromRaw(JSON.parse(raw_content)))
+      return EditorState.createWithContent(Draft.convertFromRaw(JSON.parse(raw_content)), DraftEditor.decorator())
     } catch (e) {
       return DraftEditor.empty_state()
     }
   }
 
+  static findLinkentities = (contentBlock, callback) => {
+    contentBlock.findEntityRanges(
+      (character) => {
+        const entityKey = character.getEntity();
+        return (
+          entityKey !== null &&
+          Entity.get(entityKey).getType() === 'LINK'
+        );
+      },
+      callback
+    );
+  }
+
   static empty_state() : EditorState {
-    return EditorState.createEmpty()
+    return EditorState.createEmpty(DraftEditor.decorator())
   }
 
   onChange(new_editor_state:EditorState, on_success?: () => void) {
@@ -128,6 +149,20 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
     })
   }
 
+  insert_link(contentState: Draft.ContentState, url:string) {
+    let contentStateWithEntity = contentState.createEntity('LINK', 'IMMUTABLE', {url: url})
+    let entityKey = contentStateWithEntity.getLastCreatedEntityKey()
+    let newEditorState = RichUtils.toggleLink(
+      this.state.editor_state,
+      this.state.editor_state.getSelection(),
+      entityKey
+    )
+
+    this.setState({...this.state, editor_state: newEditorState}, () => {
+      this.props.set_state(newEditorState)
+    })
+  }
+
   editor: Editor = null
   render() {
     return (
@@ -137,6 +172,7 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
                                  toggle_block_type={(s:DraftBlockType) => this.toggle_block_type(s)}
                                  insert_media={(url:string, url_type:MediaType) =>
                                    this.insert_media(this.state.editor_state.getCurrentContent() ,url, url_type)}
+                                 insert_link={(url: string) => this.insert_link(this.state.editor_state.getCurrentContent(), url)}
                                   />
            :
           null}
@@ -249,6 +285,15 @@ const YouTube = (props:{src:string}) => {
           </iframe>)
 };
 
+const Link = (props) => {
+  const {url} = Entity.get(props.entityKey).getData();
+  return (
+    <a href={url}>
+      {props.children}
+    </a>
+  );
+};
+
 export type MediaType = 'image' | 'video' | 'youtube' | 'mathblock'
 
 type MediaProps = { contentState: Draft.ContentState, block:ContentBlock }
@@ -273,7 +318,8 @@ let Media = (editable:boolean) => (props:MediaProps) => {
 type SlideEditorButtonsBarProps = {
   toggle_style: (c:DraftEditorCommand) => void,
   toggle_block_type: (c:DraftBlockType) => void,
-  insert_media: (url:string, media_type:MediaType) => void }
+  insert_media: (url:string, media_type:MediaType) => void
+  insert_link: (url:string) => void }
 class SlideEditorButtonsBar extends React.Component<
   SlideEditorButtonsBarProps,
   {} > {
@@ -329,6 +375,9 @@ class SlideEditorButtonsBar extends React.Component<
             </button>
             <button className={`text-editor__menu-button text-editor__menu-button--image`}
                     onClick={() => this.file_input.click()}>
+            </button>
+            <button className={`text-editor__menu-button text-editor__menu-button--link`}
+                    onClick={() => this.props.insert_link(prompt("Insert your link here"))}>
             </button>
           </div>
           <input type="file" onChange={(e:React.FormEvent<HTMLInputElement>) => {
