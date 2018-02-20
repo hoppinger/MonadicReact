@@ -46,30 +46,39 @@ type ShouldComponentUpdateSampleState = { string1:string, sub_state:ShouldCompon
 export let should_component_update_sample : C<void> =
   repeat<ShouldComponentUpdateSampleState>("should component update sample")(
     any<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleState>("should component update any")([
-      should_component_update<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleState>("string 1 should component update")(
-        s => s.last_update == "string1")(
+      // should_component_update<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleState>("string 1 should component update", () => "string1")(
+      //   s => s.last_update == "string1")(
         retract<ShouldComponentUpdateSampleState,string>("string 1 retract")(
           s => s.string1, s => s1 => ({...s, string1:s1, last_update:"string1"}),
           s => console.log("updating string 1") || string("edit", "text", "string 1")(s))
-      ),
-      should_component_update<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleState>("strings 2/3 should component update")(
-        s => s.last_update == "sub_state")(
+      // )
+      ,
+      // should_component_update<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleState>("strings 2/3 should component update", () => "strings 2/3")(
+      //   s => s.last_update == "sub_state")(
         retract<ShouldComponentUpdateSampleState,ShouldComponentUpdateSampleSubState>("string 2 retract")(
           s => s.sub_state, s => sub_state => ({...s, sub_state:sub_state, last_update:"sub_state"}),
           s => console.log("updating sub-state") ||
             any<ShouldComponentUpdateSampleSubState,ShouldComponentUpdateSampleSubState>("sub state any")([
-              should_component_update<ShouldComponentUpdateSampleSubState,ShouldComponentUpdateSampleSubState>("string 2 should component update")(
-                s => s.last_update == "string2")(
+              // should_component_update<ShouldComponentUpdateSampleSubState,ShouldComponentUpdateSampleSubState>("string 2 should component update", () => "string2")(
+              //   s => s.last_update == "string2")(
                 retract<ShouldComponentUpdateSampleSubState,string>("string 2 retract")(
                   s => s.string2, s => s2 => ({...s, string2:s2, last_update:"string2"}),
-                  s => console.log("updating string 2") || string("edit", "text", "string 2")(s))),
-              should_component_update<ShouldComponentUpdateSampleSubState,ShouldComponentUpdateSampleSubState>("string 3 should component update")(
+                  s => console.log("updating string 2") || string("edit", "text", "string 2")(s))
+                //)
+                ,
+              retract<ShouldComponentUpdateSampleSubState,{ s:string, last_update:"string2" | "string3" | "none"}>("string 3 retract")(
+                s => ({s:s.string3, last_update:s.last_update}), s => s3 => ({...s, string3:s3.s, last_update:"string3"}),
+                should_component_update<{ s:string, last_update:"string2" | "string3" | "none"},{ s:string, last_update:"string2" | "string3" | "none"}>("string 3 should component update", () => "string3")(
                 s => s.last_update == "string3")(
-                retract<ShouldComponentUpdateSampleSubState,string>("string 3 retract")(
-                  s => s.string3, s => s3 => ({...s, string3:s3, last_update:"string3"}),
-                  s => console.log("updating string 3") || string("edit", "text", "string 3")(s)))
+                  retract<{ s:string, last_update:"string2" | "string3" | "none"},string>("string 3 inner retract")(
+                    s => s.s, s => s1 => ({...s, s:s1}),
+                    string("edit", "text", "string 3")
+                  )
+                )
+              )
             ])
           (s))
-      )
+      // )
     ])
-  )({ string1:"string 1", sub_state:{ string2:"string 2", string3:"string 3", last_update:"none" }, last_update:"none" }).ignore()
+  )({ string1:"string 1", sub_state:{ string2:"string 2", string3:"string 3", last_update:"none" }, last_update:"none" })
+    .map(s => console.log("done with", [s.string1, s.sub_state.string2, s.sub_state.string3]) || unit(s)).ignore()

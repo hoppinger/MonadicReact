@@ -224,23 +224,22 @@ export let filter = function<A>(key?:string, dbg?:() => string) : ((_:(_:A) => b
         { kind:"filter", debug_info:dbg, p:p, f:f, context:ctxt, cont:cont, key:key }))
 }
 
-type ShouldComponentUpdateState<A,B> = { p:JSX.Element }
+type ShouldComponentUpdateState<A,B> = { }
 class ShouldComponentUpdate<A,B> extends React.Component<ShouldComponentUpdateProps<A,B>,ShouldComponentUpdateState<A,B>> {
   constructor(props:ShouldComponentUpdateProps<A,B>,context:any) {
     super(props, context)
-    this.state = { p:props.p(props.v).comp(props.context)(cbk => y => props.cont(cbk)(y)) }
   }
   shouldComponentUpdate(next_props:ShouldComponentUpdateProps<A,B>) : boolean {
     return next_props.f(next_props.v)
   }
   componentWillReceiveProps(next_props:ShouldComponentUpdateProps<A,B>) {
-    this.props.debug_info && console.log("New props:", this.props.debug_info())
-    if (next_props.f(next_props.v))
-      this.setState({...this.state, p:next_props.p(next_props.v).comp(next_props.context)(callback => x => next_props.cont(callback)(x) )})
+    // this.props.debug_info && console.log("New props:", this.props.debug_info())
   }
   render() {
-    this.props.debug_info && console.log("Render:", this.props.debug_info())
-    return this.state.p
+    // this.props.debug_info && console.log("Render:", this.props.debug_info())
+    let s = this.props.v as any
+    console.log(`rendering should component update with props ${this.props.debug_info()}`, JSON.stringify(s))
+    return this.props.p(this.props.v).comp(this.props.context)(cbk => y => this.props.cont(cbk)(y))
   }
 }
 
