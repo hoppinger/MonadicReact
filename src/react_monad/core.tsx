@@ -233,12 +233,12 @@ class ShouldComponentUpdate<A,B> extends React.Component<ShouldComponentUpdatePr
     return next_props.f(next_props.v)
   }
   componentWillReceiveProps(next_props:ShouldComponentUpdateProps<A,B>) {
-    // this.props.debug_info && console.log("New props:", this.props.debug_info())
+    this.props.debug_info && console.log("New props:", this.props.debug_info())
   }
   render() {
-    // this.props.debug_info && console.log("Render:", this.props.debug_info())
-    let s = this.props.v as any
-    console.log(`rendering should component update with props ${this.props.debug_info()}`, JSON.stringify(s))
+    this.props.debug_info && console.log("Render:", this.props.debug_info())
+    // let s = this.props.v as any
+    // console.log(`rendering should component update with props ${this.props.debug_info()}`, JSON.stringify(s))
     return this.props.p(this.props.v).comp(this.props.context)(cbk => y => this.props.cont(cbk)(y))
   }
 }
