@@ -9,7 +9,7 @@ function format_int(num:number, length:number) : string {
 }
 
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
-export type StringType = "email"|"tel"|"text"|"url"|"password"
+export type StringType = "email"|"tel"|"text"|"url"|"password"|"text-send"
 export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
 export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"|"radio"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
@@ -66,7 +66,7 @@ class String extends React.Component<StringProps,StringState> {
   }
   componentWillMount() {
     if (this.props.debug_info != undefined) console.log(`mounting`, this.props.debug_info())
-    this.call_cont(this.state.value)
+    if (this.props.type != 'text-send') this.call_cont(this.state.value)
   }
   call_cont(value:string) {
     if (this.props.debug_info != undefined) console.log(`calling continuation`, this.props.debug_info())
@@ -74,14 +74,29 @@ class String extends React.Component<StringProps,StringState> {
   }
   render() {
     if (this.props.debug_info != undefined) console.log(`render`, this.props.debug_info())
-    return this.props.mode == "edit" ? <input type={this.props.type}
+    return this.props.mode == "edit" ?
+                  this.props.type == 'text-send' ? <input
+                  type="text"
+                  value = {this.state.value}
+                  onChange={e => {
+                    if (this.state.value == e.currentTarget.value) return
+                    this.setState({ value: e.currentTarget.value})
+                  }
+                  }
+        onKeyDown={e => {
+          if (e.key == 'Enter') {
+            this.props.cont(() => null)(this.state.value)
+          }
+        }}
+                  />
+                  : <input type={this.props.type}
                   value={this.state.value}
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
                     this.call_cont(e.currentTarget.value)}
                   } />
             :
-              this.props.type == "text" ?
+              this.props.type == "text" || this.props.type == 'text-send' ?
                  <span>{this.state.value}</span>
               : this.props.type == "tel" ?
                 <a href={`tel:${this.state.value}`}>{this.state.value}</a>
