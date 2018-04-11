@@ -8,9 +8,14 @@ function format_int(num:number, length:number) : string {
     return (num / Math.pow(10, length)).toFixed(length).substr(2);
 }
 
+export type OptionalParameters = {
+  disabled?: boolean,
+  size?: number
+}
+
 export type NumberProps = { kind:"number", value:number, mode:Mode } & CmdCommon<number>
 export type StringType = "email"|"tel"|"text"|"url"|"password"
-export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode } & CmdCommon<string>
+export type StringProps = { kind:"string", value:string, type:StringType, mode:Mode, optional_parameters: OptionalParameters } & CmdCommon<string>
 export type BooleanStyle = "checkbox"|"fancy toggle"|"plus/minus"|"radio"
 export type BoolProps = { kind:"bool", value:boolean, mode:Mode, style:BooleanStyle } & CmdCommon<boolean>
 export type DateProps = { kind:"date", value:Moment.Moment, mode:Mode } & CmdCommon<Moment.Moment>
@@ -79,7 +84,10 @@ class String extends React.Component<StringProps,StringState> {
                   onChange={e => {
                     if (this.state.value == e.currentTarget.value) return
                     this.call_cont(e.currentTarget.value)}
-                  } />
+                  }
+                  size={this.props.optional_parameters.size != undefined ? this.props.optional_parameters.size : undefined}
+                  disabled={this.props.optional_parameters.disabled != undefined && this.props.optional_parameters.disabled}
+                  />
             :
               this.props.type == "text" ?
                  <span>{this.state.value}</span>
@@ -97,9 +105,9 @@ class String extends React.Component<StringProps,StringState> {
   }
 }
 
-export let string = (mode:Mode, type?:StringType, key?:string, dbg?:() => string) => function(value:string) : C<string> {
+export let string = (mode:Mode, type?:StringType, key?:string, dbg?:() => string, optional_parameters?: OptionalParameters) => function(value:string) : C<string> {
   return make_C<string>(ctxt => cont =>
-    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, type:type || "text", mode:mode, value:value, context:ctxt, cont:cont, key:key }))
+    React.createElement<StringProps>(String, { kind:"string", debug_info:dbg, type:type || "text", mode:mode, value:value, context:ctxt, cont:cont, key:key , optional_parameters: optional_parameters == undefined || optional_parameters == null ? {} : optional_parameters }))
 }
 
 
