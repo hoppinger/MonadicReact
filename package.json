@@ -1,6 +1,6 @@
 {
   "name": "monadic_react",
-  "version": "1.0.63",
+  "version": "1.0.63.1",
   "description": "A monadic library for easily composing React-based libraries.",
   "main": "dist/monadic_react.js",
   "typings": "dist/monadic_react.d.ts",
