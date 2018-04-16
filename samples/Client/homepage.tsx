@@ -29,6 +29,7 @@ import {link_sample} from './samples/link'
 import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
 import {course_form_with_autosave_sample} from './samples/form'
+import { disablable_sample } from './samples/disable_enable_input'
 
 type Sample = { sample:C<void>, description:string }
 
@@ -62,6 +63,7 @@ export function HomePage(slug:string) : JSX.Element {
       mk_submenu_entry("other", [
         mk_menu_entry({ sample: context_sample, description:"context management" }),
         mk_menu_entry({ sample: overlay_sample, description:"overlay" }),
+        mk_menu_entry({ sample: disablable_sample, description:"enable and disable input" }),
       ]),
       // mk_submenu_entry("controls", [
       //   mk_menu_entry({ sample: link_sample, description:"links" }),
