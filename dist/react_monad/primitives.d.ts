@@ -1,9 +1,9 @@
 import * as Moment from 'moment';
 import { C, Mode, CmdCommon } from './core';
 export declare type OptionalParameters = {
-    disabled?: boolean,
-    size?: number
-}
+    disabled?: boolean;
+    size?: number;
+};
 export declare type NumberProps = {
     kind: "number";
     value: number;
@@ -15,6 +15,7 @@ export declare type StringProps = {
     value: string;
     type: StringType;
     mode: Mode;
+    optional_parameters: OptionalParameters;
 } & CmdCommon<string>;
 export declare type BooleanStyle = "checkbox" | "fancy toggle" | "plus/minus" | "radio";
 export declare type BoolProps = {
