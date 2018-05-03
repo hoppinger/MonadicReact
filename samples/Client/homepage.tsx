@@ -30,6 +30,7 @@ import {overlay_sample} from './samples/overlay'
 import {context_sample} from './samples/context'
 import {course_form_with_autosave_sample, should_component_update_sample} from './samples/form'
 import {promise_sample} from './samples/promise_sample'
+import {delay_wait} from './samples/delay_wait'
 
 type Sample = { sample:C<void>, description:string }
 
@@ -65,6 +66,7 @@ export function HomePage(slug:string) : JSX.Element {
         mk_menu_entry({ sample: context_sample, description:"context management" }),
         mk_menu_entry({ sample: overlay_sample, description:"overlay" }),
         mk_menu_entry({ sample: promise_sample, description:"promise" }),
+        mk_menu_entry({ sample: delay_wait, description:"delay and wait"})
       ]),
       // mk_submenu_entry("controls", [
       //   mk_menu_entry({ sample: link_sample, description:"links" }),

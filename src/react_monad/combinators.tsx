@@ -13,6 +13,7 @@ export type AnyProps<A,B> = { kind:"any", value:A, ps:Array<(_:A)=>C<B>>, classN
 export type NeverProps<A,B> = { kind:"never", p:C<A> } & CmdCommon<B>
 export type RetractProps<A,B> = { kind:"retract", inb:(_:A)=>B, out:(_:A)=>(_:B)=>A, p:(_:B)=>C<B>, value:A } & CmdCommon<A>
 export type DelayProps<A> = { kind:"delay", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
+export type WaitProps<A> = { kind:"wait", dt:number, value:A, p:(_:A)=>C<A> } & CmdCommon<A>
 export type RetryStrategy<A> = "never" | "semi exponential" | { kind:"retry then show failure", times:number, on_failure: C<A> } | { kind : "never" , on_failure: C<A> }
 export type LiftPromiseProps<A,B> = { kind:"lift promise", p:(_:B)=>Promise<A>, retry_strategy:RetryStrategy<A>, value:B } & CmdCommon<A>
 export type SimpleMenuType = "side menu" | { kind:"tabs", max_tabs:number }
@@ -266,17 +267,17 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   }
   running:boolean = false
   componentWillMount() {
-    // console.log("starting delay thread")
+    console.log("starting delay thread")
     if (this.running) return
     this.running = true
     var self = this
     let process = () => setTimeout(() => {
-      // console.log("delay is ticking", self.state.status, self.state.value)
+      console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
-        // console.log("delay is submitting the data to save")
+        console.log("delay is submitting the data to save")
         if (!this.running) return
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
-          // console.log("calling the continuation of dirty", self.state.value)
+          console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
         process()
@@ -288,11 +289,11 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     process()
   }
   componentWillUnmount() {
-    // console.log("stopping delay thread")
+    console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    // console.log("Delay received new props and is going back to dirty")
+    console.log("Delay received new props and is going back to dirty")
     this.setState({...this.state, value: new_props.value, status:"dirty"})
   }
   render() {
@@ -304,6 +305,87 @@ export let delay = function<A>(dt:number, key?:string, dbg?:() => string) : (p:(
   return p => initial_value => make_C<A>(ctxt => cont =>
     React.createElement<DelayProps<A>>(Delay,
       { kind:"delay", debug_info:dbg, dt:dt, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key }))
+}
+
+type WaitState<A> = { status:"open"|"closed", last_command:JSX.Element }
+class Wait<A> extends React.Component<WaitProps<A>,WaitState<A>> {
+  constructor(props:WaitProps<A>,context:any) {
+    super(props, context)
+    this.state = { status:"open", 
+    last_command: null
+    //last_command:props.p(props.value).comp(props.context)(props.cont) 
+    }
+  }
+  running:boolean = false
+  end_process() {
+    if (!this.running) return
+    console.log('Ending process')
+    this.setState({...this.state, status: "closed", last_command: this.props.p(this.props.value).comp(this.props.context)(callback => new_value => this.props.cont(callback)(new_value))})
+  }
+  process() {
+    console.log('Starting Wait process')
+
+  }
+  componentWillMount() {
+    console.log("starting wait thread")
+    if (this.running) return
+    this.running = true
+    console.log('Starting first waiting')
+    setTimeout(() => this.end_process(),this.props.dt)
+    // var self = this
+    // let process = () =>
+    // setTimeout(() => {
+    //   console.log("wait is ticking", self.state.status, self.state.value)
+    //   if (self.state.status == "dirty") {
+    //     console.log("wait is submitting the data to save")
+    //     if (!this.running) return
+    //     self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
+    //       console.log("calling the continuation of dirty", self.state.value)
+    //       self.props.cont(callback)(new_value)
+    //     })})
+    //     process()
+    //   } else {
+    //     if (self.running)
+    //       process()
+    //   }
+    // }, self.props.dt)
+    // process()
+  }
+  componentWillUnmount() {
+    console.log("stopping wait thread")
+    this.running = false
+  }
+  componentDidUpdate(prevProps: WaitProps<A>,prevState: WaitState<A>) {
+    if (prevState.status == 'closed' && this.state.status == "open") {
+      console.log('Here we start the process')
+      setTimeout(() => this.end_process(),this.props.dt)
+    }
+  }
+  componentWillReceiveProps(new_props:WaitProps<A>) {
+    // console.log("Wait received new props and is going to wait")
+    // let process = () => console.log('start process') || setTimeout(() => {
+    //   console.log('the process is ending')
+    //   this.setState({...this.state, status:"closed", last_command: this.props.p(this.state.value).comp(this.props.context)(callback => new_value => {
+    //     this.props.cont(callback)(new_value)
+    //   })})
+    // }
+    //   ,this.props.dt)
+    // if (this.state.status == "closed") {
+    //   this.setState({...this.state, value: new_props.value, status:"waiting"}, () => process())
+    // }
+    // else this.setState({...this.state, value: new_props.value})
+    this.setState({...this.state, status: 'open'})
+  }
+  render() {
+    console.log(this.props.value)
+    return this.state.last_command
+  }
+}
+
+export let waiting = function<A>(dt:number, key?:string, dbg?:() => string) : (p:(_:A)=>C<A>) => ((_:A) => C<A>) {
+  return p => initial_value => make_C<A>(ctxt => cont =>
+    React.createElement<WaitProps<A>>(Wait,
+      { kind:"wait", debug_info:dbg, dt:dt, p:p as (_:A)=>C<A>, value:initial_value, context:ctxt, cont:cont, key:key }))
 }
 
 export let mk_submenu_entry = function<A>(label:string, children:Array<MenuEntryValue<A>>) : MenuEntrySubMenu<A> { return { kind:"sub menu", label:label, children:children } }
