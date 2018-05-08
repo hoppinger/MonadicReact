@@ -20,6 +20,7 @@ const overlay_1 = require("./samples/overlay");
 const context_1 = require("./samples/context");
 const form_1 = require("./samples/form");
 const promise_sample_1 = require("./samples/promise_sample");
+const delay_wait_1 = require("./samples/delay_wait");
 function HomePage(slug) {
     let all_samples = [
         monadic_react_1.mk_submenu_entry("controls", [
@@ -51,6 +52,7 @@ function HomePage(slug) {
             monadic_react_1.mk_menu_entry({ sample: context_1.context_sample, description: "context management" }),
             monadic_react_1.mk_menu_entry({ sample: overlay_1.overlay_sample, description: "overlay" }),
             monadic_react_1.mk_menu_entry({ sample: promise_sample_1.promise_sample, description: "promise" }),
+            monadic_react_1.mk_menu_entry({ sample: delay_wait_1.delay_wait, description: "delay and wait" })
         ]),
     ];
     let edit_toggle = () => ({
