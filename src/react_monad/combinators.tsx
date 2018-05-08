@@ -267,17 +267,17 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
   }
   running:boolean = false
   componentWillMount() {
-    console.log("starting delay thread")
+    //console.log("starting delay thread")
     if (this.running) return
     this.running = true
     var self = this
     let process = () => setTimeout(() => {
-      console.log("delay is ticking", self.state.status, self.state.value)
+      //console.log("delay is ticking", self.state.status, self.state.value)
       if (self.state.status == "dirty") {
-        console.log("delay is submitting the data to save")
+        //console.log("delay is submitting the data to save")
         if (!this.running) return
         self.setState({...self.state, status:"waiting", last_command:self.props.p(self.state.value).comp(this.props.context)(callback => new_value => {
-          console.log("calling the continuation of dirty", self.state.value)
+          //console.log("calling the continuation of dirty", self.state.value)
           self.props.cont(callback)(new_value)
         })})
         process()
@@ -289,11 +289,11 @@ class Delay<A> extends React.Component<DelayProps<A>,DelayState<A>> {
     process()
   }
   componentWillUnmount() {
-    console.log("stopping delay thread")
+    //console.log("stopping delay thread")
     this.running = false
   }
   componentWillReceiveProps(new_props:DelayProps<A>) {
-    console.log("Delay received new props and is going back to dirty")
+    //console.log("Delay received new props and is going back to dirty")
     this.setState({...this.state, value: new_props.value, status:"dirty"})
   }
   render() {
@@ -319,18 +319,18 @@ class Wait<A> extends React.Component<WaitProps<A>,WaitState<A>> {
   running:boolean = false
   end_process() {
     if (!this.running) return
-    console.log('Ending process')
+    //console.log('Ending process')
     this.setState({...this.state, status: "closed", last_command: this.props.p(this.props.value).comp(this.props.context)(callback => new_value => this.props.cont(callback)(new_value))})
   }
   process() {
-    console.log('Starting Wait process')
+    //console.log('Starting Wait process')
 
   }
   componentWillMount() {
-    console.log("starting wait thread")
+    //console.log("starting wait thread")
     if (this.running) return
     this.running = true
-    console.log('Starting first waiting')
+    //console.log('Starting first waiting')
     setTimeout(() => this.end_process(),this.props.dt)
     // var self = this
     // let process = () =>
@@ -352,12 +352,12 @@ class Wait<A> extends React.Component<WaitProps<A>,WaitState<A>> {
     // process()
   }
   componentWillUnmount() {
-    console.log("stopping wait thread")
+    //console.log("stopping wait thread")
     this.running = false
   }
   componentDidUpdate(prevProps: WaitProps<A>,prevState: WaitState<A>) {
     if (prevState.status == 'closed' && this.state.status == "open") {
-      console.log('Here we start the process')
+      //console.log('Here we start the process')
       setTimeout(() => this.end_process(),this.props.dt)
     }
   }
@@ -377,7 +377,7 @@ class Wait<A> extends React.Component<WaitProps<A>,WaitState<A>> {
     this.setState({...this.state, status: 'open'})
   }
   render() {
-    console.log(this.props.value)
+    //console.log(this.props.value)
     return this.state.last_command
   }
 }
