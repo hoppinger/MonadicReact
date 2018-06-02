@@ -1,17 +1,23 @@
-# Getting started
-Setup consists of installing all dependencies with `yarn install` (requires `nodejs` and `yarn`). Alternatively `npm install` will also work.
+# Samples Demo
 
-## Compiling
-Running the application requires compiling it. To compile the client-side stylesheets, use
+To run the Sample application you will first need to install all dependencies. All commands listed below will be run from the repo's root directory.
 
-```npm run stylesheets```.
+```
+yarn install
+```
 
-## Running locally
+Next compile the stylesheets as well as bundle the client:
 
-To run the application, use the watchers. For the server, from the `samples` directory, run
+```
+yarn css
+yarn fe
+```
 
-```../node_modules/.bin/nodemon app.js```
+The `fe` script starts a watcher, so open a new terminal to start the server.
 
-for the client, from the root directory, run
+```
+yarn be
+```
 
-```npm run webpack```.
+The samples can now be viewed at [localhost:5000](http://localhost:5000).
+
