@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import * as React from "react";
 import * as Immutable from "immutable";
 import * as Option from "./option";

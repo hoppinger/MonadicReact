@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import * as React from "react";
 import { Route, Url } from './router';
 export declare type CmdCommon<A> = {
