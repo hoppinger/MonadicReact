@@ -32,6 +32,12 @@ export declare type DelayProps<A> = {
     value: A;
     p: (_: A) => C<A>;
 } & CmdCommon<A>;
+export declare type WaitProps<A> = {
+    kind: "wait";
+    dt: number;
+    value: A;
+    p: (_: A) => C<A>;
+} & CmdCommon<A>;
 export declare type RetryStrategy<A> = "never" | "semi exponential" | {
     kind: "retry then show failure";
     times: number;
@@ -57,6 +63,7 @@ export declare let all: <A>(ps: C<A>[], key?: string, dbg?: () => string) => C<A
 export declare let retract: <A, B>(key?: string, dbg?: () => string) => (inb: (_: A) => B, out: (_: A) => (_: B) => A, p: (_: B) => C<B>) => (_: A) => C<A>;
 export declare let lift_promise: <A, B>(p: (_: A) => Promise<B>, retry_strategy: RetryStrategy<B>, key?: string, dbg?: () => string) => (_: A) => C<B>;
 export declare let delay: <A>(dt: number, key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
+export declare let waiting: <A>(dt: number, key?: string, dbg?: () => string) => (p: (_: A) => C<A>) => (_: A) => C<A>;
 export declare let mk_submenu_entry: <A>(label: string, children: MenuEntryValue<A>[]) => MenuEntrySubMenu<A>;
 export declare let mk_menu_entry: <A>(v: A) => MenuEntryValue<A>;
 export declare type MenuEntryValue<A> = {
