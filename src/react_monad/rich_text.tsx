@@ -57,6 +57,13 @@ class DraftEditor extends React.Component<DraftProps, DraftState> {
     this.state = { editor_state: this.props.initial_state }
   }
 
+  componentWillReceiveProps(new_props:DraftProps) {
+    let new_state = new_props.initial_state
+    if (this.state.editor_state != new_state) {
+      this.setState({...this.state, editor_state:new_state})
+    }
+  }
+
   static decorator = () => new CompositeDecorator([
     {
       strategy: DraftEditor.findLinkentities,
