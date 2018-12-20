@@ -506,7 +506,7 @@ To see the library in action in a simple application and to get inspiration on h
 # About the authors
 This library has mostly been set up by Dr. Giuseppe Maggiore, and is to some extent inspired from his PhD thesis on monadic coroutines for game development.
 
-Giuseppe works as CTO for Hoppinger BV, a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its ongoing innovation strategy.
+Giuseppe works as CTO for [Hoppinger BV](https://www.hoppinger.com), a company focusing on web strategy, design, and development in Rotterdam (Netherlands). Hoppinger supports the development of the library with significant internal effort, and acts as beta user and corporate sponsor as part of its ongoing innovation strategy.
 
 ## Contact
 <giuseppe@hoppinger.com> is the obvious place to start.
